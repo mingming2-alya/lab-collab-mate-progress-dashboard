@@ -169,6 +169,59 @@ const SCOPE = [
    item.step：0＝未開始；k＝正在第 k 個階段（從 1 起算）；stages.length+1＝全部完成 */
 const REPORTS = [
   {
+    date:"2026-10-30",
+    projects:[
+      {name:"二級區域本地部署大模型", status:"yellow", note:"部署完成；測試時記憶體不足導致服務停止，原因分析中",
+       items:[{name:"本地部署大模型", owner:"Gary、万峰", state:"doing", label:"部署完成・問題分析中"}]},
+      {name:"ADK 落地框架", status:"green", note:"開發中，已驗證可在二級區域運行",
+       items:[{name:"ADK 落地框架", owner:"Simon、Gary", state:"doing", label:"開發中"}]},
+      {name:"共性自動化工具", status:"idle", note:"6 個工具尚未啟動", prereq:"二級區域環境就位後才可開始開發",
+       stages:["開發測試","用戶驗收","打包成 MCP 格式"],
+       items:[
+         {name:"郵箱", owner:"万峰", state:"todo", label:"未開始", step:0},
+         {name:"雷達", owner:"熙宁", state:"todo", label:"未開始", step:0},
+         {name:"刷機", owner:"Simon、Gary", state:"todo", label:"未開始", step:0},
+         {name:"Panic", owner:"Simon、Gary", state:"todo", label:"未開始", step:0},
+         {name:"Insight", owner:"景棠", state:"todo", label:"未開始", step:0},
+         {name:"收集 log", owner:"景棠", state:"todo", label:"未開始", step:0}]},
+      {name:"自動化工具", status:"idle", note:"3 個工具尚未啟動", prereq:"二級區域環境就位後才可開始開發",
+       stages:["開發測試","用戶驗收","打包成 MCP 格式"],
+       items:[
+         {name:"Bundle 驗證", owner:"Simon、Gary", state:"todo", label:"未開始", step:0},
+         {name:"EFI 驗證", owner:"熙宁", state:"todo", label:"未開始", step:0},
+         {name:"proxima 驗證", owner:"景棠", state:"todo", label:"未開始", step:0}]},
+      {name:"工作流建置", status:"idle", note:"首波 3 個驗證工作流尚未啟動",
+       stages:["節點串連","測試調整","用戶驗收","打包成 A2A 接口"],
+       items:[
+         {name:"Bundle 驗證工作流", owner:"—", state:"todo", label:"未開始", step:0},
+         {name:"EFI 驗證工作流", owner:"—", state:"todo", label:"未開始", step:0},
+         {name:"proxima 驗證工作流", owner:"—", state:"todo", label:"未開始", step:0}]},
+      {name:"Try Run", status:"idle", note:"尚未啟動",
+       items:[{name:"Try Run", owner:"—", state:"todo", label:"未開始"}]},
+      {name:"串連 LabMind 模塊", status:"idle", note:"尚未啟動",
+       stages:["工作流調整","測試適配","用戶驗收"],
+       items:[{name:"串連 LabMind 模塊", owner:"—", state:"todo", label:"未開始", step:0}]}
+    ],
+    wins:[
+      {what:"二級區域本地大模型部署完成", who:"Gary、万峰"}
+    ],
+    risks:[
+      {type:"risk", project:"二級區域本地部署大模型", title:"測試時記憶體容易爆滿，大模型服務會停止",
+       impact:"模型服務不穩定，依賴本地模型的後續測試無法穩定進行",
+       ask:"初步懷疑是模型思考鏈過長導致記憶體不足，万峰正在分析具體原因", due:"待定"},
+      {type:"handled", project:"自動化工具、工作流建置（驗證、Panic 工作流）", title:"Agent 在辦公電腦，無法合規連到工站電腦",
+       impact:"驗證與 Panic 處理都要在工站電腦上進行；用網線直連辦公電腦與工站電腦違反規定",
+       ask:"驗證：改用兩個 USB 轉網口連接，已驗證能正常刷機。Panic：可用 USB 串口通訊，但實作較複雜，且 Panic 目前已有自動化，此方案優先級調低", due:"—"},
+      {type:"handled", project:"共性自動化工具（Insight）", title:"Insight 沒有可用的 API",
+       impact:"Insight 是 FA 工作流中唯一能下載 log 的系統（登入、查詢機台測試記錄、下載測試 log、篩選統計）",
+       ask:"景棠研究以爬蟲取得 API。此項屬 FA 工作流，優先級調低，先做驗證與 Panic", due:"—"},
+      {type:"risk", project:"串連 LabMind 模塊", title:"各工作流的 Agent 只能做簡單問答",
+       impact:"沒有算力支援工作流的進展分析與 debug",
+       ask:"需先了解 LabMind 是否有這項需求", due:"待定"}
+    ]
+  }
+,
+  {
     date:"2026-10-29",
     projects:[
       {name:"二級區域本地部署大模型", status:"green", note:"部署中",
