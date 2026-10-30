@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}</style>
+<title>Lab Collab Mate 每日進度</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column — date + one-line summary, a light per workstream with item segments, risks with their countermeasures, then item-level detail. */
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --fg:#18212B; --muted:#5D6B7A; --line:#DCE2E8; --seg:#D3DAE1;
+  --accent:#1E5A86; --accent-soft:#E3EDF5;
+  --ok:#1F7A4D; --ok-soft:#E2F2E9; --warn:#A86200; --warn-soft:#FBEFD9; --bad:#B3261E; --bad-soft:#FBE4E2;
+  --idle:#66727F; --idle-soft:#E8ECF0;
+  --f-display:"Noto Serif TC","Songti TC",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11161C; --surface:#19212A; --fg:#E6ECF1; --muted:#97A5B3; --line:#2B3642; --seg:#33404D;
+  --accent:#7FB6E0; --accent-soft:#1D3243;
+  --ok:#5CC48C; --ok-soft:#173527; --warn:#F0B055; --warn-soft:#3A2A12; --bad:#F2857C; --bad-soft:#3E1D1B;
+  --idle:#A3B0BD; --idle-soft:#26303A;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11161C; --surface:#19212A; --fg:#E6ECF1; --muted:#97A5B3; --line:#2B3642; --seg:#33404D;
+  --accent:#7FB6E0; --accent-soft:#1D3243;
+  --ok:#5CC48C; --ok-soft:#173527; --warn:#F0B055; --warn-soft:#3A2A12; --bad:#F2857C; --bad-soft:#3E1D1B;
+  --idle:#A3B0BD; --idle-soft:#26303A;
+  color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.65}
+.wrap{max-width:900px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:30px}
+h1,h2,h3{margin:0;text-wrap:balance}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--muted);font-weight:500}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+header.page{display:flex;flex-direction:column;gap:10px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--f-display);font-size:30px;line-height:1.25;font-weight:700}
+.date{font-family:var(--f-mono);font-size:14px;color:var(--muted)}
+.summary{font-size:16px;max-width:64ch;margin:0}
+.days{display:flex;gap:6px;flex-wrap:wrap}
+.days a{font-family:var(--f-mono);font-size:13px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);text-decoration:none;background:var(--surface)}
+.days a[aria-current="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.days a:focus-visible,.days a:hover{border-color:var(--accent);outline:none}
+
+section{display:flex;flex-direction:column;gap:12px}
+h2{font-size:18px;font-weight:700;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+h2 .count{font-family:var(--f-mono);font-size:13px;color:var(--muted);font-weight:400}
+
+[data-s="green"]{--c:var(--ok);--cs:var(--ok-soft)}
+[data-s="yellow"]{--c:var(--warn);--cs:var(--warn-soft)}
+[data-s="red"]{--c:var(--bad);--cs:var(--bad-soft)}
+[data-s="idle"]{--c:var(--idle);--cs:var(--idle-soft)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--c);background:var(--cs);padding:2px 10px;border-radius:999px;align-self:flex-start;white-space:nowrap}
+
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.light{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.light h3{font-size:16px;font-weight:700;line-height:1.4}
+.note{font-size:14px;color:var(--muted);margin:0}
+.prereq{font-size:13px;margin:0;padding:4px 8px;border-radius:4px;background:var(--accent-soft);color:var(--accent)}
+.segs{display:flex;gap:3px}
+.segs i{flex:1;height:6px;border-radius:2px;background:var(--seg)}
+.segs i.doing{background:var(--accent)}
+.segs i.done{background:var(--ok)}
+.meta{font-size:12px;color:var(--muted)}
+
+.items{display:flex;flex-direction:column;gap:10px}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
+.tag{font-size:12px;font-weight:700;padding:2px 8px;border-radius:4px;height:fit-content;white-space:nowrap}
+.tag.decide{background:var(--accent);color:var(--bg)}
+.tag.risk{background:var(--warn-soft);color:var(--warn)}
+.tag.handled{background:var(--ok-soft);color:var(--ok)}
+.item .body{min-width:0;display:flex;flex-direction:column;gap:4px}
+.item .title{font-weight:700}
+.item dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:14px}
+.item dt{color:var(--muted);white-space:nowrap}
+.item dd{margin:0;min-width:0}
+.empty{background:var(--ok-soft);color:var(--ok);padding:12px 16px;border-radius:10px;font-size:14px}
+
+.wins{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.wins li{display:grid;grid-template-columns:1.2em 1fr;gap:6px;font-size:14px}
+.wins li::before{content:"✓";color:var(--ok);font-weight:700}
+.wins .src{color:var(--muted)}
+
+.detail{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:12px}
+.proj{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.proj .hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.proj h3{font-size:16px}
+.rows{display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px 12px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:14px}
+.row:first-child{border-top:0}
+.row .who{color:var(--muted);font-size:13px;text-align:right}
+.st{font-size:12px;padding:1px 8px;border-radius:4px;white-space:nowrap;background:var(--idle-soft);color:var(--idle)}
+.st.doing{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.st.done{background:var(--ok-soft);color:var(--ok);font-weight:700}
+.next{font-size:13px;color:var(--muted);border-top:1px dashed var(--line);padding-top:8px}
+footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:4px}
+@media (max-width:480px){h1{font-size:24px}.row{grid-template-columns:minmax(0,1fr) auto}.row .who{grid-column:1;grid-row:2;text-align:left}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="page">
+    <div class="eyebrow">LAB COLLAB MATE ・ 專案進度日報</div>
+    <div class="top">
+      <h1 id="h1">每日進度</h1>
+      <div class="date" id="date"></div>
+    </div>
+    <p class="summary" id="summary"></p>
+    <nav class="days" id="days" aria-label="選擇日期"></nav>
+  </header>
+
+  <section aria-labelledby="s1">
+    <h2 id="s1">工作線燈號 <span class="count" id="tally"></span></h2>
+    <div class="strip" id="strip"></div>
+  </section>
+
+  <section aria-labelledby="s2">
+    <h2 id="s2">風險與對策 <span class="count" id="rcount"></span></h2>
+    <div class="items" id="risks"></div>
+  </section>
+
+  <section aria-labelledby="s3" id="winsec">
+    <h2 id="s3">本日成果</h2>
+    <ul class="wins" id="wins"></ul>
+  </section>
+
+  <section aria-labelledby="s4">
+    <h2 id="s4">工作項目明細 <span class="count" id="icount"></span></h2>
+    <div class="detail" id="detail"></div>
+  </section>
+
+  <footer>
+    <span>資料來源：工程師當日回報訊息，由 PM 彙整。</span>
+    <span>燈號：● 正常＝依計畫推進；▲ 注意＝有延誤可能，團隊可自行處理；■ 受阻＝需要外部協助；○ 未啟動＝尚未開工，非異常。</span>
+  </footer>
+</div>
+
+<script>
+/* ===== 每日資料：最新一天放最前面 ===== */
+const REPORTS = [
+  {
+    date:"2026-10-29",
+    summary:"4 條工作線中 2 條進行中：二級區域本地大模型部署中，ADK 落地框架已驗證可在二級區域運行；自動化工具與共性 tool 尚未啟動，需待二級區域環境就位後才能開始開發。3 項風險中 2 項已有對策，Lab Mind 對接需求待確認。",
+    projects:[
+      {name:"二級區域本地部署大模型", status:"green", note:"部署中", owners:"Gary、万峰",
+       items:[{name:"本地部署大模型", owner:"Gary、万峰", state:"doing", label:"部署中"}]},
+      {name:"自動化工具", status:"idle", note:"3 項驗證尚未啟動", prereq:"二級區域環境就位後才可開始開發", owners:"Simon、Gary、熙宁、景棠",
+       items:[
+         {name:"Bundle 驗證", owner:"Simon、Gary", state:"todo", label:"未開始"},
+         {name:"EFI 驗證", owner:"熙宁", state:"todo", label:"未開始"},
+         {name:"proxima 驗證", owner:"景棠", state:"todo", label:"未開始"}]},
+      {name:"共性 tool", status:"idle", note:"6 個部分尚未啟動", prereq:"二級區域環境就位後才可開始開發", owners:"万峰、熙宁、Simon、Gary、景棠",
+       items:[
+         {name:"郵箱", owner:"万峰", state:"todo", label:"未開始"},
+         {name:"雷達", owner:"熙宁", state:"todo", label:"未開始"},
+         {name:"刷機", owner:"Simon、Gary", state:"todo", label:"未開始"},
+         {name:"Panic", owner:"Simon、Gary", state:"todo", label:"未開始"},
+         {name:"Insight", owner:"景棠", state:"todo", label:"未開始"},
+         {name:"收集 log", owner:"景棠", state:"todo", label:"未開始"}]},
+      {name:"ADK 落地框架", status:"green", note:"開發中，已驗證可在二級區域運行", owners:"Simon、Gary",
+       items:[{name:"ADK 落地框架", owner:"Simon、Gary", state:"doing", label:"開發中"}]}
+    ],
+    wins:[
+      {what:"ADK 落地框架已驗證可在二級區域運行", who:"Simon、Gary"},
+      {what:"驗證工作流的連線問題找到合規做法：改用兩個 USB 轉網口連接辦公電腦與工站電腦，已驗證能正常刷機", who:""},
+      {what:"Insight 無 API 的問題已有方向：研究以爬蟲方式取得 API", who:"景棠"}
+    ],
+    risks:[
+      {type:"handled", project:"自動化工具（驗證、Panic 工作流）", title:"Agent 在辦公電腦，無法合規連到工站電腦",
+       impact:"驗證與 Panic 處理都要在工站電腦上進行；用網線直連辦公電腦與工站電腦違反規定",
+       ask:"驗證：改用兩個 USB 轉網口連接，已驗證能正常刷機。Panic：可用 USB 串口通訊，但實作較複雜，且 Panic 目前已有自動化，此方案優先級調低", due:"—"},
+      {type:"handled", project:"共性 tool（Insight）", title:"Insight 沒有可用的 API",
+       impact:"Insight 是 FA 工作流中唯一能下載 log 的系統（登入、查詢機台測試記錄、下載測試 log、篩選統計）",
+       ask:"景棠研究以爬蟲取得 API。此項屬 FA 工作流，優先級調低，先做驗證與 Panic", due:"—"},
+      {type:"risk", project:"對接 Lab Mind", title:"各工作流的 Agent 只能做簡單問答",
+       impact:"沒有算力支援工作流的進展分析與 debug",
+       ask:"需先了解 Lab Mind 是否有這項需求", due:"待定"}
+    ]
+  }
+];
+
+const LABEL = {green:"● 正常", yellow:"▲ 注意", red:"■ 受阻", idle:"○ 未啟動"};
+const TAG = {decide:"需決策", risk:"待追蹤", handled:"已有對策"};
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const key = d => "d" + d.replaceAll("-","");
+const wk = d => "日一二三四五六"[new Date(d+"T00:00:00").getDay()];
+
+function render(){
+  const k = location.hash.slice(1);
+  const r = REPORTS.find(x => key(x.date) === k) || REPORTS[0];
+  const [, m, d] = r.date.split("-");
+  $("h1").textContent = `${+m} 月 ${+d} 日進度`;
+  $("date").textContent = `${r.date}（${wk(r.date)}）`;
+  $("summary").textContent = r.summary;
+  $("days").innerHTML = REPORTS.slice(0,14).map(x => {
+    const [, mm, dd] = x.date.split("-");
+    return `<a href="#${key(x.date)}" aria-current="${x===r}">${mm}/${dd}</a>`;
+  }).join("");
+
+  const c = {green:0,yellow:0,red:0,idle:0}; r.projects.forEach(p => c[p.status]++);
+  $("tally").textContent = `${r.projects.length} 條・正常 ${c.green}・注意 ${c.yellow}・受阻 ${c.red}・未啟動 ${c.idle}`;
+  $("strip").innerHTML = r.projects.map(p => {
+    const n = p.items.length, doing = p.items.filter(i=>i.state==="doing").length, done = p.items.filter(i=>i.state==="done").length;
+    return `<div class="light" data-s="${p.status}">
+      <span class="pill">${LABEL[p.status]}</span>
+      <h3>${esc(p.name)}</h3>
+      <p class="note">${esc(p.note)}</p>
+      ${p.prereq ? `<p class="prereq">前置條件：${esc(p.prereq)}</p>` : ""}
+      <div class="segs" role="img" aria-label="${n} 項中進行中 ${doing}、完成 ${done}">${p.items.map(i=>`<i class="${i.state}"></i>`).join("")}</div>
+      <div class="meta">${n} 項・進行中 ${doing}${done?`・完成 ${done}`:""}・未開始 ${n-doing-done}</div>
+    </div>`}).join("");
+
+  const cnt = t => r.risks.filter(x=>x.type===t).length;
+  $("rcount").textContent = r.risks.length ? `需決策 ${cnt("decide")}・待追蹤 ${cnt("risk")}・已有對策 ${cnt("handled")}` : "";
+  $("risks").innerHTML = r.risks.length ? r.risks.map(x => `
+    <div class="item">
+      <span class="tag ${x.type}">${TAG[x.type]}</span>
+      <div class="body">
+        <div class="title">${esc(x.title)}</div>
+        <dl>
+          <dt>工作線</dt><dd>${esc(x.project)}</dd>
+          <dt>影響</dt><dd>${esc(x.impact)}</dd>
+          <dt>${x.type==="decide" ? "請求" : "對策"}</dt><dd>${esc(x.ask)}</dd>
+          <dt>期限</dt><dd class="mono">${esc(x.due)}</dd>
+        </dl>
+      </div>
+    </div>`).join("") : `<div class="empty">今日沒有需要老闆決策的事項，也沒有新風險。</div>`;
+
+  $("winsec").hidden = !(r.wins && r.wins.length);
+  $("wins").innerHTML = (r.wins||[]).map(w => `<li><span>${esc(w.what)}${w.who?` <span class="src">— ${esc(w.who)}</span>`:""}</span></li>`).join("");
+
+  const all = r.projects.flatMap(p=>p.items);
+  $("icount").textContent = `共 ${all.length} 項・進行中 ${all.filter(i=>i.state==="doing").length}・未開始 ${all.filter(i=>i.state==="todo").length}`;
+  $("detail").innerHTML = r.projects.map(p => `
+    <article class="proj" data-s="${p.status}">
+      <div class="hd"><h3>${esc(p.name)}</h3><span class="pill">${LABEL[p.status]}</span></div>
+      ${p.prereq ? `<p class="prereq">前置條件：${esc(p.prereq)}</p>` : ""}
+      <div class="rows">${p.items.map(i => `
+        <div class="row"><span>${esc(i.name)}</span><span class="who">${esc(i.owner)}</span><span class="st ${i.state}">${esc(i.label)}</span></div>`).join("")}
+      </div>
+      ${p.next ? `<div class="next">下一個里程碑：${esc(p.next.name)}・<span class="mono">${esc(p.next.date)}</span></div>` : ""}
+    </article>`).join("");
+}
+addEventListener("hashchange", render);
+render();
+</script>
+</body>
+</html>
