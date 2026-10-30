@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: one reading column — date + summary, a light per workstream (in delivery order), risks with countermeasures, wins, workflow scope tiers, then item-level detail with stage steppers. */
+/* Layout: one reading column — title with a date picker, a light per workstream (in delivery order), risks with countermeasures, wins, workflow scope tiers, then item-level detail with stage steppers. */
 :root{
   --bg:#F3F5F7; --surface:#FFFFFF; --fg:#18212B; --muted:#5D6B7A; --line:#DCE2E8; --seg:#D3DAE1;
   --accent:#1E5A86; --accent-soft:#E3EDF5;
@@ -35,12 +35,9 @@ h1,h2,h3{margin:0;text-wrap:balance}
 header.page{display:flex;flex-direction:column;gap:10px}
 .top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
 h1{font-family:var(--f-display);font-size:30px;line-height:1.25;font-weight:700}
-.date{font-family:var(--f-mono);font-size:14px;color:var(--muted)}
-.summary{font-size:16px;max-width:66ch;margin:0}
-.days{display:flex;gap:6px;flex-wrap:wrap}
-.days a{font-family:var(--f-mono);font-size:13px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);text-decoration:none;background:var(--surface)}
-.days a[aria-current="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
-.days a:focus-visible,.days a:hover{border-color:var(--accent);outline:none}
+.pick{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.pick select{font-family:var(--f-mono);font-size:14px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 8px;cursor:pointer;max-width:100%}
+.pick select:hover,.pick select:focus-visible{border-color:var(--accent);outline:none}
 
 section{display:flex;flex-direction:column;gap:12px}
 h2{font-size:18px;font-weight:700;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
@@ -126,10 +123,8 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
     <div class="eyebrow">LAB COLLAB MATE ・ 專案進度日報</div>
     <div class="top">
       <h1 id="h1">每日進度</h1>
-      <div class="date" id="date"></div>
+      <label class="pick"><span>查看日期</span><select id="date"></select></label>
     </div>
-    <p class="summary" id="summary"></p>
-    <nav class="days" id="days" aria-label="選擇日期"></nav>
   </header>
 
   <section aria-labelledby="s1">
@@ -177,7 +172,6 @@ const SCOPE = [
 const REPORTS = [
   {
     date:"2026-10-29",
-    summary:"7 條工作線中 2 條進行中：二級區域本地大模型部署中，ADK 落地框架已驗證可在二級區域運行。其餘 5 條尚未啟動，共性自動化工具與自動化工具需待二級區域環境就位後才能開始開發。首波優先落地 Bundle、EFI、proxima 三個驗證工作流。3 項風險中 2 項已有對策，LabMind 對接需求待確認。",
     projects:[
       {name:"二級區域本地部署大模型", status:"green", note:"部署中",
        items:[{name:"本地部署大模型", owner:"Gary、万峰", state:"doing", label:"部署中"}]},
@@ -248,12 +242,7 @@ function render(){
   const r = REPORTS.find(x => key(x.date) === k) || REPORTS[0];
   const [, m, d] = r.date.split("-");
   $("h1").textContent = `${+m} 月 ${+d} 日進度`;
-  $("date").textContent = `${r.date}（${wk(r.date)}）`;
-  $("summary").textContent = r.summary;
-  $("days").innerHTML = REPORTS.slice(0,14).map(x => {
-    const [, mm, dd] = x.date.split("-");
-    return `<a href="#${key(x.date)}" aria-current="${x===r}">${mm}/${dd}</a>`;
-  }).join("");
+  $("date").innerHTML = REPORTS.map(x => `<option value="${key(x.date)}"${x===r?" selected":""}>${x.date}（${wk(x.date)}）${x===REPORTS[0]?"・最新":""}</option>`).join("");
 
   const c = {green:0,yellow:0,red:0,idle:0}; r.projects.forEach(p => c[p.status]++);
   $("tally").textContent = `${r.projects.length} 條・正常 ${c.green}・注意 ${c.yellow}・受阻 ${c.red}・未啟動 ${c.idle}`;
@@ -308,6 +297,7 @@ function render(){
     </article>`).join("");
 }
 addEventListener("hashchange", render);
+$("date").addEventListener("change", e => { location.hash = e.target.value; });
 render();
 </script>
 </body>
