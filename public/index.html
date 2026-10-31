@@ -6,36 +6,49 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Lab Collab Mate 每日進度</title>
 <style>
-/* Layout: one reading column — title with a date picker, a light per workstream (in delivery order), risks with countermeasures, wins, workflow scope tiers, then item-level detail with stage steppers. */
+/* Layout: one column. Status tally → active workstreams as full cards (changed first) → not-started list with its issues shown → completed list (collapsed) → workflow scope. */
 :root{
   --bg:#F3F5F7; --surface:#FFFFFF; --fg:#18212B; --muted:#5D6B7A; --line:#DCE2E8; --seg:#D3DAE1;
   --accent:#1E5A86; --accent-soft:#E3EDF5;
   --ok:#1F7A4D; --ok-soft:#E2F2E9; --warn:#A86200; --warn-soft:#FBEFD9; --bad:#B3261E; --bad-soft:#FBE4E2;
-  --idle:#66727F; --idle-soft:#E8ECF0;
+  --idle:#66727F; --idle-soft:#E8ECF0; --new:#6A3FB5; --new-soft:#EEE6FA;
   --f-display:"Noto Serif TC","Noto Serif CJK TC","Songti TC","Songti SC","STSong","PMingLiU","SimSun",serif;
-  --f-body:"PingFang TC","PingFang SC","Microsoft JhengHei","Microsoft YaHei","Noto Sans TC","Noto Sans SC","Noto Sans CJK TC",system-ui,sans-serif;
+  --f-body:"PingFang TC","PingFang SC","Microsoft JhengHei","Microsoft YaHei","Noto Sans TC","Noto Sans CJK TC",system-ui,sans-serif;
   --f-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
-@media (prefers-color-scheme: dark){:root{
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#11161C; --surface:#19212A; --fg:#E6ECF1; --muted:#97A5B3; --line:#2B3642; --seg:#33404D;
   --accent:#7FB6E0; --accent-soft:#1D3243;
   --ok:#5CC48C; --ok-soft:#173527; --warn:#F0B055; --warn-soft:#3A2A12; --bad:#F2857C; --bad-soft:#3E1D1B;
-  --idle:#A3B0BD; --idle-soft:#26303A;
+  --idle:#A3B0BD; --idle-soft:#26303A; --new:#C3A6F2; --new-soft:#2E2442;
   color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11161C; --surface:#19212A; --fg:#E6ECF1; --muted:#97A5B3; --line:#2B3642; --seg:#33404D;
+  --accent:#7FB6E0; --accent-soft:#1D3243;
+  --ok:#5CC48C; --ok-soft:#173527; --warn:#F0B055; --warn-soft:#3A2A12; --bad:#F2857C; --bad-soft:#3E1D1B;
+  --idle:#A3B0BD; --idle-soft:#26303A; --new:#C3A6F2; --new-soft:#2E2442;
+  color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.65}
-.wrap{max-width:920px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:30px}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.65}
+.wrap{max-width:860px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:28px}
 h1,h2,h3{margin:0;text-wrap:balance}
 .eyebrow{font-size:12px;letter-spacing:.12em;color:var(--muted);font-weight:500}
 .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 
-header.page{display:flex;flex-direction:column;gap:10px}
+header.page{display:flex;flex-direction:column;gap:12px}
 .top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
 h1{font-family:var(--f-display);font-size:30px;line-height:1.25;font-weight:700}
 .pick{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
 .pick select{font-family:var(--f-mono);font-size:14px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 8px;cursor:pointer;max-width:100%}
 .pick select:hover,.pick select:focus-visible{border-color:var(--accent);outline:none}
+.tally{display:flex;flex-wrap:wrap;gap:8px}
+.tally span{font-size:13px;padding:3px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--muted)}
+.tally b{font-family:var(--f-mono);color:var(--fg);margin-left:4px}
+.tally .hot{border-color:var(--new);color:var(--new)}
+.tally .hot b{color:var(--new)}
 
 section{display:flex;flex-direction:column;gap:12px}
 h2{font-size:18px;font-weight:700;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
@@ -44,78 +57,97 @@ h2 .count{font-family:var(--f-mono);font-size:13px;color:var(--muted);font-weigh
 [data-s="green"]{--c:var(--ok);--cs:var(--ok-soft)}
 [data-s="yellow"]{--c:var(--warn);--cs:var(--warn-soft)}
 [data-s="red"]{--c:var(--bad);--cs:var(--bad-soft)}
+[data-s="done"]{--c:var(--ok);--cs:var(--ok-soft)}
 [data-s="idle"]{--c:var(--idle);--cs:var(--idle-soft)}
-.pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--c);background:var(--cs);padding:2px 10px;border-radius:999px;align-self:flex-start;white-space:nowrap}
+.pill{display:inline-flex;align-items:center;font-size:13px;font-weight:700;color:var(--c);background:var(--cs);padding:2px 10px;border-radius:999px;white-space:nowrap}
+.badge{font-size:12px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.badge.new{background:var(--new-soft);color:var(--new)}
+.badge.same{background:var(--idle-soft);color:var(--idle);font-weight:500}
 
-/* light strip: ordered list of workstreams */
-.strip{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;counter-reset:ws}
-.light{counter-increment:ws;background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:7px;min-width:0}
-.light .hd{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.light .no{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
-.light .no::before{content:counter(ws, decimal-leading-zero)}
-.light h3{font-size:15px;font-weight:700;line-height:1.4}
-.note{font-size:13px;color:var(--muted);margin:0}
-.prereq{font-size:12px;margin:0;padding:3px 8px;border-radius:4px;background:var(--accent-soft);color:var(--accent)}
-.segs{display:flex;gap:3px;margin-top:auto}
-.segs i{flex:1;height:6px;border-radius:2px;background:var(--seg)}
-.segs i.doing{background:var(--accent)}
-.segs i.done{background:var(--ok)}
-.meta{font-size:12px;color:var(--muted)}
+/* active workstream card */
+.card{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card .hd{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.card .no{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.card h3{font-size:18px;line-height:1.35;margin-right:auto}
+.diff{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px}
+.diff s{color:var(--muted)}
+.diff .arrow{color:var(--muted)}
+.diff strong{color:var(--c)}
+.update{margin:0;font-size:15px;max-width:68ch}
+.issue{border-radius:8px;padding:10px 12px;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:14px}
+.issue.risk{background:var(--warn-soft)}
+.issue.decide{background:var(--accent-soft)}
+.issue.handled{background:var(--ok-soft)}
+.issue .k{font-weight:700;white-space:nowrap}
+.issue.risk .k{color:var(--warn)} .issue.decide .k{color:var(--accent)} .issue.handled .k{color:var(--ok)}
+.issue .v{min-width:0}
+.issue .t{font-weight:700}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0;font-size:14px}
+.kv dt{color:var(--muted);white-space:nowrap}
+.kv dd{margin:0;min-width:0}
+.tbd{color:var(--muted);font-style:normal}
+.tbd::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--warn);margin-right:6px;vertical-align:middle}
+.foot{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--muted);border-top:1px dashed var(--line);padding-top:8px}
 
-/* risks */
-.items{display:flex;flex-direction:column;gap:10px}
-.item{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
-.tag{font-size:12px;font-weight:700;padding:2px 8px;border-radius:4px;height:fit-content;white-space:nowrap}
-.tag.decide{background:var(--accent);color:var(--bg)}
-.tag.risk{background:var(--warn-soft);color:var(--warn)}
-.tag.handled{background:var(--ok-soft);color:var(--ok)}
-.item .body{min-width:0;display:flex;flex-direction:column;gap:4px}
-.item .title{font-weight:700}
-.item dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:14px}
-.item dt{color:var(--muted);white-space:nowrap}
-.item dd{margin:0;min-width:0}
-.empty{background:var(--ok-soft);color:var(--ok);padding:12px 16px;border-radius:10px;font-size:14px}
-
-.wins{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:0;list-style:none;display:flex;flex-direction:column;gap:6px}
-.wins li{display:grid;grid-template-columns:1.2em 1fr;gap:6px;font-size:14px}
-.wins li::before{content:"✓";color:var(--ok);font-weight:700}
-.wins .src{color:var(--muted)}
-
-/* scope tiers */
-.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px}
-.tier{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
-.tier.now{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
-.tier .when{font-size:12px;color:var(--muted);font-weight:500;letter-spacing:.04em}
-.tier h3{font-size:15px}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font-size:13px;padding:2px 10px;border-radius:999px;background:var(--idle-soft);color:var(--fg)}
-.tier.now .chip{background:var(--accent-soft);color:var(--accent);font-weight:700}
-
-/* detail */
-.detail{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:12px}
-.proj{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
-.proj .hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
-.proj h3{font-size:16px}
-.flow{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
-.flow span{padding:1px 7px;border:1px solid var(--line);border-radius:4px;white-space:nowrap}
-.flow b{font-weight:400;color:var(--seg)}
-.rows{display:flex;flex-direction:column}
-.row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px 12px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:14px}
+/* not-started panel */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.panel .note{margin:0;padding:10px 16px;font-size:13px;color:var(--accent);background:var(--accent-soft)}
+details{border-top:1px solid var(--line)}
+details:first-of-type{border-top:0}
+summary{list-style:none;cursor:pointer;padding:10px 16px;display:grid;grid-template-columns:2.2em minmax(0,1fr) auto 1em;gap:10px;align-items:center;font-size:14px}
+summary::-webkit-details-marker{display:none}
+summary:hover{background:var(--bg)}
+summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+summary .no{font-family:var(--f-mono);color:var(--muted);font-size:13px}
+summary .nm{font-weight:700}
+summary .sub{color:var(--muted);font-size:13px;white-space:nowrap}
+summary .chev{color:var(--muted);transition:transform .15s}
+details[open] summary .chev{transform:rotate(90deg)}
+.items{padding:0 16px 12px calc(16px + 2.2em + 10px);display:flex;flex-direction:column;gap:8px}
+.sumissues{grid-column:2 / -1;display:flex;flex-direction:column;gap:6px;font-weight:400}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px 12px;padding:5px 0;border-top:1px solid var(--line);font-size:14px;align-items:center}
 .row:first-child{border-top:0}
-.row .who{color:var(--muted);font-size:13px;text-align:right}
-.right{display:flex;align-items:center;gap:8px;justify-content:flex-end}
-.steps{display:flex;gap:3px}
-.steps i{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--seg)}
-.steps i.done{background:var(--ok);border-color:var(--ok)}
-.steps i.cur{border-color:var(--accent);background:var(--accent-soft)}
-.st{font-size:12px;padding:1px 8px;border-radius:4px;white-space:nowrap;background:var(--idle-soft);color:var(--idle)}
-.st.doing{background:var(--accent-soft);color:var(--accent);font-weight:700}
-.st.done{background:var(--ok-soft);color:var(--ok);font-weight:700}
+.row .who{color:var(--muted);font-size:13px}
+.st{font-size:12px;padding:1px 8px;border-radius:4px;background:var(--idle-soft);color:var(--idle);white-space:nowrap}
+.stages{font-size:12px;color:var(--muted);padding-bottom:4px}
+
+/* completed (collapsed by default) */
+.donebox{border:0}
+.donebox > summary.donehd{display:flex;align-items:baseline;gap:10px;padding:0;grid-template-columns:none}
+.donebox > summary.donehd:hover{background:none}
+.donehd .chev{font-size:18px}
+.donehd .hint{font-size:12px;color:var(--muted)}
+.donebox[open] .hint{display:none}
+.donebox[open] > summary .chev{transform:rotate(90deg)}
+.donebox .panel{margin-top:12px}
+.empty{margin:0;padding:12px 16px;font-size:14px;color:var(--muted)}
+/* other issues */
+.list{display:flex;flex-direction:column;gap:8px}
+.list .issue{background:var(--surface);border:1px solid var(--line)}
+.list .ws{font-size:12px;color:var(--muted)}
+
+/* scope */
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px}
+.tier{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.tier.now{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.tier .when{font-size:12px;color:var(--muted);font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:13px;padding:1px 10px;border-radius:999px;background:var(--idle-soft)}
+.tier.now .chip{background:var(--accent-soft);color:var(--accent);font-weight:700}
 footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:4px}
-@media (max-width:480px){h1{font-size:24px}.row{grid-template-columns:minmax(0,1fr) auto}.row .who{grid-column:1;grid-row:2;text-align:left}}
+@media (max-width:520px){
+  h1{font-size:24px}
+  summary{grid-template-columns:2.2em minmax(0,1fr) 1em}
+  summary .sub{grid-column:2;grid-row:2;white-space:normal}
+  summary .chev{grid-column:3;grid-row:1}
+  .sumissues{grid-column:1 / -1}
+  .items{padding-left:16px}
+}
+@media (prefers-reduced-motion:reduce){summary .chev{transition:none}}
 </style>
 </head>
 <body>
+
 <div class="wrap">
   <header class="page">
     <div class="eyebrow">LAB COLLAB MATE ・ 專案進度日報</div>
@@ -123,229 +155,149 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
       <h1 id="h1">每日進度</h1>
       <label class="pick"><span>查看日期</span><select id="date"></select></label>
     </div>
+    <div class="tally" id="tally"></div>
   </header>
 
   <section aria-labelledby="s1">
-    <h2 id="s1">工作線燈號 <span class="count" id="tally"></span></h2>
-    <ol class="strip" id="strip"></ol>
+    <h2 id="s1">進行中的工作線 <span class="count" id="c1"></span></h2>
+    <div class="list" id="active"></div>
   </section>
 
   <section aria-labelledby="s2">
-    <h2 id="s2">風險與對策 <span class="count" id="rcount"></span></h2>
-    <div class="items" id="risks"></div>
+    <h2 id="s2">尚未啟動的工作線 <span class="count" id="c2"></span></h2>
+    <div class="panel" id="idle"></div>
   </section>
 
-  <section aria-labelledby="s3" id="winsec">
-    <h2 id="s3">本日成果</h2>
-    <ul class="wins" id="wins"></ul>
-  </section>
-
-  <section aria-labelledby="s5">
-    <h2 id="s5">工作流落地範圍 <span class="count" id="scount"></span></h2>
-    <div class="tiers" id="tiers"></div>
+  <section aria-labelledby="s3" id="sec3">
+    <details class="donebox">
+      <summary class="donehd"><h2 id="s3">已完成的工作線 <span class="count" id="c3"></span></h2><span class="chev" aria-hidden="true">›</span><span class="hint">點擊展開</span></summary>
+      <div class="panel" id="donelist"></div>
+    </details>
   </section>
 
   <section aria-labelledby="s4">
-    <h2 id="s4">工作項目明細 <span class="count" id="icount"></span></h2>
-    <div class="detail" id="detail"></div>
+    <h2 id="s4">工作流落地範圍 <span class="count" id="c4"></span></h2>
+    <div class="tiers" id="tiers"></div>
   </section>
 
   <footer>
     <span>資料來源：工程師當日回報訊息，由 PM 彙整。</span>
     <span>燈號：● 正常＝依計畫推進；▲ 注意＝有延誤可能，團隊可自行處理；■ 受阻＝需要外部協助；○ 未啟動＝尚未開工，非異常。</span>
-    <span>明細中的圓點代表該工作線的各階段：實心＝已完成，藍框＝進行中，空心＝未到。</span>
+    <span>「今日更新」＝與前一份日報相比有變動。</span>
   </footer>
 </div>
 
 <script>
-/* ===== 工作流落地範圍（範圍有變動時才改） ===== */
 const SCOPE = [
-  {when:"第一優先", title:"優先落地", now:true, flows:["Bundle 驗證","EFI 驗證","proxima 驗證"]},
-  {when:"時間允許", title:"接著加入", flows:["CoreOS Panic","Diags Panic"]},
-  {when:"LabMind 完整串連後", title:"陸續補齊", flows:["CoreOS FA","Diags FA","Wireless FA","測試軟體開發"]}
+  {when:"第一優先", now:true, flows:["Bundle 驗證","EFI 驗證","proxima 驗證"]},
+  {when:"時間允許", flows:["CoreOS Panic","Diags Panic"]},
+  {when:"LabMind 完整串連後", flows:["CoreOS FA","Diags FA","Wireless FA","測試軟體開發"]}
 ];
 
-/* ===== 每日資料：最新一天放最前面 =====
-   item.step：0＝未開始；k＝正在第 k 個階段（從 1 起算）；stages.length+1＝全部完成 */
-const REPORTS = [
-  {
-    date:"2026-10-30",
-    projects:[
-      {name:"二級區域本地部署大模型", status:"yellow", note:"部署完成；測試時記憶體不足導致服務停止，原因分析中",
-       items:[{name:"本地部署大模型", owner:"Gary、万峰", state:"doing", label:"部署完成・問題分析中"}]},
-      {name:"ADK 落地框架", status:"green", note:"開發中，已驗證可在二級區域運行",
-       items:[{name:"ADK 落地框架", owner:"Simon、Gary", state:"doing", label:"開發中"}]},
-      {name:"共性自動化工具", status:"idle", note:"6 個工具尚未啟動", prereq:"二級區域環境就位後才可開始開發",
-       stages:["開發測試","用戶驗收","打包成 MCP 格式"],
-       items:[
-         {name:"郵箱", owner:"万峰", state:"todo", label:"未開始", step:0},
-         {name:"雷達", owner:"熙宁", state:"todo", label:"未開始", step:0},
-         {name:"刷機", owner:"Simon、Gary", state:"todo", label:"未開始", step:0},
-         {name:"Panic", owner:"Simon、Gary", state:"todo", label:"未開始", step:0},
-         {name:"Insight", owner:"景棠", state:"todo", label:"未開始", step:0},
-         {name:"收集 log", owner:"景棠", state:"todo", label:"未開始", step:0}]},
-      {name:"自動化工具", status:"idle", note:"3 個工具尚未啟動", prereq:"二級區域環境就位後才可開始開發",
-       stages:["開發測試","用戶驗收","打包成 MCP 格式"],
-       items:[
-         {name:"Bundle 驗證", owner:"Simon、Gary", state:"todo", label:"未開始", step:0},
-         {name:"EFI 驗證", owner:"熙宁", state:"todo", label:"未開始", step:0},
-         {name:"proxima 驗證", owner:"景棠", state:"todo", label:"未開始", step:0}]},
-      {name:"工作流建置", status:"idle", note:"首波 3 個驗證工作流尚未啟動",
-       stages:["節點串連","測試調整","用戶驗收","打包成 A2A 接口"],
-       items:[
-         {name:"Bundle 驗證工作流", owner:"—", state:"todo", label:"未開始", step:0},
-         {name:"EFI 驗證工作流", owner:"—", state:"todo", label:"未開始", step:0},
-         {name:"proxima 驗證工作流", owner:"—", state:"todo", label:"未開始", step:0}]},
-      {name:"Try Run", status:"idle", note:"尚未啟動",
-       items:[{name:"Try Run", owner:"—", state:"todo", label:"未開始"}]},
-      {name:"串連 LabMind 模塊", status:"idle", note:"尚未啟動",
-       stages:["工作流調整","測試適配","用戶驗收"],
-       items:[{name:"串連 LabMind 模塊", owner:"—", state:"todo", label:"未開始", step:0}]}
-    ],
-    wins:[
-      {what:"二級區域本地大模型部署完成", who:"Gary、万峰"}
-    ],
-    risks:[
-      {type:"risk", project:"二級區域本地部署大模型", title:"測試時記憶體容易爆滿，大模型服務會停止",
-       impact:"模型服務不穩定，依賴本地模型的後續測試無法穩定進行",
-       ask:"初步懷疑是模型思考鏈過長導致記憶體不足，万峰正在分析具體原因", due:"待定"},
-      {type:"handled", project:"自動化工具、工作流建置（驗證、Panic 工作流）", title:"Agent 在辦公電腦，無法合規連到工站電腦",
-       impact:"驗證與 Panic 處理都要在工站電腦上進行；用網線直連辦公電腦與工站電腦違反規定",
-       ask:"驗證：改用兩個 USB 轉網口連接，已驗證能正常刷機。Panic：可用 USB 串口通訊，但實作較複雜，且 Panic 目前已有自動化，此方案優先級調低", due:"—"},
-      {type:"handled", project:"共性自動化工具（Insight）", title:"Insight 沒有可用的 API",
-       impact:"Insight 是 FA 工作流中唯一能下載 log 的系統（登入、查詢機台測試記錄、下載測試 log、篩選統計）",
-       ask:"景棠研究以爬蟲取得 API。此項屬 FA 工作流，優先級調低，先做驗證與 Panic", due:"—"},
-      {type:"risk", project:"串連 LabMind 模塊", title:"各工作流的 Agent 只能做簡單問答",
-       impact:"沒有算力支援工作流的進展分析與 debug",
-       ask:"需先了解 LabMind 是否有這項需求", due:"待定"}
-    ]
-  }
-,
-  {
-    date:"2026-10-29",
-    projects:[
-      {name:"二級區域本地部署大模型", status:"green", note:"部署中",
-       items:[{name:"本地部署大模型", owner:"Gary、万峰", state:"doing", label:"部署中"}]},
-      {name:"ADK 落地框架", status:"green", note:"開發中，已驗證可在二級區域運行",
-       items:[{name:"ADK 落地框架", owner:"Simon、Gary", state:"doing", label:"開發中"}]},
-      {name:"共性自動化工具", status:"idle", note:"6 個工具尚未啟動", prereq:"二級區域環境就位後才可開始開發",
-       stages:["開發測試","用戶驗收","打包成 MCP 格式"],
-       items:[
-         {name:"郵箱", owner:"万峰", state:"todo", label:"未開始", step:0},
-         {name:"雷達", owner:"熙宁", state:"todo", label:"未開始", step:0},
-         {name:"刷機", owner:"Simon、Gary", state:"todo", label:"未開始", step:0},
-         {name:"Panic", owner:"Simon、Gary", state:"todo", label:"未開始", step:0},
-         {name:"Insight", owner:"景棠", state:"todo", label:"未開始", step:0},
-         {name:"收集 log", owner:"景棠", state:"todo", label:"未開始", step:0}]},
-      {name:"自動化工具", status:"idle", note:"3 個工具尚未啟動", prereq:"二級區域環境就位後才可開始開發",
-       stages:["開發測試","用戶驗收","打包成 MCP 格式"],
-       items:[
-         {name:"Bundle 驗證", owner:"Simon、Gary", state:"todo", label:"未開始", step:0},
-         {name:"EFI 驗證", owner:"熙宁", state:"todo", label:"未開始", step:0},
-         {name:"proxima 驗證", owner:"景棠", state:"todo", label:"未開始", step:0}]},
-      {name:"工作流建置", status:"idle", note:"首波 3 個驗證工作流尚未啟動",
-       stages:["節點串連","測試調整","用戶驗收","打包成 A2A 接口"],
-       items:[
-         {name:"Bundle 驗證工作流", owner:"—", state:"todo", label:"未開始", step:0},
-         {name:"EFI 驗證工作流", owner:"—", state:"todo", label:"未開始", step:0},
-         {name:"proxima 驗證工作流", owner:"—", state:"todo", label:"未開始", step:0}]},
-      {name:"Try Run", status:"idle", note:"尚未啟動",
-       items:[{name:"Try Run", owner:"—", state:"todo", label:"未開始"}]},
-      {name:"串連 LabMind 模塊", status:"idle", note:"尚未啟動",
-       stages:["工作流調整","測試適配","用戶驗收"],
-       items:[{name:"串連 LabMind 模塊", owner:"—", state:"todo", label:"未開始", step:0}]}
-    ],
-    wins:[
-      {what:"ADK 落地框架已驗證可在二級區域運行", who:"Simon、Gary"},
-      {what:"驗證工作流的連線問題找到合規做法：改用兩個 USB 轉網口連接辦公電腦與工站電腦，已驗證能正常刷機", who:""},
-      {what:"Insight 無 API 的問題已有方向：研究以爬蟲方式取得 API", who:"景棠"}
-    ],
-    risks:[
-      {type:"handled", project:"自動化工具、工作流建置（驗證、Panic 工作流）", title:"Agent 在辦公電腦，無法合規連到工站電腦",
-       impact:"驗證與 Panic 處理都要在工站電腦上進行；用網線直連辦公電腦與工站電腦違反規定",
-       ask:"驗證：改用兩個 USB 轉網口連接，已驗證能正常刷機。Panic：可用 USB 串口通訊，但實作較複雜，且 Panic 目前已有自動化，此方案優先級調低", due:"—"},
-      {type:"handled", project:"共性自動化工具（Insight）", title:"Insight 沒有可用的 API",
-       impact:"Insight 是 FA 工作流中唯一能下載 log 的系統（登入、查詢機台測試記錄、下載測試 log、篩選統計）",
-       ask:"景棠研究以爬蟲取得 API。此項屬 FA 工作流，優先級調低，先做驗證與 Panic", due:"—"},
-      {type:"risk", project:"串連 LabMind 模塊", title:"各工作流的 Agent 只能做簡單問答",
-       impact:"沒有算力支援工作流的進展分析與 debug",
-       ask:"需先了解 LabMind 是否有這項需求", due:"待定"}
-    ]
-  }
-];
+/* 每條工作線一筆；state＝一句話狀態（用來比對昨日變化），update＝最新進展原話 */
+const IDLE_PRE = "二級區域環境就位後才可開始開發";
+const base = () => ([
+  {no:1, name:"二級區域本地部署大模型", status:"green", state:"部署中", owners:"Gary、万峰",
+   update:"部署中。"},
+  {no:2, name:"ADK 落地框架", status:"green", state:"開發中", owners:"Simon、Gary",
+   update:"開發中，已驗證可在二級區域運行。"},
+  {no:3, name:"共性自動化工具", status:"idle", state:"未啟動", prereq:IDLE_PRE,
+   stages:["開發測試","用戶驗收","打包成 MCP 格式"],
+   items:[["郵箱","万峰"],["雷達","熙宁"],["刷機","Simon、Gary"],["Panic","Simon、Gary"],["Insight","景棠"],["收集 log","景棠"]],
+   issues:[{type:"handled", title:"Insight 沒有可用的 API", ask:"景棠研究以爬蟲取得 API。屬 FA 工作流，優先級調低，先做驗證與 Panic"}]},
+  {no:4, name:"自動化工具", status:"idle", state:"未啟動", prereq:IDLE_PRE,
+   stages:["開發測試","用戶驗收","打包成 MCP 格式"],
+   items:[["Bundle 驗證","Simon、Gary"],["EFI 驗證","熙宁"],["proxima 驗證","景棠"]],
+   issues:[{type:"handled", title:"Agent 在辦公電腦，無法合規連到工站電腦", ask:"驗證：改用兩個 USB 轉網口連接，已驗證能正常刷機。Panic：可用 USB 串口通訊，但較複雜且已有自動化，優先級調低"}]},
+  {no:5, name:"工作流建置", status:"idle", state:"未啟動",
+   stages:["節點串連","測試調整","用戶驗收","打包成 A2A 接口"],
+   items:[["Bundle 驗證工作流","—"],["EFI 驗證工作流","—"],["proxima 驗證工作流","—"]]},
+  {no:6, name:"Try Run", status:"idle", state:"未啟動", items:[["Try Run","—"]]},
+  {no:7, name:"串連 LabMind 模塊", status:"idle", state:"未啟動",
+   stages:["工作流調整","測試適配","用戶驗收"], items:[["串連 LabMind 模塊","—"]],
+   issues:[{type:"risk", title:"各工作流的 Agent 只能做簡單問答", ask:"沒有算力支援進展分析與 debug；需先了解 LabMind 是否有這項需求"}]}
+]);
 
-const LABEL = {green:"● 正常", yellow:"▲ 注意", red:"■ 受阻", idle:"○ 未啟動"};
+const d30 = base();
+Object.assign(d30[0], {
+  status:"yellow", state:"部署完成・問題分析中",
+  update:"部署完成。測試時發現記憶體容易爆滿，大模型服務會停止；初步懷疑是模型思考鏈過長導致記憶體不足，万峰正在分析具體原因。",
+  next:"找出記憶體不足的原因並修正", eta:"",
+  issues:[{type:"risk", title:"記憶體不足導致大模型服務停止", ask:"万峰分析中"}]
+});
+const REPORTS = [{date:"2026-10-30", projects:d30}, {date:"2026-10-29", projects:base()}];
+
+const LABEL = {done:"✓ 已完成", green:"● 正常", yellow:"▲ 注意", red:"■ 受阻", idle:"○ 未啟動"};
 const TAG = {decide:"需決策", risk:"待追蹤", handled:"已有對策"};
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const key = d => "d" + d.replaceAll("-","");
 const wk = d => "日一二三四五六"[new Date(d+"T00:00:00").getDay()];
-const owners = p => [...new Set(p.items.flatMap(i => i.owner.split("、")).filter(o => o && o !== "—"))].join("、");
+const md = d => d.slice(5).replace("-","/");
+const pad = n => String(n).padStart(2,"0");
 
-function steps(p, i){
-  if(!p.stages) return "";
-  const n = p.stages.length, s = i.step || 0;
-  return `<span class="steps" aria-label="${s===0?"未開始":s>n?"全部完成":"進行到："+p.stages[s-1]}">${p.stages.map((_,k)=>`<i class="${k+1<s?"done":k+1===s?"cur":""}"></i>`).join("")}</span>`;
+/* 往回找這條工作線最後一次變動的日期 */
+function lastChange(idx, name){
+  for(let i=idx;i<REPORTS.length-1;i++){
+    const a = REPORTS[i].projects.find(p=>p.name===name), b = REPORTS[i+1].projects.find(p=>p.name===name);
+    if(!b || a.state!==b.state || a.update!==b.update) return REPORTS[i].date;
+  }
+  return REPORTS[REPORTS.length-1].date;
 }
+const issueHTML = (x, ws) => `<div class="issue ${x.type}"><span class="k">${TAG[x.type]}</span><div class="v">${ws?`<div class="ws">${esc(ws)}</div>`:""}<div class="t">${esc(x.title)}</div><div>${esc(x.ask)}</div></div></div>`;
 
 function render(){
-  const k = location.hash.slice(1);
-  const r = REPORTS.find(x => key(x.date) === k) || REPORTS[0];
+  const idx = Math.max(0, REPORTS.findIndex(x => key(x.date) === location.hash.slice(1)));
+  const r = REPORTS[idx], prev = REPORTS[idx+1];
   const [, m, d] = r.date.split("-");
   $("h1").textContent = `${+m} 月 ${+d} 日進度`;
-  $("date").innerHTML = REPORTS.map(x => `<option value="${key(x.date)}"${x===r?" selected":""}>${x.date}（${wk(x.date)}）${x===REPORTS[0]?"・最新":""}</option>`).join("");
+  $("date").innerHTML = REPORTS.map((x,i) => `<option value="${key(x.date)}"${i===idx?" selected":""}>${x.date}（${wk(x.date)}）${i===0?"・最新":""}</option>`).join("");
 
-  const c = {green:0,yellow:0,red:0,idle:0}; r.projects.forEach(p => c[p.status]++);
-  $("tally").textContent = `${r.projects.length} 條・正常 ${c.green}・注意 ${c.yellow}・受阻 ${c.red}・未啟動 ${c.idle}`;
-  $("strip").innerHTML = r.projects.map(p => {
-    const n = p.items.length, doing = p.items.filter(i=>i.state==="doing").length, done = p.items.filter(i=>i.state==="done").length;
-    return `<li class="light" data-s="${p.status}">
-      <div class="hd"><span class="no"></span><span class="pill">${LABEL[p.status]}</span></div>
-      <h3>${esc(p.name)}</h3>
-      <p class="note">${esc(p.note)}</p>
-      ${p.prereq ? `<p class="prereq">前置條件：${esc(p.prereq)}</p>` : ""}
-      <div class="segs" role="img" aria-label="${n} 項中進行中 ${doing}、完成 ${done}">${p.items.map(i=>`<i class="${i.state}"></i>`).join("")}</div>
-      <div class="meta">${n} 項・進行中 ${doing}${done?`・完成 ${done}`:""}・未開始 ${n-doing-done}</div>
-    </li>`}).join("");
+  const P = r.projects.map(p => {
+    const q = prev && prev.projects.find(x=>x.name===p.name);
+    return {...p, changed: !!q && (q.state!==p.state || q.update!==p.update), prevState: q && q.state!==p.state ? q.state : null, last:lastChange(idx,p.name)};
+  });
+  const active = P.filter(p=>p.status!=="idle"&&p.status!=="done").sort((a,b)=>(b.changed-a.changed)||(a.no-b.no));
+  const idle = P.filter(p=>p.status==="idle");
+  const done = P.filter(p=>p.status==="done");
+  const nDecide = P.flatMap(p=>p.issues||[]).filter(x=>x.type==="decide").length;
 
-  const cnt = t => r.risks.filter(x=>x.type===t).length;
-  $("rcount").textContent = r.risks.length ? `需決策 ${cnt("decide")}・待追蹤 ${cnt("risk")}・已有對策 ${cnt("handled")}` : "";
-  $("risks").innerHTML = r.risks.length ? r.risks.map(x => `
-    <div class="item">
-      <span class="tag ${x.type}">${TAG[x.type]}</span>
-      <div class="body">
-        <div class="title">${esc(x.title)}</div>
-        <dl>
-          <dt>工作線</dt><dd>${esc(x.project)}</dd>
-          <dt>影響</dt><dd>${esc(x.impact)}</dd>
-          <dt>${x.type==="decide" ? "請求" : "對策"}</dt><dd>${esc(x.ask)}</dd>
-          <dt>期限</dt><dd class="mono">${esc(x.due)}</dd>
-        </dl>
-      </div>
-    </div>`).join("") : `<div class="empty">今日沒有需要老闆決策的事項，也沒有新風險。</div>`;
+  $("tally").innerHTML = `<span>已完成<b>${done.length}</b></span><span>進行中<b>${active.length}</b></span><span>未啟動<b>${idle.length}</b></span><span class="${nDecide?"hot":""}">需老闆決策<b>${nDecide}</b></span>`;
 
-  $("winsec").hidden = !(r.wins && r.wins.length);
-  $("wins").innerHTML = (r.wins||[]).map(w => `<li><span>${esc(w.what)}${w.who?` <span class="src">— ${esc(w.who)}</span>`:""}</span></li>`).join("");
-
-  $("scount").textContent = `共 ${SCOPE.reduce((a,t)=>a+t.flows.length,0)} 個工作流`;
-  $("tiers").innerHTML = SCOPE.map(t => `
-    <div class="tier${t.now?" now":""}">
-      <div class="when">${esc(t.when)}</div>
-      <h3>${esc(t.title)}</h3>
-      <div class="chips">${t.flows.map(f=>`<span class="chip">${esc(f)}</span>`).join("")}</div>
-    </div>`).join("");
-
-  const all = r.projects.flatMap(p=>p.items);
-  $("icount").textContent = `共 ${all.length} 項・進行中 ${all.filter(i=>i.state==="doing").length}・未開始 ${all.filter(i=>i.state==="todo").length}`;
-  $("detail").innerHTML = r.projects.map(p => `
-    <article class="proj" data-s="${p.status}">
-      <div class="hd"><h3>${esc(p.name)}</h3><span class="pill">${LABEL[p.status]}</span></div>
-      ${p.stages ? `<div class="flow" aria-label="階段">${p.stages.map(s=>`<span>${esc(s)}</span>`).join("<b>→</b>")}</div>` : ""}
-      ${p.prereq ? `<p class="prereq">前置條件：${esc(p.prereq)}</p>` : ""}
-      <div class="rows">${p.items.map(i => `
-        <div class="row"><span>${esc(i.name)}</span><span class="who">${esc(i.owner)}</span><span class="right">${steps(p,i)}<span class="st ${i.state}">${esc(i.label)}</span></span></div>`).join("")}
-      </div>
+  $("c1").textContent = `${active.length} 條`;
+  $("active").innerHTML = active.map(p => `
+    <article class="card" data-s="${p.status}">
+      <div class="hd"><span class="no">${pad(p.no)}</span><h3>${esc(p.name)}</h3>
+        ${p.changed?`<span class="badge new">今日更新</span>`:`<span class="badge same">今日無變動</span>`}
+        <span class="pill">${LABEL[p.status]}</span></div>
+      <div class="diff">${p.prevState?`<s>${esc(p.prevState)}</s><span class="arrow">→</span>`:""}<strong>${esc(p.state)}</strong></div>
+      <p class="update">${esc(p.update)}</p>
+      ${(p.issues||[]).map(x=>issueHTML(x)).join("")}
+      ${p.status!=="green" || p.next ? `<dl class="kv">
+        <dt>下一步</dt><dd>${p.next?esc(p.next):`<em class="tbd">待工程師回報</em>`}</dd>
+        <dt>預計時間</dt><dd>${p.eta?esc(p.eta):`<em class="tbd">待工程師回報</em>`}</dd></dl>` : ""}
+      <div class="foot"><span>負責人：${esc(p.owners)}</span><span>最後更新：<span class="mono">${md(p.last)}</span></span></div>
     </article>`).join("");
+
+  $("c2").textContent = `${idle.length} 條`;
+  const pre = [...new Set(idle.map(p=>p.prereq).filter(Boolean))];
+  const rows = (list, st) => list.map(p => `
+    <details>
+      <summary><span class="no">${pad(p.no)}</span><span class="nm">${esc(p.name)}</span>
+        <span class="sub">${p.items.length} 項${p.prereq?"・待二級區域環境就位":""}</span><span class="chev" aria-hidden="true">›</span>
+        ${(p.issues||[]).length?`<span class="sumissues">${p.issues.map(x=>issueHTML(x)).join("")}</span>`:""}</summary>
+      <div class="items">
+        ${p.stages?`<div class="stages">階段：${p.stages.map(esc).join(" → ")}</div>`:""}
+        <div>${p.items.map(([n,o])=>`<div class="row"><span>${esc(n)}</span><span class="who">${esc(o)}</span><span class="st">${st}</span></div>`).join("")}</div>
+      </div>
+    </details>`).join("");
+  $("idle").innerHTML = rows(idle,"未開始") + (pre.length?`<p class="note">前置條件：${pre.map(esc).join("；")}（共性自動化工具、自動化工具）</p>`:"");
+
+  $("c3").textContent = `${done.length} 條`;
+  $("donelist").innerHTML = done.length ? rows(done,"完成") : `<p class="empty">目前尚無已完成的工作線。</p>`;
+
+  $("c4").textContent = `共 ${SCOPE.reduce((a,t)=>a+t.flows.length,0)} 個工作流`;
+  $("tiers").innerHTML = SCOPE.map(t=>`<div class="tier${t.now?" now":""}"><div class="when">${esc(t.when)}</div><div class="chips">${t.flows.map(f=>`<span class="chip">${esc(f)}</span>`).join("")}</div></div>`).join("");
 }
 addEventListener("hashchange", render);
 $("date").addEventListener("change", e => { location.hash = e.target.value; });
