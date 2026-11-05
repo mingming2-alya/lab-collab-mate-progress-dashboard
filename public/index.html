@@ -259,7 +259,18 @@ const d1104 = day(d1103, d => {
   d[2].items[1][2] = "定時下載完成・打包成執行檔";
 });
 
+const d1105 = day(d1104, d => {
+  Object.assign(d[0], {status:"yellow", state:"可用・能力與速度不足",
+    update:"部署完成，可用。測試接入 Agent 寫程式碼，發現模型不夠聰明且運行很慢。", next:"",
+    issues:[{type:"risk", title:"本地模型能力不足、運行很慢", ask:"接入 Agent 寫程式碼測試時表現不佳且速度慢；可能影響驗證工作流最後一步的 AI 分析品質與耗時，待評估"}]});
+  Object.assign(d[2], {state:"4 項進行中・2 項未開始",
+    update:"郵箱：發送郵件腳本開發完成。雷達：定時下載 diags root 功能已實現，正在把程式打包成可執行檔。刷機：開發中。收集 log：已完成刷機 log 收集。Panic、Insight 未開始。"});
+  d[2].items[0][2] = "發信腳本完成"; d[2].items[0][3] = "doing";
+  d[3].items[1][2] = "本日未回報";
+});
+
 const REPORTS = [
+  {date:"2026-11-05", projects:d1105},
   {date:"2026-11-04", projects:d1104},
   {date:"2026-11-03", projects:d1103},
   {date:"2026-11-02", projects:d1102},
