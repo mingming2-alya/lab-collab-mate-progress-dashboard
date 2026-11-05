@@ -82,6 +82,7 @@ h2 .count{font-family:var(--f-mono);font-size:13px;color:var(--muted);font-weigh
 .issue.risk .k{color:var(--warn)} .issue.decide .k{color:var(--accent)} .issue.handled .k{color:var(--ok)}
 .issue .v{min-width:0}
 .issue .t{font-weight:700}
+.issue .ask{white-space:pre-line}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0;font-size:14px}
 .kv dt{color:var(--muted);white-space:nowrap}
 .kv dd{margin:0;min-width:0}
@@ -230,7 +231,7 @@ Object.assign(d30[0], {
 });
 /* 新的一天：複製前一天，只改有變動的工作線。items：[名稱, 負責人, 狀態文字, todo|doing|done] */
 const day = (prev, fn) => { const d = structuredClone(prev); fn(d); return d; };
-const MEM = {type:"handled", title:"記憶體不足導致大模型服務停止（10/30 回報）", ask:"原因：使用的不是官方模型，而是他人另行調整的版本（Qwen 混 Claude）；換回官方模型後已無此問題"};
+const MEM = {type:"handled", title:"記憶體不足導致大模型服務停止（10/30 回報）", ask:"原因：使用的不是官方模型，而是社群以 Claude 推理資料再訓練的 Qwen 版本。這類模型思考鏈特別長，記憶體用量隨輸出長度增加，最後耗盡記憶體、服務被終止。換回官方模型後已無此問題。\n預防：之後只採用官方發布的模型，並在部署前做長輸出壓力測試。"};
 
 const d1102 = day(d30, d => {
   Object.assign(d[0], {status:"green", state:"部署完成・簡單測試可用", update:"部署完成，簡單測試後可用。", next:"", issues:[MEM]});
@@ -284,7 +285,7 @@ function lastChange(idx, name){
   return REPORTS[REPORTS.length-1].date;
 }
 const itemRows = (items, def="未開始") => items.map(([n,o,l,k])=>`<div class="row"><span>${esc(n)}</span><span class="who">${esc(o)}</span><span class="st ${k||""}">${esc(l||def)}</span></div>`).join("");
-const issueHTML = (x, ws) => `<div class="issue ${x.type}"><span class="k">${TAG[x.type]}</span><div class="v">${ws?`<div class="ws">${esc(ws)}</div>`:""}<div class="t">${esc(x.title)}</div><div>${esc(x.ask)}</div></div></div>`;
+const issueHTML = (x, ws) => `<div class="issue ${x.type}"><span class="k">${TAG[x.type]}</span><div class="v">${ws?`<div class="ws">${esc(ws)}</div>`:""}<div class="t">${esc(x.title)}</div><div class="ask">${esc(x.ask)}</div></div></div>`;
 
 function render(){
   const idx = Math.max(0, REPORTS.findIndex(x => key(x.date) === location.hash.slice(1)));
