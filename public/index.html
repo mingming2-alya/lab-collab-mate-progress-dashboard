@@ -110,6 +110,9 @@ details[open] summary .chev{transform:rotate(90deg)}
 .row .who{color:var(--muted);font-size:13px}
 .st{font-size:12px;padding:1px 8px;border-radius:4px;background:var(--idle-soft);color:var(--idle);white-space:nowrap}
 .stages{font-size:12px;color:var(--muted);padding-bottom:4px}
+.st.doing{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.st.done{background:var(--ok-soft);color:var(--ok);font-weight:700}
+.cardrows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px;padding:6px 12px}
 
 /* completed (collapsed by default) */
 .donebox{border:0}
@@ -225,7 +228,43 @@ Object.assign(d30[0], {
   next:"找出記憶體不足的原因並修正", eta:"",
   issues:[{type:"risk", title:"記憶體不足導致大模型服務停止", ask:"万峰分析中"}]
 });
-const REPORTS = [{date:"2026-10-30", projects:d30}, {date:"2026-10-29", projects:base()}];
+/* 新的一天：複製前一天，只改有變動的工作線。items：[名稱, 負責人, 狀態文字, todo|doing|done] */
+const day = (prev, fn) => { const d = structuredClone(prev); fn(d); return d; };
+const MEM = {type:"risk", title:"記憶體不足導致大模型服務停止（10/30 回報）", ask:"11/2 回報簡單測試可用；記憶體問題的分析結果尚未回報"};
+
+const d1102 = day(d30, d => {
+  Object.assign(d[0], {status:"green", state:"部署完成・簡單測試可用", update:"部署完成，簡單測試後可用。", next:"", issues:[MEM]});
+  Object.assign(d[1], {state:"已遷移至二級區域", update:"框架已遷移到二級區域。"});
+});
+const d1103 = day(d1102, d => {
+  Object.assign(d[0], {status:"yellow", state:"接入 ADK 後頻繁重啟",
+    update:"接入 ADK 專案後，發現 LLM 頻繁重啟；懷疑是雷電線頻繁掉線導致。", next:"排查雷電線連線問題",
+    issues:[{type:"risk", title:"LLM 頻繁重啟", ask:"懷疑雷電線頻繁掉線，排查中"}, MEM]});
+  Object.assign(d[1], {state:"已接入本地 LLM", update:"ADK 成功接入本地 LLM。"});
+  Object.assign(d[2], {status:"green", state:"3 項進行中・3 項未開始", prereq:"",
+    update:"雷達：下載、上傳、檢測更新等基本功能已實現，正在測試工具穩定性。刷機：開發中。收集 log：已完成刷機 log 收集。郵箱、Panic、Insight 未開始。",
+    items:[["郵箱","万峰","未開始","todo"],["雷達","熙宁","基本功能完成・測試穩定性","doing"],["刷機","Simon、Gary","開發中","doing"],["Panic","Simon、Gary","未開始","todo"],["Insight","景棠","未開始","todo"],["收集 log","景棠","刷機 log 已完成","doing"]]});
+  Object.assign(d[3], {status:"green", state:"2 項開發中・1 項未開始", prereq:"",
+    update:"Bundle 驗證、proxima 驗證開始開發；EFI 驗證未開始。",
+    items:[["Bundle 驗證","Simon、Gary","開發中","doing"],["EFI 驗證","熙宁","未開始","todo"],["proxima 驗證","景棠","開發中","doing"]]});
+});
+const d1104 = day(d1103, d => {
+  Object.assign(d[0], {status:"green", state:"連線穩定・未再重啟",
+    update:"更換 KPD 的雷電線後連線較穩定，未再出現大模型重啟。", next:"",
+    issues:[{type:"handled", title:"LLM 頻繁重啟", ask:"更換 KPD 雷電線後連線穩定，未再出現重啟"}, MEM]});
+  Object.assign(d[1], {state:"框架調試成功", update:"框架調試成功。"});
+  Object.assign(d[2], {
+    update:"雷達：定時下載 diags root 功能已實現，正在處理程式打包。刷機：開發中。收集 log：已完成刷機 log 收集。郵箱、Panic、Insight 未開始。"});
+  d[2].items[1][2] = "定時下載完成・處理打包";
+});
+
+const REPORTS = [
+  {date:"2026-11-04", projects:d1104},
+  {date:"2026-11-03", projects:d1103},
+  {date:"2026-11-02", projects:d1102},
+  {date:"2026-10-30", projects:d30},
+  {date:"2026-10-29", projects:base()}
+];
 
 const LABEL = {done:"✓ 已完成", green:"● 正常", yellow:"▲ 注意", red:"■ 受阻", idle:"○ 未啟動"};
 const TAG = {decide:"需決策", risk:"待追蹤", handled:"已有對策"};
@@ -244,6 +283,7 @@ function lastChange(idx, name){
   }
   return REPORTS[REPORTS.length-1].date;
 }
+const itemRows = (items, def="未開始") => items.map(([n,o,l,k])=>`<div class="row"><span>${esc(n)}</span><span class="who">${esc(o)}</span><span class="st ${k||""}">${esc(l||def)}</span></div>`).join("");
 const issueHTML = (x, ws) => `<div class="issue ${x.type}"><span class="k">${TAG[x.type]}</span><div class="v">${ws?`<div class="ws">${esc(ws)}</div>`:""}<div class="t">${esc(x.title)}</div><div>${esc(x.ask)}</div></div></div>`;
 
 function render(){
@@ -255,7 +295,8 @@ function render(){
 
   const P = r.projects.map(p => {
     const q = prev && prev.projects.find(x=>x.name===p.name);
-    return {...p, changed: !!q && (q.state!==p.state || q.update!==p.update), prevState: q && q.state!==p.state ? q.state : null, last:lastChange(idx,p.name)};
+    const owners = p.owners || [...new Set(p.items.flatMap(i=>i[1].split("、")).filter(o=>o&&o!=="—"))].join("、");
+    return {...p, owners, changed: !!q && (q.state!==p.state || q.update!==p.update), prevState: q && q.state!==p.state ? q.state : null, last:lastChange(idx,p.name)};
   });
   const active = P.filter(p=>p.status!=="idle"&&p.status!=="done").sort((a,b)=>(b.changed-a.changed)||(a.no-b.no));
   const idle = P.filter(p=>p.status==="idle");
@@ -272,6 +313,7 @@ function render(){
         <span class="pill">${LABEL[p.status]}</span></div>
       <div class="diff">${p.prevState?`<s>${esc(p.prevState)}</s><span class="arrow">→</span>`:""}<strong>${esc(p.state)}</strong></div>
       <p class="update">${esc(p.update)}</p>
+      ${p.items && p.items.length>1 ? `<div class="cardrows">${p.stages?`<div class="stages">階段：${p.stages.map(esc).join(" → ")}</div>`:""}${itemRows(p.items)}</div>` : ""}
       ${(p.issues||[]).map(x=>issueHTML(x)).join("")}
       ${p.status!=="green" || p.next ? `<dl class="kv">
         <dt>下一步</dt><dd>${p.next?esc(p.next):`<em class="tbd">待工程師回報</em>`}</dd>
@@ -280,7 +322,7 @@ function render(){
     </article>`).join("");
 
   $("c2").textContent = `${idle.length} 條`;
-  const pre = [...new Set(idle.map(p=>p.prereq).filter(Boolean))];
+  const pre = [...new Set(idle.map(p=>p.prereq).filter(Boolean))].map(t => `${t}（${idle.filter(p=>p.prereq===t).map(p=>p.name).join("、")}）`);
   const rows = (list, st) => list.map(p => `
     <details>
       <summary><span class="no">${pad(p.no)}</span><span class="nm">${esc(p.name)}</span>
@@ -288,10 +330,10 @@ function render(){
         ${(p.issues||[]).length?`<span class="sumissues">${p.issues.map(x=>issueHTML(x)).join("")}</span>`:""}</summary>
       <div class="items">
         ${p.stages?`<div class="stages">階段：${p.stages.map(esc).join(" → ")}</div>`:""}
-        <div>${p.items.map(([n,o])=>`<div class="row"><span>${esc(n)}</span><span class="who">${esc(o)}</span><span class="st">${st}</span></div>`).join("")}</div>
+        <div>${itemRows(p.items, st)}</div>
       </div>
     </details>`).join("");
-  $("idle").innerHTML = rows(idle,"未開始") + (pre.length?`<p class="note">前置條件：${pre.map(esc).join("；")}（共性自動化工具、自動化工具）</p>`:"");
+  $("idle").innerHTML = rows(idle,"未開始") + (pre.length?`<p class="note">前置條件：${pre.map(esc).join("；")}</p>`:"");
 
   $("c3").textContent = `${done.length} 條`;
   $("donelist").innerHTML = done.length ? rows(done,"完成") : `<p class="empty">目前尚無已完成的工作線。</p>`;
