@@ -230,7 +230,7 @@ Object.assign(d30[0], {
 });
 /* 新的一天：複製前一天，只改有變動的工作線。items：[名稱, 負責人, 狀態文字, todo|doing|done] */
 const day = (prev, fn) => { const d = structuredClone(prev); fn(d); return d; };
-const MEM = {type:"risk", title:"記憶體不足導致大模型服務停止（10/30 回報）", ask:"11/2 回報簡單測試可用；記憶體問題的分析結果尚未回報"};
+const MEM = {type:"handled", title:"記憶體不足導致大模型服務停止（10/30 回報）", ask:"原因：使用的不是官方模型，而是他人另行調整的版本（Qwen 混 Claude）；換回官方模型後已無此問題"};
 
 const d1102 = day(d30, d => {
   Object.assign(d[0], {status:"green", state:"部署完成・簡單測試可用", update:"部署完成，簡單測試後可用。", next:"", issues:[MEM]});
@@ -239,7 +239,7 @@ const d1102 = day(d30, d => {
 const d1103 = day(d1102, d => {
   Object.assign(d[0], {status:"yellow", state:"接入 ADK 後頻繁重啟",
     update:"接入 ADK 專案後，發現 LLM 頻繁重啟；懷疑是雷電線頻繁掉線導致。", next:"排查雷電線連線問題",
-    issues:[{type:"risk", title:"LLM 頻繁重啟", ask:"懷疑雷電線頻繁掉線，排查中"}, MEM]});
+    issues:[{type:"risk", title:"LLM 頻繁重啟", ask:"懷疑雷電線頻繁掉線，排查中"}]});
   Object.assign(d[1], {state:"已接入本地 LLM", update:"ADK 成功接入本地 LLM。"});
   Object.assign(d[2], {status:"green", state:"3 項進行中・3 項未開始", prereq:"",
     update:"雷達：下載、上傳、檢測更新等基本功能已實現，正在測試工具穩定性。刷機：開發中。收集 log：已完成刷機 log 收集。郵箱、Panic、Insight 未開始。",
@@ -251,7 +251,7 @@ const d1103 = day(d1102, d => {
 const d1104 = day(d1103, d => {
   Object.assign(d[0], {status:"green", state:"連線穩定・未再重啟",
     update:"更換 KPD 的雷電線後連線較穩定，未再出現大模型重啟。", next:"",
-    issues:[{type:"handled", title:"LLM 頻繁重啟", ask:"更換 KPD 雷電線後連線穩定，未再出現重啟"}, MEM]});
+    issues:[{type:"handled", title:"LLM 頻繁重啟", ask:"更換 KPD 雷電線後連線穩定，未再出現重啟"}]});
   Object.assign(d[1], {state:"框架調試成功", update:"框架調試成功。"});
   Object.assign(d[2], {
     update:"雷達：定時下載 diags root 功能已實現，正在處理程式打包。刷機：開發中。收集 log：已完成刷機 log 收集。郵箱、Panic、Insight 未開始。"});
