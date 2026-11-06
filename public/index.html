@@ -269,7 +269,14 @@ const d1105 = day(d1104, d => {
   d[3].items[1][2] = "本日未回報";
 });
 
+const d1106 = day(d1105, d => {
+  Object.assign(d[3], {
+    update:"Bundle 驗證：開發中。proxima 驗證：root FW 開發已完成，待刷機測試。EFI 驗證：本日未回報。"});
+  d[3].items[2][2] = "root FW 完成・待刷機測試";
+});
+
 const REPORTS = [
+  {date:"2026-11-06", projects:d1106},
   {date:"2026-11-05", projects:d1105},
   {date:"2026-11-04", projects:d1104},
   {date:"2026-11-03", projects:d1103},
