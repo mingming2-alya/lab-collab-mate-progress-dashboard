@@ -213,14 +213,27 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
 .prog{display:flex;flex-direction:column;gap:4px;margin:0;font-size:15px;max-width:72ch}
 .prog b{margin-right:6px}
 .mrows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px}
-.mrow{display:grid;grid-template-columns:minmax(0,1fr) 13em minmax(0,1.3fr);gap:4px 14px;padding:8px 12px;border-top:1px solid var(--line);align-items:center;font-size:14px}
+.mrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;padding:8px 12px;border-top:1px solid var(--line);align-items:center;font-size:14px}
 .mrow.two{grid-template-columns:minmax(0,1fr) auto}
 .mrow:first-child{border-top:0}
 .mrow .nm{font-weight:700;min-width:0}
 .mrow .nm small{display:block;font-weight:400;color:var(--muted);font-size:12px}
 .mrow .nm i{white-space:nowrap;font-style:normal;font-size:11px;font-weight:700;color:var(--new);background:var(--new-soft);padding:0 6px;border-radius:4px;margin-left:6px;vertical-align:1px}
 .mrow .nx{font-size:13px;color:var(--muted);min-width:0;border-top:0;padding-top:0}
-.mrow:not(.two) .st{justify-self:start;white-space:normal}
+.mrow .st{white-space:normal;text-align:right}
+.stepper{grid-column:1 / -1;list-style:none;margin:6px 0 2px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:0}
+.stepper li{position:relative;border-top:3px solid var(--line);padding:8px 10px 0 0;display:flex;flex-direction:column;gap:1px;min-width:0;font-size:13px}
+.stepper li::before{content:"";position:absolute;top:-8px;left:0;width:9px;height:9px;border-radius:50%;background:var(--surface);border:2px solid var(--line)}
+.stepper .sd{font-size:12px;color:var(--muted)}
+.stepper .sn{font-weight:700;line-height:1.35}
+.stepper .sg{font-size:12px;font-weight:700;color:var(--accent)}
+.stepper li.past{color:var(--muted)}
+.stepper li.past .sn{font-weight:500}
+.stepper li.past::before{background:var(--idle);border-color:var(--idle)}
+.stepper li.now{border-top-color:var(--accent)}
+.stepper li.now::before{background:var(--accent);border-color:var(--accent)}
+.stepper li.next::before{border-color:var(--accent);background:var(--accent-soft)}
+.stepper li.live .sn{color:var(--ok)}
 .mrow .nx b{color:var(--fg)}
 .livepill{font-size:12px;font-weight:700;color:var(--ok);background:var(--ok-soft);padding:2px 8px;border-radius:4px;white-space:nowrap}
 .card[data-s="idle"] .prog{color:var(--muted)}
@@ -231,6 +244,12 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
 @media (max-width:520px){
   .mrow{grid-template-columns:minmax(0,1fr) auto}
   .mrow .nx{grid-column:1 / -1}
+  .stepper{grid-template-columns:1fr;margin-left:5px}
+  .stepper li{border-top:0;border-left:3px solid var(--line);padding:0 0 10px 14px;flex-direction:row;flex-wrap:wrap;gap:0 8px;align-items:baseline}
+  .stepper li:last-child{padding-bottom:0}
+  .stepper li::before{top:3px;left:-8px}
+  .stepper li.now{border-left-color:var(--accent)}
+  .stepper .sd{min-width:7.5em}
 }
 </style>
 </head>
@@ -466,10 +485,18 @@ function schedHTML(tr){
   if (I.nx) out.push(`<div class="dim">下一階段：${esc(I.nx.n)}（${rng(I.nx)}）</div>`);
   return `<div class="sched"><span class="lbl">排程</span>${out.join("")}</div>`;
 }
-function rowNext(tr){
-  const I = trackInfo(tr);
-  const now = I.cur.length ? `${esc(I.cur[0].n)}・ETA ${mdd(I.cur[0].e)}` : I.nxt && I.nxt.s ? `${mdd(I.nxt.s)} 開始` : "";
-  return `<span class="nx">${I.m ? `下一個里程碑：<b>${esc(I.m[1])}</b> <b class="mono">${mdd(I.m[0])}</b>` : ""}${now ? `<br>${now}` : ""}</span>`;
+/* 工作流的關鍵步驟：開發・串連 → 首次跑通 → 連續 5 次穩定跑通 → Try Run → 上線，依日期排序；標出已過／進行中／下一步 */
+function rowSteps(tr){
+  const items = [
+    ...tr.steps.filter(x => x.s).map(x => ({d:dn(x.s), end:dn(x.e), date:rng(x), n:x.kind === "try" ? "用戶 Try Run" : x.n, range:true})),
+    ...[...(tr.ms||[]), ...tr.steps.flatMap(x => x.ms||[])].map(m => ({d:dn(m[0]), end:dn(m[0]), date:mdd(m[0]), n:(m[2] === "live" ? "◆ " : "") + m[1], k:m[2]}))
+  ].sort((a,b) => a.d - b.d || (a.range ? -1 : 1));
+  const nextIdx = items.findIndex(x => x.end >= TODAY && !(x.range && x.d <= TODAY));
+  return `<ol class="stepper">${items.map((x,i) => {
+    const st = x.end < TODAY ? "past" : x.range && x.d <= TODAY ? "now" : i === nextIdx ? "next" : "";
+    const tag = st === "now" ? `進行中・${left(x.end)}` : st === "next" ? (x.d === TODAY ? "今天" : `${x.d - TODAY} 天後`) : "";
+    return `<li class="${st}${x.k === "live" ? " live" : ""}"><span class="sd mono">${x.date}</span><span class="sn">${esc(x.n)}</span>${tag ? `<span class="sg">${tag}</span>` : ""}</li>`;
+  }).join("")}</ol>`;
 }
 
 function render(){
@@ -503,7 +530,7 @@ function render(){
       ${M.note ? `<div class="sched"><span class="dim">${esc(M.note)}</span></div>` : ""}
       ${x.rows.length ? `<div class="mrows">${x.rows.map(s => `<div class="mrow${s.track ? "" : " two"}">
           <span class="nm">${esc(s.label || s.item)}${rowChanged(s) ? `<i>更新</i>` : ""}<small>${esc(s.owner)}</small></span>
-          <span class="st ${s.k}">${esc(s.lab)}</span>${s.track ? rowNext(TRACK(s.track)) : ""}</div>`).join("")}</div>` : ""}
+          <span class="st ${s.k}">${esc(s.lab)}</span>${s.track ? rowSteps(TRACK(s.track)) : ""}</div>`).join("")}</div>` : ""}
       ${x.issues.map(issueHTML).join("")}
       <div class="foot"><span>負責人：${esc(x.owners || "—")}</span><span>最後更新：<span class="mono">${md(x.last)}</span></span></div>
     </article>`;
