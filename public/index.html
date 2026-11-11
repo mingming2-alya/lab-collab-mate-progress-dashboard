@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Lab Collab Mate 每日進度</title>
 <style>
-/* Layout: one column. Status tally → active workstreams as full cards (changed first) → not-started list with its issues shown → completed list (collapsed) → workflow scope. */
+/* Layout: one column. Tabs → status tally → overall schedule (track summary cards + gantt) → active workstreams as full cards (changed first) → not-started list with its issues shown → completed list (collapsed) → workflow scope. */
 :root{
   --bg:#F3F5F7; --surface:#FFFFFF; --fg:#18212B; --muted:#5D6B7A; --line:#DCE2E8; --seg:#D3DAE1;
   --accent:#1E5A86; --accent-soft:#E3EDF5;
@@ -138,9 +138,57 @@ details[open] summary .chev{transform:rotate(90deg)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-size:13px;padding:1px 10px;border-radius:999px;background:var(--idle-soft)}
 .tier.now .chip{background:var(--accent-soft);color:var(--accent);font-weight:700}
+/* tabs */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.tabs a{font-size:14px;font-weight:700;color:var(--muted);text-decoration:none;padding:8px 14px;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs a:hover{color:var(--fg)}
+.tabs a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--accent)}
+.tabs a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+/* overall schedule */
+.tracks{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px}
+.trkcard{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--tc,var(--accent));border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.trkcard .grp{font-size:12px;color:var(--muted)}
+.trkcard h3{font-size:16px}
+.trkcard .cur{font-size:14px}
+.trkcard .cur b{color:var(--tc,var(--accent))}
+.eta{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.eta .big{font-family:var(--f-mono);font-size:22px;font-weight:700;line-height:1.2}
+.eta .left{font-size:13px;color:var(--muted)}
+.nx{font-size:13px;border-top:1px dashed var(--line);padding-top:6px;color:var(--muted)}
+.nx b{color:var(--fg);font-weight:700}
+.tbdline{margin:0;font-size:13px;color:var(--muted)}
+.gwrap{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.gantt{min-width:780px;padding:10px 14px 12px;--L:200px}
+.gax,.grow,.ghd{display:grid;grid-template-columns:var(--L) minmax(0,1fr);align-items:center}
+.gax{font-size:12px;color:var(--muted);height:34px;align-items:stretch}
+.gax .ticks{position:relative}
+.gax .mo{position:absolute;top:0;font-weight:700;color:var(--fg);padding-left:4px;border-left:1px solid var(--muted);line-height:16px}
+.gax .wk{position:absolute;bottom:0;transform:translateX(-50%);font-family:var(--f-mono);font-size:11px}
+.ghd{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--muted);padding-top:10px;border-top:1px solid var(--line);margin-top:4px}
+.ghd .gn{font-weight:400;letter-spacing:0;font-size:12px}
+.grow{min-height:34px}
+.grow .lb{font-size:14px;font-weight:700;padding-right:10px;line-height:1.3;min-width:0}
+.grow .lb small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.trk{position:relative;height:34px;background:repeating-linear-gradient(to right,var(--line) 0 1px,transparent 1px calc(100% / var(--wks)))}
+.today{position:absolute;top:0;bottom:0;width:0;border-left:2px solid var(--bad);z-index:0}
+.gax .today{top:auto;height:12px}
+.gax .todayl{position:absolute;top:0;transform:translateX(-50%);font-size:11px;font-weight:700;color:var(--bad);background:var(--surface);padding:0 4px;z-index:3;white-space:nowrap}
+.bar{position:absolute;z-index:1;top:6px;height:22px;border-radius:5px;font-size:12px;font-weight:700;line-height:20px;padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid var(--bc);background:var(--bs);color:var(--bc)}
+.bar.build{--bc:var(--accent);--bs:var(--accent-soft)}
+.bar.try{--bc:var(--ok);--bs:var(--ok-soft)}
+.bar.now{background:var(--bc);color:var(--surface)}
+.bar.past{--bc:var(--idle);--bs:var(--idle-soft);font-weight:500}
+.bar.open{border-right:0;border-radius:5px 0 0 5px;background:linear-gradient(to right,var(--bs) 60%,transparent);border-style:solid dashed}
+.bar.tbdbar{left:0;right:0;border:1px dashed var(--idle);background:transparent;color:var(--muted);font-weight:500}
+.ms{position:absolute;top:9px;width:14px;height:14px;transform:translateX(-50%) rotate(45deg);background:var(--ok);border:2px solid var(--surface);z-index:1}
+.msl{position:absolute;top:7px;font-size:12px;font-weight:700;color:var(--ok);padding-left:12px;white-space:nowrap}
+.glegend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--muted);padding:8px 14px 0}
+.glegend i{display:inline-block;width:18px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle;font-style:normal}
 footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:4px}
 @media (max-width:520px){
   h1{font-size:24px}
+  .gantt{--L:120px;min-width:700px}
   summary{grid-template-columns:2.2em minmax(0,1fr) 1em}
   summary .sub{grid-column:2;grid-row:2;white-space:normal}
   summary .chev{grid-column:3;grid-row:1}
@@ -154,6 +202,7 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
 
 <div class="wrap">
   <header class="page">
+    <nav class="tabs" aria-label="頁面"><a href="./" aria-current="page">每日進度</a><a href="arch.html">架構全貌</a></nav>
     <div class="eyebrow">LAB COLLAB MATE ・ 專案進度日報</div>
     <div class="top">
       <h1 id="h1">每日進度</h1>
@@ -161,6 +210,13 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
     </div>
     <div class="tally" id="tally"></div>
   </header>
+
+  <section aria-labelledby="s0">
+    <h2 id="s0">整體時程 <span class="count" id="c0"></span></h2>
+    <div class="tracks" id="tracks"></div>
+    <p class="tbdline" id="tbdline"></p>
+    <div class="gwrap"><div class="glegend"><span><i style="background:var(--accent)"></i>開發・串連・設計</span><span><i style="background:var(--ok)"></i>用戶 Try Run</span><span><i style="background:var(--idle-soft);border:1px solid var(--idle)"></i>已過</span><span><i style="border:1px dashed var(--idle)"></i>時程待定</span><span>◆ 正式上線（用戶驗收）</span><span style="color:var(--bad)">｜今天</span></div><div class="gantt" id="gantt"></div></div>
+  </section>
 
   <section aria-labelledby="s1">
     <h2 id="s1">進行中的工作線 <span class="count" id="c1"></span></h2>
@@ -185,13 +241,41 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
   </section>
 
   <footer>
-    <span>資料來源：工程師當日回報訊息，由 PM 彙整。</span>
+    <span>資料來源：工程師當日回報訊息，由 PM 彙整。整體時程依 PM 規劃，不隨查看日期切換；「今天」線與剩餘天數依瀏覽當天計算。</span>
     <span>燈號：● 正常＝依計畫推進；▲ 注意＝有延誤可能，團隊可自行處理；■ 受阻＝需要外部協助；○ 未啟動＝尚未開工，非異常。</span>
     <span>「今日更新」＝與前一份日報相比有變動。</span>
   </footer>
 </div>
 
 <script>
+/* 整體時程。s／e＝開始／結束日；e:null＝結束日待定；s:null＝整段待定。row:"one"＝所有步驟畫在同一列，"each"＝每步一列。kind：build＝開發／串連／設計，try＝用戶 Try Run */
+const PLAN = {
+  updated:"2026-11-11", from:"2026-10-26", weeks:12,
+  groups:[
+    {name:"環境與框架", note:"部署完成後，需邊實作工作流邊調整模型問題"},
+    {name:"工作流建置", note:"每個模塊：工具開發 → 工作流串連測試 → 用戶 Try Run；用戶驗收後才算正式上線"},
+    {name:"LabMind 串連"}
+  ],
+  tracks:[
+    {name:"環境與框架", label:"本地模型與 ADK 框架", group:0, row:"one", steps:[
+      {n:"部署與實時調整", short:"部署・實時調整", s:"2026-10-26", e:"2026-11-28", kind:"build"}]},
+    {name:"驗證", group:1, row:"one", live:"2026-12-12", steps:[
+      {n:"工具開發・串連測試", short:"開發・串連", s:"2026-11-09", e:"2026-11-26", kind:"build"},
+      {n:"用戶 Try Run", short:"Try Run", s:"2026-11-28", e:"2026-12-12", kind:"try"}]},
+    {name:"Panic", group:1, row:"one", live:"2026-12-26", steps:[
+      {n:"工具開發・串連測試", short:"開發・串連", s:"2026-12-07", e:"2026-12-15", kind:"build"},
+      {n:"用戶 Try Run", short:"Try Run", s:"2026-12-16", e:"2026-12-26", kind:"try"}]},
+    {name:"開發", group:1, row:"one", steps:[{n:"可能涉及跨系統，時程待定", s:null}]},
+    {name:"FA", group:1, row:"one", steps:[{n:"可能涉及跨系統，時程待定", s:null}]},
+    {name:"LabMind 串連", group:2, row:"each", steps:[
+      {n:"1 研究 LabMind 設計", s:"2026-11-16", e:"2026-12-12", kind:"build"},
+      {n:"2 設計用戶界面與管理介面", sub:"含開發與 FA 工作流設計", s:"2026-12-13", e:"2026-12-31", kind:"build"},
+      {n:"3 正式串連與部署方案提案", sub:"含模型與硬體資源評估", s:"2026-12-21", e:"2027-01-06", kind:"build"},
+      {n:"4 正式串連與測試", sub:"取決於算力與硬體資源何時到位", s:null},
+      {n:"5 用戶 Try Run", s:null}]}
+  ]
+};
+
 const SCOPE = [
   {when:"第一優先", now:true, flows:["Bundle 驗證","EFI 驗證","proxima 驗證"]},
   {when:"時間允許", flows:["CoreOS Panic","Diags Panic"]},
@@ -305,6 +389,67 @@ function lastChange(idx, name){
 const itemRows = (items, def="未開始") => items.map(([n,o,l,k])=>`<div class="row"><span>${esc(n)}</span><span class="who">${esc(o)}</span><span class="st ${k||""}">${esc(l||def)}</span></div>`).join("");
 const issueHTML = (x, ws) => `<div class="issue ${x.type}"><span class="k">${TAG[x.type]}</span><div class="v">${ws?`<div class="ws">${esc(ws)}</div>`:""}<div class="t">${esc(x.title)}</div><div class="ask">${esc(x.ask)}</div></div></div>`;
 
+/* ---- 整體時程 ---- */
+const dn = s => Date.UTC(+s.slice(0,4), +s.slice(5,7)-1, +s.slice(8,10)) / 864e5;
+const mdd = s => `${+s.slice(5,7)}/${+s.slice(8,10)}`;
+const rng = x => x.s ? (x.e ? `${mdd(x.s)}–${mdd(x.e)}` : `${mdd(x.s)} 起・結束待定`) : "時程待定";
+function renderPlan(){
+  const t0 = new Date(), today = Date.UTC(t0.getFullYear(), t0.getMonth(), t0.getDate()) / 864e5;
+  const A = dn(PLAN.from), span = PLAN.weeks * 7, pct = d => ((d - A) / span * 100).toFixed(3) + "%";
+  const pctEnd = d => ((d + 1 - A) / span * 100).toFixed(3) + "%";   // 結束日當天算在內
+  const inAxis = today >= A && today < A + span;
+  $("c0").textContent = `時程版本 ${mdd(PLAN.updated)}`;
+
+  /* 摘要卡：每條線現在在做什麼、ETA、下一步 */
+  const dated = PLAN.tracks.filter(tr => tr.steps.some(x => x.s));
+  const undated = PLAN.tracks.filter(tr => !tr.steps.some(x => x.s));
+  $("tracks").innerHTML = dated.map(tr => {
+    const st = tr.steps;
+    const cur = st.filter(x => x.s && dn(x.s) <= today && (!x.e || today <= dn(x.e)));
+    const last = cur.length ? st.indexOf(cur[cur.length-1]) : -1;
+    const nxt = st.find((x,i) => i > last && !(x.s && dn(x.s) <= today));
+    const allPast = !cur.length && st.every(x => x.s && x.e && dn(x.e) < today);
+    const tc = cur.some(x=>x.kind==="try") ? "var(--ok)" : cur.length ? "var(--accent)" : "var(--idle)";
+    let head;
+    if (cur.length) head = cur.map(x => `<div class="cur">現在：<b>${esc(x.n)}</b></div>
+      <div class="eta"><span class="big">${x.e?`ETA ${mdd(x.e)}`:"ETA 待定"}</span>${x.e?`<span class="left">剩 ${dn(x.e)-today} 天</span>`:""}</div>`).join("");
+    else if (allPast) head = `<div class="cur"><b>依計畫已結束</b></div>`;
+    else head = `<div class="cur">尚未開始</div><div class="eta"><span class="big">${nxt&&nxt.s?`${mdd(nxt.s)} 開始`:"待定"}</span>${nxt&&nxt.s?`<span class="left">${dn(nxt.s)-today} 天後</span>`:""}</div>`;
+    const nx = cur.length || allPast ? nxt : st[st.indexOf(nxt)+1];
+    const live = tr.live ? `<div class="nx">◆ 正式上線：<b class="mono">${mdd(tr.live)}</b>（用戶驗收）</div>` : "";
+    return `<div class="trkcard" style="--tc:${tc}">${PLAN.groups[tr.group].name!==tr.name?`<div class="grp">${esc(PLAN.groups[tr.group].name)}</div>`:""}<h3>${esc(tr.name)}</h3>${head}
+      ${!cur.length && nxt ? `<div class="nx">第一步：<b>${esc(nxt.n)}</b>（${rng(nxt)}）</div>` : ""}
+      ${nx ? `<div class="nx">下一階段：<b>${esc(nx.n)}</b>（${rng(nx)}）</div>` : ""}${live}</div>`;
+  }).join("");
+  $("tbdline").textContent = undated.length ? `${undated.map(t=>t.name).join("、")}：${undated[0].steps[0].n}。` : "";
+
+  /* 甘特圖 */
+  const todayEl = inAxis ? `<span class="today" style="left:${pct(today)}"></span>` : "";
+  let ticks = "";
+  for (let w = 0; w < PLAN.weeks; w++) {
+    const d = new Date((A + w*7) * 864e5), m = d.getUTCMonth()+1, dd = d.getUTCDate();
+    ticks += `<span class="wk" style="left:${pct(A+w*7)}">${m}/${dd}</span>`;
+  }
+  for (let d = A; d < A + span; d++) {
+    const x = new Date(d * 864e5);
+    if (x.getUTCDate() === 1 || d === A) ticks += `<span class="mo" style="left:${pct(d)}">${x.getUTCFullYear()!==2026?x.getUTCFullYear()+" 年 ":""}${x.getUTCMonth()+1} 月</span>`;
+  }
+  if (inAxis) ticks += `<span class="todayl" style="left:${pct(today)}">今天 ${t0.getMonth()+1}/${t0.getDate()}</span>${todayEl}`;
+  const bar = x => {
+    if (!x.s) return `<span class="bar tbdbar" title="${esc(x.n)}">時程待定</span>`;
+    const st = x.e && dn(x.e) < today ? "past" : (dn(x.s) <= today ? "now" : "");
+    const R = x.e ? pctEnd(dn(x.e)) : "100%";
+    return `<span class="bar ${x.kind} ${st} ${x.e?"":"open"}" style="left:${pct(dn(x.s))};width:calc(${R} - ${pct(dn(x.s))})" title="${esc(x.n)}　${rng(x)}">${esc(x.short || rng(x))}</span>`;
+  };
+  const row = (label, sub, steps, live) => `<div class="grow"><div class="lb">${esc(label)}${sub?`<small>${esc(sub)}</small>`:""}</div>
+    <div class="trk" style="--wks:${PLAN.weeks}">${steps.map(bar).join("")}${live?`<span class="ms" style="left:${pctEnd(dn(live))}"></span><span class="msl" style="left:${pctEnd(dn(live))}">上線 ${mdd(live)}</span>`:""}${todayEl}</div></div>`;
+  $("gantt").innerHTML = `<div class="gax"><span></span><div class="ticks">${ticks}</div></div>` +
+    PLAN.groups.map((g, gi) => `<div class="ghd"><span>${esc(g.name)}</span><span class="gn">${esc(g.note||"")}</span></div>` +
+      PLAN.tracks.filter(tr => tr.group === gi).map(tr => tr.row === "each"
+        ? tr.steps.map(x => row(x.n, x.sub, [x])).join("")
+        : row(tr.label || tr.name, "", tr.steps, tr.live)).join("")).join("");
+}
+
 function render(){
   const idx = Math.max(0, REPORTS.findIndex(x => key(x.date) === location.hash.slice(1)));
   const r = REPORTS[idx], prev = REPORTS[idx+1];
@@ -362,6 +507,7 @@ function render(){
 }
 addEventListener("hashchange", render);
 $("date").addEventListener("change", e => { location.hash = e.target.value; });
+renderPlan();
 render();
 </script>
 </body>
