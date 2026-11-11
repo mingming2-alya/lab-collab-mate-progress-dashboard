@@ -413,8 +413,11 @@ const MODULES = [
   {name:"環境與框架", track:"環境與框架", src:[{ws:1, label:"本地模型"}, {ws:2, label:"ADK 框架"}]},
   {name:"驗證", rows:[{ws:4, item:"Bundle 驗證", track:"Bundle 驗證"}, {ws:4, item:"proxima 驗證", track:"proxima 驗證"}, {ws:4, item:"EFI 驗證", track:"EFI 驗證"}]},
   {name:"共性工具", note:"各工作流共用；刷機需在 Bundle 首次跑通前（11/18）可用", rows:[{ws:3, item:"郵箱"}, {ws:3, item:"雷達"}, {ws:3, item:"刷機"}, {ws:3, item:"收集 log"}]},
-  {name:"Panic", rows:[{ws:3, item:"Panic", label:"Panic 工具", track:"Panic"}]},
-  {name:"開發、FA", rows:[{ws:3, item:"Insight", label:"Insight 工具（FA 用）", track:"開發、FA"}]},
+  {name:"Panic", track:"Panic", rows:[{ws:3, item:"Panic", label:"Panic 工具（兩條共用）"},
+    {item:"CoreOS Panic 工作流", owner:"負責人待定"}, {item:"Diags Panic 工作流", owner:"負責人待定"}]},
+  {name:"開發、FA", track:"開發、FA", rows:[{ws:3, item:"Insight", label:"Insight 工具（FA 用）"},
+    {item:"CoreOS FA 工作流", owner:"負責人待定"}, {item:"Diags FA 工作流", owner:"負責人待定"},
+    {item:"Wireless FA 工作流", owner:"負責人待定"}, {item:"測試軟體開發工作流", owner:"負責人待定"}]},
   {name:"LabMind 串連", track:"LabMind 串連", src:[{ws:7}]}
 ];
 const HOME = {1:"環境與框架", 2:"環境與框架", 3:"共性工具", 4:"驗證", 5:"驗證", 6:"驗證", 7:"LabMind 串連"};
@@ -424,12 +427,12 @@ const RANK = {red:4, yellow:3, green:2, done:1, idle:0};
 function modOf(r, M){
   const P = no => r.projects.find(p => p.no === no);
   const lines = (M.src||[]).map(s => { const p = P(s.ws); return {label:s.label, text:p.update, status:p.status, owners:p.owners||"", next:p.next, eta:p.eta}; });
-  const rows = (M.rows||[]).map(s => { const p = P(s.ws); const it = (p.items||[]).find(i => i[0] === s.item) || [s.item, "—"];
+  const rows = (M.rows||[]).map(s => { const p = s.ws ? P(s.ws) : {status:"idle"}; const it = (p.items||[]).find(i => i[0] === s.item) || [s.item, s.owner || "—"];
     return {...s, owner:it[1], lab:it[2] || "未開始", k:it[3] || "todo", status: it[3] && it[3] !== "todo" ? p.status : "idle"}; });
   const issues = r.projects.flatMap(p => (p.issues||[]).filter(x => (x.mod || HOME[p.no]) === M.name));
   const sts = [...lines, ...rows].map(x => x.status);
   const status = sts.every(s => s === "done") ? "done" : sts.reduce((a,b) => RANK[b] > RANK[a] ? b : a, "idle");
-  const owners = [...new Set([...lines.flatMap(l => l.owners.split("、")), ...rows.flatMap(x => x.owner.split("、"))].filter(o => o && o !== "—"))].join("、");
+  const owners = [...new Set([...lines.flatMap(l => l.owners.split("、")), ...rows.flatMap(x => x.owner.split("、"))].filter(o => o && o !== "—" && o !== "負責人待定"))].join("、");
   const sig = JSON.stringify([lines.map(l => [l.text, l.status]), rows.map(x => [x.lab, x.k]), issues.map(x => x.title + x.ask)]);
   return {lines, rows, issues, status, owners, sig};
 }
@@ -488,7 +491,7 @@ function render(){
   $("rule").textContent = PLAN.rule;
 
   $("mods").innerHTML = mods.map(x => {
-    const M = x.M, lives = [...new Set((M.rows||[]).filter(s => s.track).map(s => trackInfo(TRACK(s.track)).live).filter(Boolean).map(l => l[0]))];
+    const M = x.M, lives = [...new Set([M.track, ...(M.rows||[]).map(s => s.track)].filter(Boolean).map(n => trackInfo(TRACK(n)).live).filter(Boolean).map(l => l[0]))];
     const rowChanged = s => x.was && (() => { const w = x.was.rows.find(y => y.item === s.item); return w && (w.lab !== s.lab || w.k !== s.k); })();
     return `<article class="card" data-s="${x.status}">
       <div class="hd"><h3>${esc(M.name)}</h3>
