@@ -1,0 +1,260 @@
+<title>Lab Collab Mate 技術架構</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single reading column; wide figures scroll sideways on phones; tables scroll in their own box. */
+:root{
+  --bg:#F2F4F6; --surface:#FFFFFF; --band:#E8ECF0; --fg:#17202A; --muted:#5A6878; --line:#B9C3CE;
+  --head:#DCE4EC; --gap:#B4650A; --gap-soft:#FDF3E6; --mock:#7A4BB8; --mock-soft:#EFE7FA;
+  --user:#1D63A6; --user-soft:#E2EEF9; --ubox:#F6FAFE; --user-line:#8DB6DE;
+  --plat:#EEF1F5; --comp:#2D7A57; --comp-soft:#E3F2EA; --comp-line:#8CC3A6;
+  --stn:#2A6F7A; --stn-soft:#E1F1F3; --stn-line:#89BFC6;
+  --arrow:#6A8FB3; --arrow-soft:#DCE8F4; --link:#4A4FA8; --link-soft:#ECEDFA; --link-line:#A9ACDF; --lane:#E4E9EF; --p2:#B4236B; --p2-soft:#FCE7F1; --band2:#E3E8EE; --lane-on:#D7E3EF; --rl:#D6DEE7; --rl-fg:#33475B;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12171D; --surface:#1A222B; --band:#202A35; --fg:#E5EBF0; --muted:#9AA8B6; --line:#3D4A58;
+  --head:#2A3644; --gap:#F0A84E; --gap-soft:#33261A; --mock:#C3A3F0; --mock-soft:#2E2540;
+  --user:#7DB8EE; --user-soft:#1A2C3F; --ubox:#1C2735;
+  --user-line:#3F6F9C; --plat:#1D252F; --comp:#6CC495; --comp-soft:#17302A; --comp-line:#3E7A5E;
+  --stn:#6FC3CE; --stn-soft:#163036; --stn-line:#3B7880; --arrow:#7FA6CC; --arrow-soft:#1E3043; --link:#A9ADF2; --link-soft:#22243F; --link-line:#4A4E8A; --lane:#232C37; --p2:#F28DBE; --p2-soft:#3A1A2B; --band2:#222B36; --lane-on:#283A4C; --rl:#2B3644; --rl-fg:#C9D5E1; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12171D; --surface:#1A222B; --band:#202A35; --fg:#E5EBF0; --muted:#9AA8B6; --line:#3D4A58;
+  --head:#2A3644; --gap:#F0A84E; --gap-soft:#33261A; --mock:#C3A3F0; --mock-soft:#2E2540;
+  --user:#7DB8EE; --user-soft:#1A2C3F; --ubox:#1C2735;
+  --user-line:#3F6F9C; --plat:#1D252F; --comp:#6CC495; --comp-soft:#17302A; --comp-line:#3E7A5E;
+  --stn:#6FC3CE; --stn-soft:#163036; --stn-line:#3B7880; --arrow:#7FA6CC; --arrow-soft:#1E3043; --link:#A9ADF2; --link-soft:#22243F; --link-line:#4A4E8A; --lane:#232C37; --p2:#F28DBE; --p2-soft:#3A1A2B; --band2:#222B36; --lane-on:#283A4C; --rl:#2B3644; --rl-fg:#C9D5E1; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.7}
+.wrap{max-width:1960px;margin:0 auto;padding-block:32px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{margin:0;text-wrap:balance}
+h1{font-size:28px;line-height:1.3}
+h2{font-size:20px}
+h3{font-size:16px}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--muted)}
+.lede{margin:0;max-width:80ch;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:10px}
+section{display:flex;flex-direction:column;gap:14px;min-width:0}
+.legend{display:flex;flex-wrap:wrap;gap:10px 22px;font-size:13px;color:var(--muted);align-items:center}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.sw{width:30px;height:18px;border-radius:4px;display:inline-block;font-style:normal}
+.sw.solid{background:var(--surface);border:1.5px solid var(--line)}
+.sw.usw{background:var(--user-soft);border:1.5px solid var(--user)}
+.sw.gapsw{background:var(--gap-soft);border:1.5px dashed var(--gap)}
+.sw.mocksw{background:var(--mock-soft);border-radius:9px;width:40px;font-size:11px;color:var(--mock);text-align:center;line-height:18px;font-weight:700}
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.scroll svg{display:block;width:100%;min-width:960px;height:auto;margin:0 auto}
+.scroll svg.narrow{max-width:1000px}
+figcaption{font-size:14px;color:var(--muted);max-width:80ch}
+svg{color:var(--fg);font-family:var(--f-body)}
+.band{fill:var(--band)}
+.uband{fill:var(--user-soft)}
+.bl{fill:var(--muted);font-size:13px;font-weight:700;letter-spacing:.06em}
+.lane{fill:var(--muted);font-size:14px;font-weight:700;letter-spacing:.08em}
+.box{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.ubox{fill:var(--ubox);stroke:var(--user);stroke-width:1.5}
+.gap{fill:var(--gap-soft);stroke:var(--gap);stroke-width:1.6;stroke-dasharray:7 5}
+.tagbox{fill:var(--head);stroke:none}
+.head{fill:var(--head)}
+.tt{fill:var(--fg);font-size:14.5px;font-weight:700}
+.ts{fill:var(--muted);font-size:12.5px}
+.ts2{fill:var(--fg);font-size:13px}
+.tagr{fill:var(--mock-soft)}
+.tagt{fill:var(--mock);font-size:11.5px;font-weight:700}
+.ar{fill:none;stroke:var(--fg);stroke-width:1.5}
+.userar{stroke:var(--user);stroke-width:2}
+.ln{stroke:var(--fg);stroke-width:2;fill:none}
+.gapar{stroke:var(--gap);stroke-dasharray:6 5}
+.ahp{fill:var(--fg)} .ahg{fill:var(--gap)} .ahu{fill:var(--user)}
+.al{fill:var(--fg);font-size:12px;font-weight:500}
+.ual{fill:var(--user);font-weight:700}
+.div{stroke:var(--user);stroke-width:1.5}
+.divt{fill:var(--user);font-size:12.5px;font-weight:700}
+.zone{fill:var(--muted);font-size:13px;letter-spacing:.14em;font-weight:700}
+.zu{fill:var(--user)}
+.zline{stroke:var(--line);stroke-width:2;fill:none}
+.zlu{stroke:var(--user)}
+.g-user{fill:var(--user-soft);stroke:var(--user-line);stroke-width:1.2}
+.g-plat{fill:var(--plat);stroke:var(--line);stroke-width:1.2}
+.g-comp{fill:var(--comp-soft);stroke:var(--comp-line);stroke-width:1.2}
+.g-stn{fill:var(--stn-soft);stroke:var(--stn-line);stroke-width:1.2}
+.g-base{fill:var(--band);stroke:var(--line);stroke-width:1.2}
+.gt{fill:var(--fg);font-size:15px;font-weight:700}
+.gt-user{fill:var(--user)} .gt-comp{fill:var(--comp)} .gt-stn{fill:var(--stn)}
+.c-solid{fill:var(--surface);stroke:var(--line);stroke-width:1.2}
+.c-user{fill:var(--surface);stroke:var(--user-line);stroke-width:1.2}
+.c-comp{fill:var(--surface);stroke:var(--comp-line);stroke-width:1.2}
+.c-stn{fill:var(--surface);stroke:var(--stn-line);stroke-width:1.2}
+.c-dark{fill:var(--comp)}
+.c-gap{fill:var(--gap-soft);stroke:var(--gap);stroke-width:1.6;stroke-dasharray:6 4}
+.ct{fill:var(--fg);font-weight:500}
+.ct-gap{fill:var(--gap);font-weight:700}
+.ct-dark{fill:var(--surface);font-weight:700}
+.ba-flow{fill:var(--arrow-soft);stroke:var(--arrow);stroke-width:1.4;stroke-linejoin:round}
+.ba-gapflow{fill:var(--gap-soft);stroke:var(--gap);stroke-width:1.4;stroke-dasharray:5 3;stroke-linejoin:round}
+.cy{fill:var(--surface);stroke:var(--line);stroke-width:1.3}
+.cy-gap{fill:var(--gap-soft);stroke:var(--gap);stroke-width:1.5;stroke-dasharray:6 4}
+.ic-user{fill:var(--surface);stroke:var(--user);stroke-width:2}
+.ic-comp{fill:var(--surface);stroke:var(--comp);stroke-width:2}
+.ic-dot{fill:var(--comp)}
+.ic-stn{fill:var(--surface);stroke:var(--stn);stroke-width:2}
+.ict{fill:var(--fg);font-size:13px;font-weight:500}
+.rl{fill:var(--rl)}
+.rlt{fill:var(--rl-fg);font-size:13px;font-weight:700}
+.chev{fill:var(--muted)}
+.hint{fill:var(--muted);font-size:12px}
+.sub{fill:var(--fg);font-size:14px;font-weight:700}
+.g-link{fill:var(--link-soft);stroke:var(--link-line);stroke-width:1.2}
+.gt-link{fill:var(--link)}
+.lane{fill:var(--lane)} .lane-on{fill:var(--lane-on)}
+.lk{stroke:var(--gap);stroke-width:1.3;stroke-dasharray:3 3;fill:none}
+.sl{paint-order:stroke;stroke:var(--plat);stroke-width:4px;stroke-linejoin:round}
+.sub2{font-size:13px;font-weight:700}
+.band2{fill:var(--band2);stroke:var(--line);stroke-width:1}
+.g-sub{fill:var(--surface);stroke:var(--link-line);stroke-width:1.2}
+.guard{fill:var(--surface);stroke:var(--gap);stroke-width:1.3;stroke-dasharray:4 3}
+.sw.p2sw{background:var(--p2-soft);border:1.5px solid var(--p2)}
+.c-new{fill:var(--p2-soft);stroke:var(--p2);stroke-width:1.6}
+.ct-new{fill:var(--p2);font-weight:700}
+.cy-new{fill:var(--p2-soft);stroke:var(--p2);stroke-width:1.5}
+.sl-n{fill:none;stroke:var(--p2);stroke-width:2.2}
+.ahn{fill:var(--p2)}
+.sln{fill:var(--p2)}
+.g-subu{fill:var(--surface);stroke:var(--user-line);stroke-width:1.2}
+.g-subn{fill:var(--surface);stroke:var(--p2);stroke-width:1.2}
+.rowt{fill:var(--muted);font-size:13px;font-weight:700;letter-spacing:.06em}
+.sl-i{fill:none;stroke:var(--fg);stroke-width:2}
+.sl-u{fill:none;stroke:var(--user);stroke-width:2.2}
+.sl-g{fill:none;stroke:var(--gap);stroke-width:2;stroke-dasharray:5 4}
+.bd-i{fill:var(--fg)} .bd-u{fill:var(--user)} .bd-g{fill:var(--gap)}
+.bdt{fill:var(--bg);font-size:12.5px;font-weight:700;font-family:var(--f-mono)}
+.sl{fill:var(--fg);font-size:12px;font-weight:700}
+.slu{fill:var(--user)} .slg{fill:var(--gap)}
+.steps{margin:0;padding-left:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:6px 18px;font-size:14px}
+.steps li{display:flex;gap:8px;align-items:baseline;min-width:0}
+.steps .n{flex:none;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:12px;font-weight:700;color:var(--bg);background:var(--fg)}
+.steps .n.u{background:var(--user)} .steps .n.g{background:var(--gap)}
+
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14px;min-width:0}
+.note b{display:block;margin-bottom:2px}
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
+th,td{text-align:left;padding:10px 14px;border-top:1px solid var(--line);vertical-align:top}
+thead th{border-top:0;font-size:12px;color:var(--muted);letter-spacing:.06em;font-weight:500;background:var(--band);white-space:nowrap}
+tbody th{font-weight:700;white-space:nowrap}
+tbody th code{display:block;font-weight:400;color:var(--muted);font-size:12px}
+tr.grp td{background:var(--band);font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.06em;padding-block:6px}
+td.n{font-family:var(--f-mono);color:var(--muted);white-space:nowrap}
+td.item{font-weight:700;white-space:nowrap}
+.q{display:inline-block;font-size:12px;padding:0 8px;border:1px dashed var(--gap);border-radius:4px;background:var(--gap-soft);color:var(--gap);white-space:nowrap}
+.mk{display:inline-block;font-size:12px;padding:0 8px;border-radius:9px;background:var(--mock-soft);color:var(--mock);font-weight:700;white-space:nowrap}
+.src{font-size:11px;color:var(--muted)}
+.who{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;background:var(--gap-soft);color:var(--gap);font-weight:700;white-space:nowrap}
+.who.me{background:var(--mock-soft);color:var(--mock)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+code{font-family:var(--f-mono);font-size:.92em}
+footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">LAB COLLAB MATE ・ USB-AGENT 技術架構</div>
+  <h1>技術架構全貌與部署示意</h1>
+  <p class="lede">依據 USB-Agent Lite 的 README（程式碼現況）、架構 PPT 第二頁，以及團隊對工站連線方案的補充說明整理。實線是程式碼裡已經有的，虛線是要補齊或待確認的。</p>
+  <div class="legend">
+    <span><i class="sw solid"></i>已實作（系統內部）</span>
+    <span><i class="sw usw"></i>用戶接觸範圍；藍色箭頭＝用戶與系統的互動</span>
+    <span><i class="sw mocksw">模擬</i>已有，但用模擬資料、未接真機</span>
+    <span><i class="sw gapsw"></i>待補齊／待確認</span>
+    <span><i class="sw p2sw"></i>第二階段新增</span>
+  </div>
+</header>
+
+<section aria-labelledby="h-arch">
+  <h2 id="h-arch">一、第一階段技術架構全貌</h2>
+  <figure>
+    <div class="scroll">%%SVG1%%</div>
+    
+  </figure>
+  </section>
+
+<section aria-labelledby="h-p2">
+  <h2 id="h-p2">二、第二階段技術架構全貌</h2>
+  <h3>方案 A：在 LabMind Kanban 人工領取</h3>
+  <figure>
+    <div class="scroll">%%SVGP2A%%</div>
+  </figure>
+  <h3>方案 B：在 LabWork 待確認池確認</h3>
+  <figure>
+    <div class="scroll">%%SVGP2B%%</div>
+  </figure>
+</section>
+
+<section aria-labelledby="h-flow">
+  <h2 id="h-flow">三、執行流程：用戶操作與系統內部</h2>
+  <figure>
+    <div class="scroll">%%SVG2%%</div>
+    <figcaption>9 條工作流都走這同一套流程。實驗室工程師只接觸上排的 4 個動作：選工作流、提供參數、看進度、拿結果。下排是系統自動完成的部分。各工作流不同的地方是參數內容、step 數、用到的工具、哪一步呼叫模型，列在下面的差異表。</figcaption>
+  </figure>
+
+  <h3>9 條工作流的差異</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>工作流</th><th>用戶要提供</th><th>連到的工站／方式</th><th>step 數</th><th>呼叫模型的 step</th><th>產出</th><th>現況</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="7">第一優先</td></tr>
+      <tr><th>Bundle 驗證<code>bundle_verification</code></th><td>機台號、bundle 版本</td><td>驗證工站 · USB 轉網口 ×2</td><td class="mono">8</td><td>刷機日誌研判</td><td>準入報告 PASS／WARNING／FAIL</td><td>已實作 <span class="mk">模擬</span></td></tr>
+      <tr><th>EFI 驗證<code>efi_validation</code></th><td><span class="q">待確認</span></td><td>驗證工站 · USB 轉網口 ×2</td><td class="mono">7 <span class="src">PPT</span></td><td><span class="q">待確認</span></td><td><span class="q">待確認</span></td><td>未開始</td></tr>
+      <tr><th>proxima 驗證<code>efi_proxfw（推測）</code></th><td><span class="q">待確認</span></td><td>驗證工站 · USB 轉網口 ×2</td><td class="mono">8 <span class="src">PPT</span></td><td><span class="q">待確認</span></td><td><span class="q">待確認</span></td><td>工具：root FW 完成，待刷機測試</td></tr>
+      <tr class="grp"><td colspan="7">時間允許</td></tr>
+      <tr><th>CoreOS Panic<code>coreos_panic</code></th><td><span class="q">待確認</span></td><td>Panic 工站 · USB 串口（優先級低）</td><td class="mono">6 <span class="src">PPT</span></td><td><span class="q">待確認</span></td><td><span class="q">待確認</span></td><td>未建</td></tr>
+      <tr><th>Diags Panic<code>diags_panic</code></th><td><span class="q">待確認</span></td><td>Panic 工站 · USB 串口（優先級低）</td><td class="mono">6 <span class="src">PPT</span></td><td><span class="q">待確認</span></td><td><span class="q">待確認</span></td><td>未建</td></tr>
+      <tr class="grp"><td colspan="7">LabMind 串連後</td></tr>
+      <tr><th>CoreOS FA<code>coreos_fa</code></th><td><span class="q">待確認</span></td><td><span class="q">待確認</span></td><td class="mono">7 <span class="src">PPT</span></td><td><span class="q">待確認</span></td><td><span class="q">待確認</span></td><td>未建</td></tr>
+      <tr><th>Diags FA<code>diags_fa</code></th><td><span class="q">待確認</span></td><td><span class="q">待確認</span></td><td class="mono">7 <span class="src">PPT</span></td><td><span class="q">待確認</span></td><td><span class="q">待確認</span></td><td>未建</td></tr>
+      <tr class="grp"><td colspan="7">不在原定範圍（PPT 有列）</td></tr>
+      <tr><th>EFI burn-in<code>efi_burnin</code></th><td><span class="q">待確認</span></td><td><span class="q">待確認</span></td><td class="mono">7 <span class="src">PPT</span></td><td><span class="q">待確認</span></td><td><span class="q">待確認</span></td><td>未建</td></tr>
+      <tr><th>EFI diags rel<code>efi_diags_rel</code></th><td><span class="q">待確認</span></td><td><span class="q">待確認</span></td><td class="mono">5 <span class="src">PPT</span></td><td><span class="q">待確認</span></td><td><span class="q">待確認</span></td><td>未建</td></tr>
+      <tr class="grp"><td colspan="7">在原定範圍，但 PPT 沒有列</td></tr>
+      <tr><th>Wireless FA</th><td colspan="5"><span class="q">是否還要做？</span></td><td>—</td></tr>
+      <tr><th>測試軟體開發</th><td colspan="5"><span class="q">是否還要做？</span></td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <p class="lede">標「PPT」的 step 數取自架構 PPT，程式碼裡還沒有這些工作流，只能先參考。所有「待確認」的欄位可以直接請各工作流的負責工程師填寫。</p>
+</section>
+
+<section aria-labelledby="h-dep">
+  <h2 id="h-dep">四、部署示意</h2>
+  <figure>
+    <div class="scroll">%%SVG3%%</div>
+    <figcaption>三類機器：算力電腦只做推理；9 個 agent 和 9 條工作流全部在辦公電腦；工站分兩種。驗證工站透過兩個 USB 轉網口點對點連線，已經驗證能刷機。Panic 工站和辦公電腦之間沒有網路，只能用 USB 串口。串口方案比較複雜，而且現場已經有自動化，所以優先級調低。</figcaption>
+  </figure>
+</section>
+
+<section aria-labelledby="h-gap">
+  <h2 id="h-gap">五、待補齊清單</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>項目</th><th>所在位置</th><th>現況</th><th>要釐清的問題</th><th>由誰決定</th></tr></thead>
+    <tbody>
+      <tr><td class="n">01</td><td class="item">判定防線／確定性兜底</td><td>能力層</td><td>ADR-026 已刪除，模型的研判結論直接寫進報告</td><td>本地模型能力有限，是否要恢復兜底？會影響全部 9 條工作流</td><td><span class="who me">PM 決策</span></td></tr>
+      <tr><td class="n">02</td><td class="item">工具接真機</td><td>能力層</td><td>11 個工具全是模擬資料，跑出來的 PASS 不代表硬體行為</td><td>Bundle 工具接上真機的時程</td><td><span class="who">團隊</span></td></tr>
+      <tr><td class="n">03</td><td class="item">其餘 8 條工作流與 agent</td><td>智能體／編排層</td><td>只有 Bundle 一條</td><td>依優先序的開發時程，以及差異表中的待確認欄位</td><td><span class="who">團隊</span></td></tr>
+      <tr><td class="n">04</td><td class="item">共性工具併入</td><td>能力層</td><td>不在這份程式碼裡</td><td>是否放進 <code>tools/</code> 共用？哪些在辦公電腦本機執行？</td><td><span class="who">團隊</span></td></tr>
+      <tr><td class="n">05</td><td class="item">逐一指定執行位置</td><td>能力層</td><td>切換開關看起來是整體一起切</td><td>能否逐一指定每個工具在本機或工站執行</td><td><span class="who">團隊</span></td></tr>
+      <tr><td class="n">06</td><td class="item">工站執行服務（MCP）</td><td>基礎設施／部署</td><td>預設不啟動，從未連過工站</td><td>工站上要安裝常駐程式嗎？這是否需要合規確認？</td><td><span class="who">團隊＋合規</span></td></tr>
+      <tr><td class="n">07</td><td class="item">多台工站擴展</td><td>部署</td><td>目前是 1 台辦公電腦對 1 台工站</td><td>一台辦公電腦要對應幾台工站？USB 埠數量夠嗎？</td><td><span class="who">團隊</span></td></tr>
+      <tr><td class="n">08</td><td class="item">Panic 串口方案</td><td>部署</td><td>優先級低，尚未實作</td><td>agent 要操作 Panic 過程，還是只讀取現有自動化的結果？</td><td><span class="who">團隊</span></td></tr>
+      <tr><td class="n">09</td><td class="item">FA 等工站的連線</td><td>部署</td><td>未知</td><td>CoreOS/Diags FA、efi_burnin、efi_diags_rel 要連到哪一種工站？</td><td><span class="who">團隊</span></td></tr>
+      <tr><td class="n">10</td><td class="item">A2A 對外接口</td><td>入口層</td><td>計畫中有，程式碼裡沒有</td><td>LabMind 從哪裡接進來？</td><td><span class="who">團隊</span></td></tr>
+      <tr><td class="n">11</td><td class="item">多流程通用測試</td><td>工程保障</td><td>資料欄位檢查寫死 Bundle 的欄位</td><td>在加第二條工作流之前先改成通用版</td><td><span class="who">團隊</span></td></tr>
+      <tr><td class="n">12</td><td class="item">模型併發排隊</td><td>基礎設施</td><td>9 條工作流共用 2 台 Mac Mini</td><td>多條工作流同時跑時，怎麼排隊、逾時怎麼處理？</td><td><span class="who">團隊</span></td></tr>
+      <tr><td class="n">13</td><td class="item">知識庫</td><td>狀態層</td><td>PPT 有提到，README 裡沒有</td><td>是否存在？還是規劃中？</td><td><span class="who">團隊</span></td></tr>
+      <tr><td class="n">14</td><td class="item">工作流清單對齊</td><td>範圍</td><td>PPT 多了 efi_burnin、efi_diags_rel，少了 Wireless FA、測試軟體開發</td><td>最終要做哪幾條？</td><td><span class="who me">PM 決策</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<footer>整理日期 2026-11-09。依據 USB-Agent Lite README（1 條工作流、216 個測試、27 條 ADR）與架構 PPT。輕量架構版本尚未納入。</footer>
+</div>
