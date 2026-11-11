@@ -167,22 +167,28 @@ details[open] summary .chev{transform:rotate(90deg)}
 .gax .wk{position:absolute;bottom:0;transform:translateX(-50%);font-family:var(--f-mono);font-size:11px}
 .ghd{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--muted);padding-top:10px;border-top:1px solid var(--line);margin-top:4px}
 .ghd .gn{font-weight:400;letter-spacing:0;font-size:12px}
-.grow{min-height:34px}
+.grow{min-height:42px}
 .grow .lb{font-size:14px;font-weight:700;padding-right:10px;line-height:1.3;min-width:0}
 .grow .lb small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
-.trk{position:relative;height:34px;background:repeating-linear-gradient(to right,var(--line) 0 1px,transparent 1px calc(100% / var(--wks)))}
+.trk{position:relative;height:42px;background:repeating-linear-gradient(to right,var(--line) 0 1px,transparent 1px calc(100% / var(--wks)))}
 .today{position:absolute;top:0;bottom:0;width:0;border-left:2px solid var(--bad);z-index:0}
 .gax .today{top:auto;height:12px}
 .gax .todayl{position:absolute;top:0;transform:translateX(-50%);font-size:11px;font-weight:700;color:var(--bad);background:var(--surface);padding:0 4px;z-index:3;white-space:nowrap}
-.bar{position:absolute;z-index:1;top:6px;height:22px;border-radius:5px;font-size:12px;font-weight:700;line-height:20px;padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid var(--bc);background:var(--bs);color:var(--bc)}
+.bar{position:absolute;z-index:1;top:10px;height:22px;border-radius:5px;font-size:12px;font-weight:700;line-height:20px;padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid var(--bc);background:var(--bs);color:var(--bc)}
 .bar.build{--bc:var(--accent);--bs:var(--accent-soft)}
 .bar.try{--bc:var(--ok);--bs:var(--ok-soft)}
 .bar.now{background:var(--bc);color:var(--surface)}
 .bar.past{--bc:var(--idle);--bs:var(--idle-soft);font-weight:500}
 .bar.open{border-right:0;border-radius:5px 0 0 5px;background:linear-gradient(to right,var(--bs) 60%,transparent);border-style:solid dashed}
 .bar.tbdbar{left:0;right:0;border:1px dashed var(--idle);background:transparent;color:var(--muted);font-weight:500}
-.ms{position:absolute;top:9px;width:14px;height:14px;transform:translateX(-50%) rotate(45deg);background:var(--ok);border:2px solid var(--surface);z-index:1}
-.msl{position:absolute;top:7px;font-size:12px;font-weight:700;color:var(--ok);padding-left:12px;white-space:nowrap}
+.mk{position:absolute;top:14px;width:14px;height:14px;transform:translateX(-50%);z-index:2;border:2px solid var(--surface);box-sizing:content-box;margin-top:-2px}
+.mk.first{border-radius:50%;background:var(--surface);box-shadow:inset 0 0 0 2.5px var(--fg)}
+.mk.stable{border-radius:50%;background:var(--fg)}
+.mk.gate{transform:translateX(-50%) rotate(45deg);background:var(--warn);width:11px;height:11px;margin-top:0}
+.mk.live{transform:translateX(-50%) rotate(45deg);background:var(--ok);width:12px;height:12px;margin-top:-1px}
+.glegend .k{display:inline-block;width:11px;height:11px;margin-right:6px;vertical-align:-1px}
+.tbdline{border-left:3px solid var(--accent);padding-left:10px}
+.msl{position:absolute;z-index:2;top:11px;font-size:12px;font-weight:700;color:var(--ok);padding-left:12px;white-space:nowrap}
 .glegend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--muted);padding:8px 14px 0}
 .glegend i{display:inline-block;width:18px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle;font-style:normal}
 footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:4px}
@@ -215,7 +221,7 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
     <h2 id="s0">整體時程 <span class="count" id="c0"></span></h2>
     <div class="tracks" id="tracks"></div>
     <p class="tbdline" id="tbdline"></p>
-    <div class="gwrap"><div class="glegend"><span><i style="background:var(--accent)"></i>開發・串連・設計</span><span><i style="background:var(--ok)"></i>用戶 Try Run</span><span><i style="background:var(--idle-soft);border:1px solid var(--idle)"></i>已過</span><span><i style="border:1px dashed var(--idle)"></i>時程待定</span><span>◆ 正式上線（用戶驗收）</span><span style="color:var(--bad)">｜今天</span></div><div class="gantt" id="gantt"></div></div>
+    <div class="gwrap"><div class="glegend"><span><i style="background:var(--accent)"></i>開發・串連・設計</span><span><i style="background:var(--ok)"></i>用戶 Try Run</span><span><i style="background:var(--idle-soft);border:1px solid var(--idle)"></i>已過</span><span><i style="border:1px dashed var(--idle)"></i>時程待定</span><span><i class="k" style="border-radius:50%;box-shadow:inset 0 0 0 2px var(--fg)"></i>真機首次跑通</span><span><i class="k" style="border-radius:50%;background:var(--fg)"></i>連續 5 次穩定跑通</span><span><i class="k" style="background:var(--warn);transform:rotate(45deg) scale(.85)"></i>判斷點／定案</span><span><i class="k" style="background:var(--ok);transform:rotate(45deg) scale(.85)"></i>正式上線（用戶驗收）</span><span style="color:var(--bad)">｜今天</span></div><div class="gantt" id="gantt"></div></div>
   </section>
 
   <section aria-labelledby="s1">
@@ -248,31 +254,46 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
 </div>
 
 <script>
-/* 整體時程。s／e＝開始／結束日；e:null＝結束日待定；s:null＝整段待定。row:"one"＝所有步驟畫在同一列，"each"＝每步一列。kind：build＝開發／串連／設計，try＝用戶 Try Run */
+/* 整體時程。s／e＝開始／結束日；s:null＝整段待定。row:"one"＝所有步驟畫在同一列，"each"＝每步一列。
+   kind：build＝開發・串連・設計，try＝用戶 Try Run。ms＝里程碑 [日期, 說明, 類型]：first＝真機首次跑通，stable＝連續 5 次穩定跑通，gate＝判斷點／定案，live＝正式上線 */
 const PLAN = {
   updated:"2026-11-11", from:"2026-10-26", weeks:12,
+  rule:"進 Try Run 的標準：真機連續 5 次穩定跑通、失敗時有看得懂的錯誤訊息、最後的 AI 分析結果經工程師確認可用。",
   groups:[
-    {name:"環境與框架", note:"部署完成後，需邊實作工作流邊調整模型問題"},
-    {name:"工作流建置", note:"每個模塊：工具開發 → 工作流串連測試 → 用戶 Try Run；用戶驗收後才算正式上線"},
+    {name:"環境與框架", note:"部署完成後，邊實作工作流邊調整模型問題"},
+    {name:"工作流建置", note:"邊開發工具邊串連 → 連續 5 次穩定跑通 → 用戶 Try Run → 驗收後正式上線"},
     {name:"LabMind 串連"}
   ],
   tracks:[
-    {name:"環境與框架", label:"本地模型與 ADK 框架", group:0, row:"one", steps:[
-      {n:"部署與實時調整", short:"部署・實時調整", s:"2026-10-26", e:"2026-11-28", kind:"build"}]},
-    {name:"驗證", group:1, row:"one", live:"2026-12-12", steps:[
-      {n:"工具開發・串連測試", short:"開發・串連", s:"2026-11-09", e:"2026-11-26", kind:"build"},
-      {n:"用戶 Try Run", short:"Try Run", s:"2026-11-28", e:"2026-12-12", kind:"try"}]},
-    {name:"Panic", group:1, row:"one", live:"2026-12-26", steps:[
-      {n:"工具開發・串連測試", short:"開發・串連", s:"2026-12-07", e:"2026-12-15", kind:"build"},
-      {n:"用戶 Try Run", short:"Try Run", s:"2026-12-16", e:"2026-12-26", kind:"try"}]},
-    {name:"開發", group:1, row:"one", steps:[{n:"可能涉及跨系統，時程待定", s:null}]},
-    {name:"FA", group:1, row:"one", steps:[{n:"可能涉及跨系統，時程待定", s:null}]},
+    {name:"環境與框架", label:"本地模型與 ADK 框架", group:0, row:"one",
+     steps:[{n:"部署與實時調整", short:"部署・實時調整", s:"2026-10-26", e:"2026-11-27", kind:"build"}],
+     ms:[["2026-11-25","判斷點：本地模型能否跑完 Bundle 工作流","gate","不行就啟動備案：改接雲端模型、恢復兜底規則，或先拿掉 AI 分析"]]},
+    {name:"Bundle 驗證", label:"Bundle 驗證", sub:"Simon、Gary", group:1, row:"one",
+     steps:[{n:"開發・串連", short:"", s:"2026-11-09", e:"2026-11-25", kind:"build"},
+            {n:"用戶 Try Run", short:"Try Run", s:"2026-11-30", e:"2026-12-11", kind:"try"}],
+     ms:[["2026-11-18","真機首次跑通","first"],["2026-11-25","連續 5 次穩定跑通","stable"],["2026-12-11","正式上線","live"]]},
+    {name:"proxima 驗證", label:"proxima 驗證", sub:"景棠", group:1, row:"one",
+     steps:[{n:"開發・串連", short:"", s:"2026-11-09", e:"2026-11-27", kind:"build"},
+            {n:"用戶 Try Run", short:"Try Run", s:"2026-11-30", e:"2026-12-11", kind:"try"}],
+     ms:[["2026-11-20","真機首次跑通","first"],["2026-11-27","連續 5 次穩定跑通","stable"],["2026-12-11","正式上線","live"]]},
+    {name:"EFI 驗證", label:"EFI 驗證", sub:"熙宁", group:1, row:"one",
+     steps:[{n:"開發・串連", short:"", s:"2026-11-12", e:"2026-12-02", kind:"build"},
+            {n:"用戶 Try Run", short:"Try Run", s:"2026-12-03", e:"2026-12-11", kind:"try"}],
+     ms:[["2026-11-27","真機首次跑通","first"],["2026-12-02","連續 5 次穩定跑通","stable"],["2026-12-11","正式上線","live"]]},
+    {name:"Panic", label:"Panic", sub:"Simon、Gary", group:1, row:"one",
+     steps:[{n:"開發・串連", short:"", s:"2026-12-01", e:"2026-12-18", kind:"build"},
+            {n:"用戶 Try Run（含元旦）", short:"Try Run", s:"2026-12-21", e:"2027-01-08", kind:"try"}],
+     ms:[["2026-11-27","串口方案定案（Agent 操作，或只讀取結果）","gate"],["2026-12-11","真機首次跑通","first"],["2026-12-18","連續 5 次穩定跑通","stable"],["2027-01-08","正式上線","live"]]},
+    {name:"開發、FA", label:"開發、FA", sub:"可能涉及跨系統", group:1, row:"one",
+     steps:[{n:"技術調研（跨哪些系統、連哪種工站）", short:"技術調研", s:"2026-12-14", e:"2026-12-25", kind:"build"}],
+     ms:[["2027-01-08","給出開發與 FA 的時程","gate"]]},
     {name:"LabMind 串連", group:2, row:"each", steps:[
-      {n:"1 研究 LabMind 設計", s:"2026-11-16", e:"2026-12-12", kind:"build"},
-      {n:"2 設計用戶界面與管理介面", sub:"含開發與 FA 工作流設計", s:"2026-12-13", e:"2026-12-31", kind:"build"},
-      {n:"3 正式串連與部署方案提案", sub:"含模型與硬體資源評估", s:"2026-12-21", e:"2027-01-06", kind:"build"},
-      {n:"4 正式串連與測試", sub:"取決於算力與硬體資源何時到位", s:null},
-      {n:"5 用戶 Try Run", s:null}]}
+      {n:"1 研究 LabMind 設計", s:"2026-11-16", e:"2026-12-11", kind:"build", ms:[["2026-12-11","和 LabMind 團隊定案方案 A／B","gate"]]},
+      {n:"資源評估（模型、硬體）", sub:"用驗證 Try Run 的實測數據", s:"2026-12-07", e:"2026-12-18", kind:"build"},
+      {n:"2 設計用戶界面與管理介面", sub:"含開發與 FA 工作流設計", s:"2026-12-14", e:"2026-12-25", kind:"build"},
+      {n:"3 部署方案提案", sub:"含模型與硬體需求", s:"2026-12-28", e:"2027-01-08", kind:"build", ms:[["2027-01-08","部署方案提案會","gate"]]},
+      {n:"4 正式串連與測試", sub:"硬體到位後約 3–4 週", s:null},
+      {n:"5 用戶 Try Run", sub:"串連完成後約 2 週", s:null}]}
   ]
 };
 
@@ -393,42 +414,45 @@ const issueHTML = (x, ws) => `<div class="issue ${x.type}"><span class="k">${TAG
 const dn = s => Date.UTC(+s.slice(0,4), +s.slice(5,7)-1, +s.slice(8,10)) / 864e5;
 const mdd = s => `${+s.slice(5,7)}/${+s.slice(8,10)}`;
 const rng = x => x.s ? (x.e ? `${mdd(x.s)}–${mdd(x.e)}` : `${mdd(x.s)} 起・結束待定`) : "時程待定";
+const MSK = {first:"真機首次跑通", stable:"連續 5 次穩定跑通", gate:"判斷點／定案", live:"正式上線"};
 function renderPlan(){
   const t0 = new Date(), today = Date.UTC(t0.getFullYear(), t0.getMonth(), t0.getDate()) / 864e5;
   const A = dn(PLAN.from), span = PLAN.weeks * 7, pct = d => ((d - A) / span * 100).toFixed(3) + "%";
   const pctEnd = d => ((d + 1 - A) / span * 100).toFixed(3) + "%";   // 結束日當天算在內
+  const pctMid = d => ((d + .5 - A) / span * 100).toFixed(3) + "%";
   const inAxis = today >= A && today < A + span;
+  const left = d => d === today ? "今天" : `剩 ${d - today} 天`;
   $("c0").textContent = `時程版本 ${mdd(PLAN.updated)}`;
 
-  /* 摘要卡：每條線現在在做什麼、ETA、下一步 */
-  const dated = PLAN.tracks.filter(tr => tr.steps.some(x => x.s));
-  const undated = PLAN.tracks.filter(tr => !tr.steps.some(x => x.s));
-  $("tracks").innerHTML = dated.map(tr => {
+  /* 摘要卡：每條線現在在做什麼、ETA、下一個里程碑、下一階段 */
+  $("tracks").innerHTML = PLAN.tracks.map(tr => {
     const st = tr.steps;
-    const cur = st.filter(x => x.s && dn(x.s) <= today && (!x.e || today <= dn(x.e)));
+    const cur = st.filter(x => x.s && dn(x.s) <= today && today <= dn(x.e));
     const last = cur.length ? st.indexOf(cur[cur.length-1]) : -1;
     const nxt = st.find((x,i) => i > last && !(x.s && dn(x.s) <= today));
-    const allPast = !cur.length && st.every(x => x.s && x.e && dn(x.e) < today);
+    const allPast = !cur.length && st.every(x => x.s && dn(x.e) < today);
     const tc = cur.some(x=>x.kind==="try") ? "var(--ok)" : cur.length ? "var(--accent)" : "var(--idle)";
+    const ms = [...(tr.ms||[]), ...st.flatMap(x => x.ms||[])].filter(m => dn(m[0]) >= today).sort((a,b) => dn(a[0]) - dn(b[0]));
     let head;
     if (cur.length) head = cur.map(x => `<div class="cur">現在：<b>${esc(x.n)}</b></div>
-      <div class="eta"><span class="big">${x.e?`ETA ${mdd(x.e)}`:"ETA 待定"}</span>${x.e?`<span class="left">剩 ${dn(x.e)-today} 天</span>`:""}</div>`).join("");
+      <div class="eta"><span class="big">ETA ${mdd(x.e)}</span><span class="left">${left(dn(x.e))}</span></div>`).join("");
     else if (allPast) head = `<div class="cur"><b>依計畫已結束</b></div>`;
     else head = `<div class="cur">尚未開始</div><div class="eta"><span class="big">${nxt&&nxt.s?`${mdd(nxt.s)} 開始`:"待定"}</span>${nxt&&nxt.s?`<span class="left">${dn(nxt.s)-today} 天後</span>`:""}</div>`;
     const nx = cur.length || allPast ? nxt : st[st.indexOf(nxt)+1];
-    const live = tr.live ? `<div class="nx">◆ 正式上線：<b class="mono">${mdd(tr.live)}</b>（用戶驗收）</div>` : "";
-    return `<div class="trkcard" style="--tc:${tc}">${PLAN.groups[tr.group].name!==tr.name?`<div class="grp">${esc(PLAN.groups[tr.group].name)}</div>`:""}<h3>${esc(tr.name)}</h3>${head}
+    const m = ms[0];
+    return `<div class="trkcard" style="--tc:${tc}">${PLAN.groups[tr.group].name!==tr.name?`<div class="grp">${esc(PLAN.groups[tr.group].name)}${tr.sub?`・${esc(tr.sub)}`:""}</div>`:""}<h3>${esc(tr.name)}</h3>${head}
+      ${m ? `<div class="nx">下一個里程碑：<b>${esc(m[1])}</b>（<span class="mono">${mdd(m[0])}</span>，${left(dn(m[0]))}）${m[3]?`<br>${esc(m[3])}`:""}</div>` : ""}
       ${!cur.length && nxt ? `<div class="nx">第一步：<b>${esc(nxt.n)}</b>（${rng(nxt)}）</div>` : ""}
-      ${nx ? `<div class="nx">下一階段：<b>${esc(nx.n)}</b>（${rng(nx)}）</div>` : ""}${live}</div>`;
+      ${nx ? `<div class="nx">下一階段：<b>${esc(nx.n)}</b>（${rng(nx)}）</div>` : ""}</div>`;
   }).join("");
-  $("tbdline").textContent = undated.length ? `${undated.map(t=>t.name).join("、")}：${undated[0].steps[0].n}。` : "";
+  $("tbdline").textContent = PLAN.rule;
 
   /* 甘特圖 */
   const todayEl = inAxis ? `<span class="today" style="left:${pct(today)}"></span>` : "";
   let ticks = "";
   for (let w = 0; w < PLAN.weeks; w++) {
-    const d = new Date((A + w*7) * 864e5), m = d.getUTCMonth()+1, dd = d.getUTCDate();
-    ticks += `<span class="wk" style="left:${pct(A+w*7)}">${m}/${dd}</span>`;
+    const d = new Date((A + w*7) * 864e5);
+    ticks += `<span class="wk" style="left:${pct(A+w*7)}">${d.getUTCMonth()+1}/${d.getUTCDate()}</span>`;
   }
   for (let d = A; d < A + span; d++) {
     const x = new Date(d * 864e5);
@@ -437,17 +461,18 @@ function renderPlan(){
   if (inAxis) ticks += `<span class="todayl" style="left:${pct(today)}">今天 ${t0.getMonth()+1}/${t0.getDate()}</span>${todayEl}`;
   const bar = x => {
     if (!x.s) return `<span class="bar tbdbar" title="${esc(x.n)}">時程待定</span>`;
-    const st = x.e && dn(x.e) < today ? "past" : (dn(x.s) <= today ? "now" : "");
-    const R = x.e ? pctEnd(dn(x.e)) : "100%";
-    return `<span class="bar ${x.kind} ${st} ${x.e?"":"open"}" style="left:${pct(dn(x.s))};width:calc(${R} - ${pct(dn(x.s))})" title="${esc(x.n)}　${rng(x)}">${esc(x.short || rng(x))}</span>`;
+    const st = dn(x.e) < today ? "past" : (dn(x.s) <= today ? "now" : "");
+    return `<span class="bar ${x.kind} ${st}" style="left:${pct(dn(x.s))};width:calc(${pctEnd(dn(x.e))} - ${pct(dn(x.s))})" title="${esc(x.n)}　${rng(x)}">${esc(x.short ?? rng(x))}</span>`;
   };
-  const row = (label, sub, steps, live) => `<div class="grow"><div class="lb">${esc(label)}${sub?`<small>${esc(sub)}</small>`:""}</div>
-    <div class="trk" style="--wks:${PLAN.weeks}">${steps.map(bar).join("")}${live?`<span class="ms" style="left:${pctEnd(dn(live))}"></span><span class="msl" style="left:${pctEnd(dn(live))}">上線 ${mdd(live)}</span>`:""}${todayEl}</div></div>`;
+  const mark = ([d, txt, k, more]) => `<span class="mk ${k}" style="left:${pctMid(dn(d))}" title="${mdd(d)}　${esc(txt)}${more?"："+esc(more):""}"></span>` +
+    (k === "live" ? `<span class="msl" style="left:${pctMid(dn(d))}">上線 ${mdd(d)}</span>` : "");
+  const row = (label, sub, steps, ms) => `<div class="grow"><div class="lb">${esc(label)}${sub?`<small>${esc(sub)}</small>`:""}</div>
+    <div class="trk" style="--wks:${PLAN.weeks}">${steps.map(bar).join("")}${(ms||[]).map(mark).join("")}${todayEl}</div></div>`;
   $("gantt").innerHTML = `<div class="gax"><span></span><div class="ticks">${ticks}</div></div>` +
     PLAN.groups.map((g, gi) => `<div class="ghd"><span>${esc(g.name)}</span><span class="gn">${esc(g.note||"")}</span></div>` +
       PLAN.tracks.filter(tr => tr.group === gi).map(tr => tr.row === "each"
-        ? tr.steps.map(x => row(x.n, x.sub, [x])).join("")
-        : row(tr.label || tr.name, "", tr.steps, tr.live)).join("")).join("");
+        ? tr.steps.map(x => row(x.n, x.sub, [x], x.ms)).join("")
+        : row(tr.label || tr.name, tr.sub, tr.steps, tr.ms)).join("")).join("");
 }
 
 function render(){
