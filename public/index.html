@@ -221,7 +221,7 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
     <h2 id="s0">整體時程 <span class="count" id="c0"></span></h2>
     <div class="tracks" id="tracks"></div>
     <p class="tbdline" id="tbdline"></p>
-    <div class="gwrap"><div class="glegend"><span><i style="background:var(--accent)"></i>開發・串連・設計</span><span><i style="background:var(--ok)"></i>用戶 Try Run</span><span><i style="background:var(--idle-soft);border:1px solid var(--idle)"></i>已過</span><span><i style="border:1px dashed var(--idle)"></i>時程待定</span><span><i class="k" style="border-radius:50%;box-shadow:inset 0 0 0 2px var(--fg)"></i>真機首次跑通</span><span><i class="k" style="border-radius:50%;background:var(--fg)"></i>連續 5 次穩定跑通</span><span><i class="k" style="background:var(--warn);transform:rotate(45deg) scale(.85)"></i>判斷點／定案</span><span><i class="k" style="background:var(--ok);transform:rotate(45deg) scale(.85)"></i>正式上線（用戶驗收）</span><span style="color:var(--bad)">｜今天</span></div><div class="gantt" id="gantt"></div></div>
+    <div class="gwrap"><div class="glegend"><span><i style="background:var(--accent)"></i>開發・串連・設計</span><span><i style="background:var(--ok)"></i>用戶 Try Run</span><span><i style="background:var(--idle-soft);border:1px solid var(--idle)"></i>已過</span><span><i style="border:1px dashed var(--idle)"></i>時程待定</span><span><i class="k" style="border-radius:50%;box-shadow:inset 0 0 0 2px var(--fg)"></i>正式數據首次跑通全流程</span><span><i class="k" style="border-radius:50%;background:var(--fg)"></i>連續 5 次穩定跑通</span><span><i class="k" style="background:var(--warn);transform:rotate(45deg) scale(.85)"></i>判斷點／定案</span><span><i class="k" style="background:var(--ok);transform:rotate(45deg) scale(.85)"></i>正式上線（用戶驗收）</span><span style="color:var(--bad)">｜今天</span></div><div class="gantt" id="gantt"></div></div>
   </section>
 
   <section aria-labelledby="s1">
@@ -255,7 +255,7 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
 
 <script>
 /* 整體時程。s／e＝開始／結束日；s:null＝整段待定。row:"one"＝所有步驟畫在同一列，"each"＝每步一列。
-   kind：build＝開發・串連・設計，try＝用戶 Try Run。ms＝里程碑 [日期, 說明, 類型]：first＝真機首次跑通，stable＝連續 5 次穩定跑通，gate＝判斷點／定案，live＝正式上線 */
+   kind：build＝開發・串連・設計，try＝用戶 Try Run。ms＝里程碑 [日期, 說明, 類型]：first＝正式數據首次跑通全流程，stable＝連續 5 次穩定跑通，gate＝判斷點／定案，live＝正式上線 */
 const PLAN = {
   updated:"2026-11-11", from:"2026-10-26", weeks:12,
   rule:"進 Try Run 的標準：真機連續 5 次穩定跑通、失敗時有看得懂的錯誤訊息、最後的 AI 分析結果經工程師確認可用。",
@@ -271,19 +271,19 @@ const PLAN = {
     {name:"Bundle 驗證", label:"Bundle 驗證", sub:"Simon、Gary", group:1, row:"one",
      steps:[{n:"開發・串連", short:"", s:"2026-11-09", e:"2026-11-25", kind:"build"},
             {n:"用戶 Try Run", short:"Try Run", s:"2026-11-30", e:"2026-12-11", kind:"try"}],
-     ms:[["2026-11-18","真機首次跑通","first"],["2026-11-25","連續 5 次穩定跑通","stable"],["2026-12-11","正式上線","live"]]},
+     ms:[["2026-11-18","正式數據首次跑通全流程","first"],["2026-11-25","連續 5 次穩定跑通","stable"],["2026-12-11","正式上線","live"]]},
     {name:"proxima 驗證", label:"proxima 驗證", sub:"景棠", group:1, row:"one",
      steps:[{n:"開發・串連", short:"", s:"2026-11-09", e:"2026-11-27", kind:"build"},
             {n:"用戶 Try Run", short:"Try Run", s:"2026-11-30", e:"2026-12-11", kind:"try"}],
-     ms:[["2026-11-20","真機首次跑通","first"],["2026-11-27","連續 5 次穩定跑通","stable"],["2026-12-11","正式上線","live"]]},
+     ms:[["2026-11-20","正式數據首次跑通全流程","first"],["2026-11-27","連續 5 次穩定跑通","stable"],["2026-12-11","正式上線","live"]]},
     {name:"EFI 驗證", label:"EFI 驗證", sub:"熙宁", group:1, row:"one",
      steps:[{n:"開發・串連", short:"", s:"2026-11-12", e:"2026-12-02", kind:"build"},
             {n:"用戶 Try Run", short:"Try Run", s:"2026-12-03", e:"2026-12-11", kind:"try"}],
-     ms:[["2026-11-27","真機首次跑通","first"],["2026-12-02","連續 5 次穩定跑通","stable"],["2026-12-11","正式上線","live"]]},
+     ms:[["2026-11-27","正式數據首次跑通全流程","first"],["2026-12-02","連續 5 次穩定跑通","stable"],["2026-12-11","正式上線","live"]]},
     {name:"Panic", label:"Panic", sub:"Simon、Gary", group:1, row:"one",
      steps:[{n:"開發・串連", short:"", s:"2026-12-01", e:"2026-12-18", kind:"build"},
             {n:"用戶 Try Run（含元旦）", short:"Try Run", s:"2026-12-21", e:"2027-01-08", kind:"try"}],
-     ms:[["2026-11-27","串口方案定案（Agent 操作，或只讀取結果）","gate"],["2026-12-11","真機首次跑通","first"],["2026-12-18","連續 5 次穩定跑通","stable"],["2027-01-08","正式上線","live"]]},
+     ms:[["2026-11-27","串口方案定案（Agent 操作，或只讀取結果）","gate"],["2026-12-11","正式數據首次跑通全流程","first"],["2026-12-18","連續 5 次穩定跑通","stable"],["2027-01-08","正式上線","live"]]},
     {name:"開發、FA", label:"開發、FA", sub:"可能涉及跨系統", group:1, row:"one",
      steps:[{n:"技術調研（跨哪些系統、連哪種工站）", short:"技術調研", s:"2026-12-14", e:"2026-12-25", kind:"build"}],
      ms:[["2027-01-08","給出開發與 FA 的時程","gate"]]},
@@ -414,7 +414,7 @@ const issueHTML = (x, ws) => `<div class="issue ${x.type}"><span class="k">${TAG
 const dn = s => Date.UTC(+s.slice(0,4), +s.slice(5,7)-1, +s.slice(8,10)) / 864e5;
 const mdd = s => `${+s.slice(5,7)}/${+s.slice(8,10)}`;
 const rng = x => x.s ? (x.e ? `${mdd(x.s)}–${mdd(x.e)}` : `${mdd(x.s)} 起・結束待定`) : "時程待定";
-const MSK = {first:"真機首次跑通", stable:"連續 5 次穩定跑通", gate:"判斷點／定案", live:"正式上線"};
+const MSK = {first:"正式數據首次跑通全流程", stable:"連續 5 次穩定跑通", gate:"判斷點／定案", live:"正式上線"};
 function renderPlan(){
   const t0 = new Date(), today = Date.UTC(t0.getFullYear(), t0.getMonth(), t0.getDate()) / 864e5;
   const A = dn(PLAN.from), span = PLAN.weeks * 7, pct = d => ((d - A) / span * 100).toFixed(3) + "%";
