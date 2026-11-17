@@ -257,26 +257,59 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
   .stepper .sd{min-width:7.5em}
 }
 
-/* 桌機版：模塊摘要格，點開展開。手機維持原本單欄全展開。 */
-.tldr,.meta{display:none}
-.card .meta{font-size:13px;color:var(--muted)}
+/* 卡片可見摘要：時程現況（階段／現象／ETA／下一階段）＋風險與決策＋DRI；
+   收合（FYI）：逐工具明細列、step 步驟條、完整排程細節。 */
+.card .cbody{display:flex;flex-direction:column;gap:10px}
+.card .sum{display:flex;flex-direction:column;gap:5px;margin:0}
+.card .sum .issue{padding:7px 10px;font-size:13px;gap:2px 9px}
+.card .sum .issue .t{font-weight:700}
+.card .sum .issue .ask{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .sum .prog{font-size:13.5px}
+.card .sum .prog{font-size:14px;color:var(--fg)}
+.card .sum .prog b{color:var(--fg)}
+.card .meta{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 14px;border-top:1px dashed var(--line);padding-top:6px;margin-top:auto}
+.ssum{font-size:14px;background:var(--bg);border-radius:8px;padding:7px 11px;display:flex;flex-direction:column;gap:2px}
+.ssum .lbl{font-size:11.5px;color:var(--muted);font-weight:700;letter-spacing:.06em}
+.ssum .row{display:flex;flex-wrap:wrap;gap:3px 14px}
+.ssum .row .k{color:var(--muted)}
+.ssum b.mono{font-size:14px}
+.ssum .dim{color:var(--muted);font-size:13px}
+.card[data-s="idle"] .sum .prog{color:var(--muted)}
 @media (min-width:901px){
-@media (min-width:901px){
-  .wrap{max-width:1280px}
-  .mods{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:12px;align-items:start}
+  .wrap{max-width:1360px;gap:14px;padding-block:14px 20px}
+  .mods{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:10px;align-items:start}
+  .card{padding:11px 13px;gap:6px}
+  .card h3{font-size:15.5px}
+  .ssum{padding:6px 10px}
+  h1{font-size:22px}
+  header.page{gap:8px}
   .card[role="button"]{cursor:pointer;position:relative;padding-bottom:14px}
   .card[role="button"]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  .card .tldr{display:-webkit-box;margin:0;font-size:14px;color:var(--fg);-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .card .meta{display:block;font-size:13px;color:var(--muted);margin-top:-2px}
-  .card[data-s="idle"] .tldr{color:var(--muted)}
   .card .chev{position:absolute;bottom:9px;right:13px;color:var(--muted);font-size:16px;transition:transform .15s;line-height:1}
   .card .cbody{display:none;border-top:1px dashed var(--line);margin-top:2px;padding-top:10px}
   .card[aria-expanded="true"] .cbody{display:flex;flex-direction:column;gap:10px}
-  .card[aria-expanded="true"] .tldr{-webkit-line-clamp:unset;overflow:visible;display:none}
   .card[aria-expanded="true"] .chev{transform:rotate(90deg)}
   .card[aria-expanded="true"]{grid-column:1 / -1}
 }
 @media (min-width:901px) and (prefers-reduced-motion:reduce){.card .chev{transition:none}}
+/* 矮螢幕（≤960px，如筆電 1440×900）再壓縮，維持單屏 */
+@media (min-width:901px) and (max-height:960px){
+  .wrap{gap:10px;padding-block:10px 14px}
+  h1{font-size:20px}
+  .tabs a{padding:5px 12px;font-size:13px}
+  header.page{gap:6px}
+  .card{padding:9px 12px;gap:5px}
+  .card h3{font-size:15px}
+  .card .sum{gap:4px}
+  .card .sum .issue{padding:6px 9px;font-size:12.5px}
+  .card .sum .issue .ask{-webkit-line-clamp:1}
+  .ssum{padding:5px 9px;font-size:13px}
+  .ssum .lbl{font-size:11px}
+  .mods{gap:9px}
+  footer{padding-top:5px;font-size:10.5px;gap:2px}
+  footer span:nth-child(2){display:none}
+  footer span:last-child{display:none}
+}
 </style>
 </head>
 <body>
@@ -566,33 +599,41 @@ function render(){
   $("mods").innerHTML = mods.map(x => {
     const M = x.M, lives = [...new Set([M.track, ...(M.rows||[]).map(s => s.track)].filter(Boolean).map(n => trackInfo(TRACK(n)).live).filter(Boolean).map(l => l[0]))];
     const rowChanged = s => x.was && (() => { const w = x.was.rows.find(y => y.item === s.item); return w && (w.lab !== s.lab || w.k !== s.k); })();
-    /* 摘要：優先用排程現在狀態；否則用第一條進展原話 */
     const I = M.track ? trackInfo(TRACK(M.track)) : null;
-    const tldr = I && I.cur.length ? I.cur.map(c => `${c.n}　ETA ${mdd(c.e)}`).join("；")
-      : I && I.nxt ? `${I.nxt.s ? mdd(I.nxt.s) + " 開始：" : ""}${I.nxt.n}`
-      : x.lines[0] ? x.lines[0].text
-      : x.rows.length ? x.rows.map(r => `${r.label || r.item}：${r.lab}`).join("、")
-      : "—";
-    const nextMs = I && I.m ? `下一個里程碑 ${mdd(I.m[0])}　${I.m[1]}` : "";
+    /* 主管要看：現在進行中階段 → 現象 → ETA（預計完成）→ 下一階段 */
+    let srow = "";
+    if (I && I.cur.length) {
+      const c = I.cur[I.cur.length-1];
+      const phen = x.lines[0] ? x.lines[0].text : "";
+      srow = `<div class="row"><span class="k">目前階段</span><b>${esc(c.n)}</b>${phen ? `<span class="dim">— ${esc(phen)}</span>` : ""}</div>` +
+             `<div class="row"><span class="k">預計完成</span><b class="mono">${mdd(c.e)}</b>${I.nx ? `<span class="k">下一階段</span><span>${esc(I.nx.n)}${I.nx.s ? `（<span class="mono">${mdd(I.nx.s)}</span> 開始）` : "（時程待定）"}</span>` : ""}</div>`;
+    } else if (I && I.allPast) {
+      srow = `<div class="row"><span class="k">狀態</span><b>依計畫已結束</b></div>`;
+    } else if (I && I.nxt) {
+      srow = `<div class="row"><span class="k">尚未開始</span><b>${esc(I.nxt.n)}</b><span class="k">預計</span><b class="mono">${I.nxt.s ? mdd(I.nxt.s) + " 開始" : "時程待定"}</b></div>`;
+    }
+    const sched = srow ? `<div class="ssum"><span class="lbl">時程</span>${srow}</div>` : "";
     return `<article class="card" data-s="${x.status}" role="button" tabindex="0" aria-expanded="false">
       <div class="hd"><h3>${esc(M.name)}</h3>
         ${lives.length ? `<span class="livepill">◆ 上線 ${lives.map(mdd).join("、")}</span>` : ""}
         ${x.changed ? `<span class="badge new">今日更新</span>` : `<span class="badge same">今日無變動</span>`}
         <span class="pill">${LABEL[x.status]}</span></div>
-      <p class="tldr">${esc(tldr)}</p>
-      <div class="meta">${x.owners ? `負責 ${esc(x.owners)}` : ""}${nextMs ? `　·　${esc(nextMs)}` : ""}</div>
+      <div class="sum">
+        ${sched}
+        ${!I && x.lines.length ? `<div class="prog">${x.lines.map(l => `<div>${x.lines.length > 1 ? `<b>${esc(l.label)}</b>` : ""}${esc(l.text)}</div>`).join("")}</div>` : ""}
+        ${x.issues.map(issueHTML).join("")}
+      </div>
       <span class="chev" aria-hidden="true">›</span>
       <div class="cbody">
       ${M.track ? schedHTML(TRACK(M.track)) : ""}
-      ${x.lines.length ? `<div class="prog">${x.lines.map(l => `<div>${x.lines.length > 1 ? `<b>${esc(l.label)}</b>` : ""}${esc(l.text)}</div>`).join("")}</div>` : ""}
-      ${x.lines.filter(l => l.next).map(l => `<dl class="kv"><dt>下一步</dt><dd>${esc(l.next)}</dd><dt>預計時間</dt><dd>${l.eta ? esc(l.eta) : `<em class="tbd">待工程師回報</em>`}</dd></dl>`).join("")}
+      ${I && x.lines.length ? `<div class="prog">${x.lines.map(l => `<div>${x.lines.length > 1 ? `<b>${esc(l.label)}</b>` : ""}${esc(l.text)}</div>`).join("")}</div>` : ""}
+      ${x.lines.filter(l => l.next).map(l => `<dl class="kv"><dt>下一步</dt><dd>${esc(l.next)}</dd></dl>`).join("")}
       ${M.note ? `<div class="sched"><span class="dim">${esc(M.note)}</span></div>` : ""}
       ${x.rows.length ? `<div class="mrows">${x.rows.map(s => `<div class="mrow${s.track ? "" : " two"}">
           <span class="nm">${esc(s.label || s.item)}${rowChanged(s) ? `<i>更新</i>` : ""}<small>${esc(s.owner)}</small></span>
           <span class="st ${s.k}">${esc(s.lab)}</span>${s.track ? rowSteps(TRACK(s.track)) : ""}</div>`).join("")}</div>` : ""}
-      ${x.issues.map(issueHTML).join("")}
-      <div class="foot"><span>負責人：${esc(x.owners || "—")}</span><span>最後更新：<span class="mono">${md(x.last)}</span></span></div>
       </div>
+      <div class="meta"><span>DRI：${esc(x.owners || "—")}</span><span>最後更新：<span class="mono">${md(x.last)}</span></span></div>
     </article>`;
   }).join("");
   /* 桌機（>900px）：點卡片展開／收合；手機：全展開，不綁事件 */
