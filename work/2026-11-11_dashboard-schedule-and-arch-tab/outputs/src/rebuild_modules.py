@@ -1,3 +1,14 @@
+"""【已失效，請勿重跑】2026-11-11 日報頁改版的一次性腳本（僅供回溯當時怎麼改）。
+
+它是把當時的 public/index.html 硬重組成「模塊卡＋甘特圖」版的臨時工具，不是可重複執行的工具：
+
+- 它靠 `const SCOPE = [` 這個字串定位要切割的區段；該常數已在後續 commit（25d664d）移除，現在重跑會直接拋 ValueError: substring not found。
+- 就算把定位字串改成別的，它會**再重寫一次 public/index.html**，把現在的內容覆蓋回 11/11 當天的版本。那是破壞，不是修復。
+- 正確的產線是 `build.py` ＋ `tpl.html` → `lcm-architecture.html` → `build_public_arch.py` → `public/arch.html`；日報頁的內容維護是直接編輯 `public/index.html` 的 REPORTS / PLAN / MODULES 常數。
+
+保留此檔僅作為改版過程的紀錄。要了解當時的決策，看同層上方的 STATUS.md。
+"""
+
 import re
 p='public/index.html'; t=open(p,encoding='utf-8').read()
 L=t.split('\n')
