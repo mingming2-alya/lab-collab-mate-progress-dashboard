@@ -2,9 +2,9 @@
 
 - **狀態**：已上線（含 11/11 日報、驗證步驟條）。剩餘待確認事項見下方。
 - **開始**：2026-11-11
-- **最後更新**：2026-11-11
+- **最後更新**：2026-11-17
 - **交付物**
-  - `public/index.html`：頁首加分頁列；新增「整體時程」區塊（各線摘要卡＋甘特圖）
+  - `public/daily.html`（原 `public/index.html`，11-17 站台重組時搬移）：頁首加分頁列；新增「整體時程」區塊（各線摘要卡＋甘特圖）
   - `public/arch.html`：架構全貌分頁，只放三張全貌圖（第一階段、第二階段方案 A、方案 B）
   - 產生腳本：`work/2026-11-09_usb-agent-architecture-alignment/outputs/src/build_public_arch.py`（從架構頁原始檔抽圖，架構圖更新後重跑即可）
   - 截圖：`outputs/screenshots/`；截圖腳本 `outputs/src/shot.js`

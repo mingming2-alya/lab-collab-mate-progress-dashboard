@@ -1,12 +1,13 @@
 # SW AI 案例總覽主頁 與 日報頁桌機版密度改善
 
-- **狀態**：已完成，待推送上線。
+- **狀態**：已上線（main `27f140d`，線上已驗證 `/`、`/daily`、`/arch` 皆 200）。剩 8 案的 DRI／里程碑／本週成果待補。
 - **開始**：2026-11-17
 - **最後更新**：2026-11-17
 - **交付物**
   - `public/index.html`：新首頁「SW AI 案例總覽」（單屏、9 案例、點開展開）
   - `public/daily.html`：原每日進度頁，桌機版改摘要格
   - `public/arch.html`：分頁列更新（內容不變）
+  - 最新版截圖：`outputs/screenshots/`（腳本 `outputs/src/shot.js`）
   - 產生腳本沿用：`work/2026-11-09_.../outputs/src/build_public_arch.py`（分頁列已同步更新）
 
 ## 目標
@@ -82,6 +83,15 @@
 - 是否要把「每日進度」也納入首頁某一張卡（目前 Lab Collab Mate 卡已有該案摘要，未連到日報頁）。
 
 ## 過程紀錄（由新到舊）
+
+### 2026-11-17（第三輪：新 session 接手、修正紀錄、截取最新版）
+- 新 session 從 main（`79ac10d`）讀取 INDEX、各 STATUS、HANDOFF 掌握進度。
+- 修正紀錄不一致（使用者確認）：
+  - 本任務狀態原寫「已完成，待推送上線」，與 HANDOFF（已上線 `27f140d`）矛盾 → 改為已上線。INDEX 同步。
+  - `2026-11-11_dashboard-schedule-and-arch-tab/STATUS.md` 交付物路徑 `public/index.html` → 註明已搬到 `public/daily.html`（過程紀錄保留原文，不改歷史）。
+- 截取最新版供使用者檢視（線上網址在此環境被網路代理擋住，改用與部署版相同的 main 檔案本地截圖）：
+  - `overview-desktop.png`、`daily-desktop.png`、`daily-desktop-expanded.png`、`arch-desktop.png`、`overview-mobile.png`、`daily-mobile.png`
+  - 量測：總覽、日報桌機 1440×900 皆 scrollHeight 900（單屏 0px 溢出）；五張皆無橫向溢出；console 無錯誤。
 
 ### 2026-11-17（第二輪：依使用者回饋調整）
 - **任務一**回饋：收合界線錯了。原設計把 issue（風險／需決策）也收起來，但那是老闆最該看的。改為：
