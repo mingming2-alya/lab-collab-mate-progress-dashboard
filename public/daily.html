@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Lab Collab Mate 每日進度</title>
+<style>
+/* Layout: one column. Tabs → tally → one card per module (schedule + today's progress merged) → collapsible full gantt. Older rules kept below where reused: active workstreams as full cards (changed first) → not-started list with its issues shown → completed list (collapsed) → workflow scope. */
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --fg:#18212B; --muted:#5D6B7A; --line:#DCE2E8; --seg:#D3DAE1;
+  --accent:#1E5A86; --accent-soft:#E3EDF5;
+  --ok:#1F7A4D; --ok-soft:#E2F2E9; --warn:#A86200; --warn-soft:#FBEFD9; --bad:#B3261E; --bad-soft:#FBE4E2;
+  --idle:#66727F; --idle-soft:#E8ECF0; --new:#6A3FB5; --new-soft:#EEE6FA;
+  --f-display:"Noto Serif TC","Noto Serif CJK TC","Songti TC","Songti SC","STSong","PMingLiU","SimSun",serif;
+  --f-body:"PingFang TC","PingFang SC","Microsoft JhengHei","Microsoft YaHei","Noto Sans TC","Noto Sans CJK TC",system-ui,sans-serif;
+  --f-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11161C; --surface:#19212A; --fg:#E6ECF1; --muted:#97A5B3; --line:#2B3642; --seg:#33404D;
+  --accent:#7FB6E0; --accent-soft:#1D3243;
+  --ok:#5CC48C; --ok-soft:#173527; --warn:#F0B055; --warn-soft:#3A2A12; --bad:#F2857C; --bad-soft:#3E1D1B;
+  --idle:#A3B0BD; --idle-soft:#26303A; --new:#C3A6F2; --new-soft:#2E2442;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11161C; --surface:#19212A; --fg:#E6ECF1; --muted:#97A5B3; --line:#2B3642; --seg:#33404D;
+  --accent:#7FB6E0; --accent-soft:#1D3243;
+  --ok:#5CC48C; --ok-soft:#173527; --warn:#F0B055; --warn-soft:#3A2A12; --bad:#F2857C; --bad-soft:#3E1D1B;
+  --idle:#A3B0BD; --idle-soft:#26303A; --new:#C3A6F2; --new-soft:#2E2442;
+  color-scheme:dark}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.65}
+.wrap{max-width:860px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{margin:0;text-wrap:balance}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--muted);font-weight:500}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+header.page{display:flex;flex-direction:column;gap:12px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--f-display);font-size:30px;line-height:1.25;font-weight:700}
+.pick{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.pick select{font-family:var(--f-mono);font-size:14px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 8px;cursor:pointer;max-width:100%}
+.pick select:hover,.pick select:focus-visible{border-color:var(--accent);outline:none}
+.tally{display:flex;flex-wrap:wrap;gap:8px}
+.tally span{font-size:13px;padding:3px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--muted)}
+.tally b{font-family:var(--f-mono);color:var(--fg);margin-left:4px}
+.tally .hot{border-color:var(--new);color:var(--new)}
+.tally .hot b{color:var(--new)}
+
+section{display:flex;flex-direction:column;gap:12px}
+h2{font-size:18px;font-weight:700;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+h2 .count{font-family:var(--f-mono);font-size:13px;color:var(--muted);font-weight:400}
+
+[data-s="green"]{--c:var(--ok);--cs:var(--ok-soft)}
+[data-s="yellow"]{--c:var(--warn);--cs:var(--warn-soft)}
+[data-s="red"]{--c:var(--bad);--cs:var(--bad-soft)}
+[data-s="done"]{--c:var(--ok);--cs:var(--ok-soft)}
+[data-s="idle"]{--c:var(--idle);--cs:var(--idle-soft)}
+.pill{display:inline-flex;align-items:center;font-size:13px;font-weight:700;color:var(--c);background:var(--cs);padding:2px 10px;border-radius:999px;white-space:nowrap}
+.badge{font-size:12px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.badge.new{background:var(--new-soft);color:var(--new)}
+.badge.same{background:var(--idle-soft);color:var(--idle);font-weight:500}
+
+/* active workstream card */
+.card{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+/* 灰階可辨識：不同狀態用不同左緣樣式，不只靠色相 */
+.card[data-s="yellow"]{border-left-style:solid;border-left-width:8px}
+.card[data-s="red"]{border-left-width:8px}
+.card[data-s="idle"]{border-left-style:dotted;border-left-width:6px}
+.card[data-s="done"]{border-left-width:8px}
+.card .hd{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.card .no{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.card h3{font-size:18px;line-height:1.35;margin-right:auto}
+.diff{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px}
+.diff s{color:var(--muted)}
+.diff .arrow{color:var(--muted)}
+.diff strong{color:var(--c)}
+.update{margin:0;font-size:15px;max-width:68ch}
+.issue{border-radius:8px;padding:10px 12px;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:14px}
+.issue.risk{background:var(--warn-soft)}
+.issue.decide{background:var(--accent-soft)}
+.issue.handled{background:var(--ok-soft)}
+.issue .k{font-weight:700;white-space:nowrap}
+.issue.risk .k{color:var(--warn)} .issue.decide .k{color:var(--accent)} .issue.handled .k{color:var(--ok)}
+.issue .v{min-width:0}
+.issue .t{font-weight:700}
+.issue .ask{white-space:pre-line}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0;font-size:14px}
+.kv dt{color:var(--muted);white-space:nowrap}
+.kv dd{margin:0;min-width:0}
+.tbd{color:var(--muted);font-style:normal}
+.tbd::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--warn);margin-right:6px;vertical-align:middle}
+.foot{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--muted);border-top:1px dashed var(--line);padding-top:8px}
+
+/* not-started panel */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.panel .note{margin:0;padding:10px 16px;font-size:13px;color:var(--accent);background:var(--accent-soft)}
+details{border-top:1px solid var(--line)}
+details:first-of-type{border-top:0}
+summary{list-style:none;cursor:pointer;padding:10px 16px;display:grid;grid-template-columns:2.2em minmax(0,1fr) auto 1em;gap:10px;align-items:center;font-size:14px}
+summary::-webkit-details-marker{display:none}
+summary:hover{background:var(--bg)}
+summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+summary .no{font-family:var(--f-mono);color:var(--muted);font-size:13px}
+summary .nm{font-weight:700}
+summary .sub{color:var(--muted);font-size:13px;white-space:nowrap}
+summary .chev{color:var(--muted);transition:transform .15s}
+details[open] summary .chev{transform:rotate(90deg)}
+.items{padding:0 16px 12px calc(16px + 2.2em + 10px);display:flex;flex-direction:column;gap:8px}
+.sumissues{grid-column:2 / -1;display:flex;flex-direction:column;gap:6px;font-weight:400}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px 12px;padding:5px 0;border-top:1px solid var(--line);font-size:14px;align-items:center}
+.row:first-child{border-top:0}
+.row .who{color:var(--muted);font-size:13px}
+.st{font-size:12px;padding:1px 8px;border-radius:4px;background:var(--idle-soft);color:var(--idle);white-space:nowrap}
+.stages{font-size:12px;color:var(--muted);padding-bottom:4px}
+.st.doing{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.st.done{background:var(--ok-soft);color:var(--ok);font-weight:700}
+.cardrows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px;padding:6px 12px}
+
+/* completed (collapsed by default) */
+.donebox{border:0}
+.donebox > summary.donehd{display:flex;align-items:baseline;gap:10px;padding:0;grid-template-columns:none}
+.donebox > summary.donehd:hover{background:none}
+.donehd .chev{font-size:18px}
+.donehd .hint{font-size:12px;color:var(--muted)}
+.donebox[open] .hint{display:none}
+.donebox[open] > summary .chev{transform:rotate(90deg)}
+.donebox .panel{margin-top:12px}
+.empty{margin:0;padding:12px 16px;font-size:14px;color:var(--muted)}
+/* other issues */
+.list{display:flex;flex-direction:column;gap:8px}
+.list .issue{background:var(--surface);border:1px solid var(--line)}
+.list .ws{font-size:12px;color:var(--muted)}
+
+/* scope */
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px}
+.tier{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.tier.now{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.tier .when{font-size:12px;color:var(--muted);font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:13px;padding:1px 10px;border-radius:999px;background:var(--idle-soft)}
+.tier.now .chip{background:var(--accent-soft);color:var(--accent);font-weight:700}
+/* tabs */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.tabs a{font-size:14px;font-weight:700;color:var(--muted);text-decoration:none;padding:8px 14px;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs a:hover{color:var(--fg)}
+.tabs a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--accent)}
+.tabs a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+/* overall schedule */
+.tracks{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px}
+.trkcard{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--tc,var(--accent));border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.trkcard .grp{font-size:12px;color:var(--muted)}
+.trkcard h3{font-size:16px}
+.trkcard .cur{font-size:14px}
+.trkcard .cur b{color:var(--tc,var(--accent))}
+.eta{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.eta .big{font-family:var(--f-mono);font-size:22px;font-weight:700;line-height:1.2}
+.eta .left{font-size:13px;color:var(--muted)}
+.nx{font-size:13px;border-top:1px dashed var(--line);padding-top:6px;color:var(--muted)}
+.nx b{color:var(--fg);font-weight:700}
+.tbdline{margin:0;font-size:13px;color:var(--muted)}
+.gwrap{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.gantt{min-width:780px;padding:10px 14px 12px;--L:200px}
+.gax,.grow,.ghd{display:grid;grid-template-columns:var(--L) minmax(0,1fr);align-items:center}
+.gax{font-size:12px;color:var(--muted);height:34px;align-items:stretch}
+.gax .ticks{position:relative}
+.gax .mo{position:absolute;top:0;font-weight:700;color:var(--fg);padding-left:4px;border-left:1px solid var(--muted);line-height:16px}
+.gax .wk{position:absolute;bottom:0;transform:translateX(-50%);font-family:var(--f-mono);font-size:11px}
+.ghd{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--muted);padding-top:10px;border-top:1px solid var(--line);margin-top:4px}
+.ghd .gn{font-weight:400;letter-spacing:0;font-size:12px}
+.grow{min-height:42px}
+.grow .lb{font-size:14px;font-weight:700;padding-right:10px;line-height:1.3;min-width:0}
+.grow .lb small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.trk{position:relative;height:42px;background:repeating-linear-gradient(to right,var(--line) 0 1px,transparent 1px calc(100% / var(--wks)))}
+.today{position:absolute;top:0;bottom:0;width:0;border-left:2px solid var(--bad);z-index:0}
+.gax .today{top:auto;height:12px}
+.gax .todayl{position:absolute;top:0;transform:translateX(-50%);font-size:11px;font-weight:700;color:var(--bad);background:var(--surface);padding:0 4px;z-index:3;white-space:nowrap}
+.bar{position:absolute;z-index:1;top:10px;height:22px;border-radius:5px;font-size:12px;font-weight:700;line-height:20px;padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid var(--bc);background:var(--bs);color:var(--bc)}
+.bar.build{--bc:var(--accent);--bs:var(--accent-soft)}
+.bar.try{--bc:var(--ok);--bs:var(--ok-soft)}
+.bar.now{background:var(--bc);color:var(--surface)}
+.bar.past{--bc:var(--idle);--bs:var(--idle-soft);font-weight:500}
+.bar.open{border-right:0;border-radius:5px 0 0 5px;background:linear-gradient(to right,var(--bs) 60%,transparent);border-style:solid dashed}
+.bar.tbdbar{left:0;right:0;border:1px dashed var(--idle);background:transparent;color:var(--muted);font-weight:500}
+.mk{position:absolute;top:14px;width:14px;height:14px;transform:translateX(-50%);z-index:2;border:2px solid var(--surface);box-sizing:content-box;margin-top:-2px}
+.mk.first{border-radius:50%;background:var(--surface);box-shadow:inset 0 0 0 2.5px var(--fg)}
+.mk.stable{border-radius:50%;background:var(--fg)}
+.mk.gate{transform:translateX(-50%) rotate(45deg);background:var(--warn);width:11px;height:11px;margin-top:0}
+.mk.live{transform:translateX(-50%) rotate(45deg);background:var(--ok);width:12px;height:12px;margin-top:-1px}
+.glegend .k{display:inline-block;width:11px;height:11px;margin-right:6px;vertical-align:-1px}
+.tbdline{border-left:3px solid var(--accent);padding-left:10px}
+.msl{position:absolute;z-index:2;top:11px;font-size:12px;font-weight:700;color:var(--ok);padding-left:12px;white-space:nowrap}
+.glegend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--muted);padding:8px 14px 0}
+.glegend i{display:inline-block;width:18px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle;font-style:normal}
+footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:4px}
+@media (max-width:520px){
+  h1{font-size:24px}
+  .gantt{--L:120px;min-width:700px}
+  summary{grid-template-columns:2.2em minmax(0,1fr) 1em}
+  summary .sub{grid-column:2;grid-row:2;white-space:normal}
+  summary .chev{grid-column:3;grid-row:1}
+  .sumissues{grid-column:1 / -1}
+  .items{padding-left:16px}
+}
+@media (prefers-reduced-motion:reduce){summary .chev{transition:none}}
+
+/* module cards (schedule + progress merged) */
+.mods{display:flex;flex-direction:column;gap:12px}
+.rule{margin:0;font-size:13px;color:var(--muted);border-left:3px solid var(--accent);padding-left:10px}
+.sched{display:flex;flex-direction:column;gap:2px;font-size:14px;background:var(--bg);border-radius:8px;padding:8px 12px}
+.sched .lbl{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.06em}
+.sched b.mono{font-size:15px}
+.sched .dim{color:var(--muted);font-size:13px}
+.prog{display:flex;flex-direction:column;gap:4px;margin:0;font-size:15px;max-width:72ch}
+.prog b{margin-right:6px}
+.mrows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px}
+.mrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;padding:8px 12px;border-top:1px solid var(--line);align-items:center;font-size:14px}
+.mrow.two{grid-template-columns:minmax(0,1fr) auto}
+.mrow:first-child{border-top:0}
+.mrow .nm{font-weight:700;min-width:0}
+.mrow .nm small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.mrow .nm i{white-space:nowrap;font-style:normal;font-size:11px;font-weight:700;color:var(--new);background:var(--new-soft);padding:0 6px;border-radius:4px;margin-left:6px;vertical-align:1px}
+.mrow .nx{font-size:13px;color:var(--muted);min-width:0;border-top:0;padding-top:0}
+.mrow .st{white-space:normal;text-align:right}
+.stepper{grid-column:1 / -1;list-style:none;margin:6px 0 2px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:0}
+.stepper li{position:relative;border-top:3px solid var(--line);padding:8px 10px 0 0;display:flex;flex-direction:column;gap:1px;min-width:0;font-size:13px}
+.stepper li::before{content:"";position:absolute;top:-8px;left:0;width:9px;height:9px;border-radius:50%;background:var(--surface);border:2px solid var(--line)}
+.stepper .sd{font-size:12px;color:var(--muted)}
+.stepper .sn{font-weight:700;line-height:1.35}
+.stepper .sg{font-size:12px;font-weight:700;color:var(--accent)}
+.stepper li.past{color:var(--muted)}
+.stepper li.past .sn{font-weight:500}
+.stepper li.past::before{background:var(--idle);border-color:var(--idle)}
+.stepper li.now{border-top-color:var(--accent)}
+.stepper li.now::before{background:var(--accent);border-color:var(--accent)}
+.stepper li.next::before{border-color:var(--accent);background:var(--accent-soft)}
+.stepper li.live .sn{color:var(--ok)}
+.mrow .nx b{color:var(--fg)}
+.livepill{font-size:12px;font-weight:700;color:var(--ok);background:var(--ok-soft);padding:2px 8px;border-radius:4px;white-space:nowrap}
+.card[data-s="idle"] .prog{color:var(--muted)}
+.gbox > summary.donehd{display:flex;align-items:baseline;gap:10px;padding:0}
+.gbox[open] > summary .chev{transform:rotate(90deg)}
+.gbox[open] .hint{display:none}
+.gbox .gwrap{margin-top:12px}
+@media (max-width:520px){
+  .mrow{grid-template-columns:minmax(0,1fr) auto}
+  .mrow .nx{grid-column:1 / -1}
+  .stepper{grid-template-columns:1fr;margin-left:5px}
+  .stepper li{border-top:0;border-left:3px solid var(--line);padding:0 0 10px 14px;flex-direction:row;flex-wrap:wrap;gap:0 8px;align-items:baseline}
+  .stepper li:last-child{padding-bottom:0}
+  .stepper li::before{top:3px;left:-8px}
+  .stepper li.now{border-left-color:var(--accent)}
+  .stepper .sd{min-width:7.5em}
+}
+
+/* 桌機版：模塊摘要格，點開展開。手機維持原本單欄全展開。 */
+.tldr,.meta{display:none}
+.card .meta{font-size:13px;color:var(--muted)}
+@media (min-width:901px){
+@media (min-width:901px){
+  .wrap{max-width:1280px}
+  .mods{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:12px;align-items:start}
+  .card[role="button"]{cursor:pointer;position:relative;padding-bottom:14px}
+  .card[role="button"]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .card .tldr{display:-webkit-box;margin:0;font-size:14px;color:var(--fg);-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .card .meta{display:block;font-size:13px;color:var(--muted);margin-top:-2px}
+  .card[data-s="idle"] .tldr{color:var(--muted)}
+  .card .chev{position:absolute;bottom:9px;right:13px;color:var(--muted);font-size:16px;transition:transform .15s;line-height:1}
+  .card .cbody{display:none;border-top:1px dashed var(--line);margin-top:2px;padding-top:10px}
+  .card[aria-expanded="true"] .cbody{display:flex;flex-direction:column;gap:10px}
+  .card[aria-expanded="true"] .tldr{-webkit-line-clamp:unset;overflow:visible;display:none}
+  .card[aria-expanded="true"] .chev{transform:rotate(90deg)}
+  .card[aria-expanded="true"]{grid-column:1 / -1}
+}
+@media (min-width:901px) and (prefers-reduced-motion:reduce){.card .chev{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="page">
+    <nav class="tabs" aria-label="頁面"><a href="./">總覽</a><a href="daily.html" aria-current="page">每日進度</a><a href="arch.html">架構全貌</a></nav>
+    <div class="eyebrow">LAB COLLAB MATE ・ 專案進度日報</div>
+    <div class="top">
+      <h1 id="h1">每日進度</h1>
+      <label class="pick"><span>查看日期</span><select id="date"></select></label>
+    </div>
+    <div class="tally" id="tally"></div>
+  </header>
+
+  <section aria-labelledby="s1">
+    <h2 id="s1">各模塊進展 <span class="count" id="c1"></span></h2>
+    <p class="rule" id="rule"></p>
+    <div class="mods" id="mods"></div>
+  </section>
+
+  <section aria-labelledby="s2">
+    <details class="gbox" id="gbox">
+      <summary class="donehd"><h2 id="s2">完整時程 <span class="count" id="c2"></span></h2><span class="chev" aria-hidden="true">›</span><span class="hint">點擊展開甘特圖</span></summary>
+      <div class="gwrap"><div class="glegend"><span><i style="background:var(--accent)"></i>工具開發與工作流串連・設計</span><span><i style="background:var(--ok)"></i>用戶 Try Run</span><span><i style="background:var(--idle-soft);border:1px solid var(--idle)"></i>已過</span><span><i style="border:1px dashed var(--idle)"></i>時程待定</span><span><i class="k" style="border-radius:50%;box-shadow:inset 0 0 0 2px var(--fg)"></i>正式數據首次跑通全流程</span><span><i class="k" style="border-radius:50%;background:var(--fg)"></i>正式數據連續 5 次穩定跑通全流程</span><span><i class="k" style="background:var(--warn);transform:rotate(45deg) scale(.85)"></i>判斷點／定案</span><span><i class="k" style="background:var(--ok);transform:rotate(45deg) scale(.85)"></i>正式上線（用戶驗收）</span><span style="color:var(--bad)">｜今天</span></div><div class="gantt" id="gantt"></div></div>
+    </details>
+  </section>
+
+  <footer>
+    <span>資料來源：工程師當日回報訊息，由 PM 彙整。「排程」依 PM 規劃的時程版本，剩餘天數依瀏覽當天計算；其餘內容依所選日期的日報。</span>
+    <span>燈號：● 正常＝依計畫推進；▲ 注意＝有延誤可能，團隊可自行處理；■ 受阻＝需要外部協助；○ 未啟動＝尚未開工，非異常。</span>
+    <span>「今日更新」＝與前一份日報相比有變動。</span>
+  </footer>
+</div>
+
+<script>
+/* 整體時程。s／e＝開始／結束日；s:null＝整段待定。row:"one"＝所有步驟畫在同一列，"each"＝每步一列。
+   kind：build＝工具開發與工作流串連・設計，try＝用戶 Try Run。ms＝里程碑 [日期, 說明, 類型]：first＝正式數據首次跑通全流程，stable＝正式數據連續 5 次穩定跑通全流程，gate＝判斷點／定案，live＝正式上線 */
+const PLAN = {
+  updated:"2026-11-11", from:"2026-10-26", weeks:12,
+  rule:"進 Try Run 的標準：正式數據連續 5 次穩定跑通全流程、失敗時有看得懂的錯誤訊息、最後的 AI 分析結果經工程師確認可用。",
+  groups:[
+    {name:"環境與框架", note:"部署完成後，邊實作工作流邊調整模型問題"},
+    {name:"工作流建置", note:"邊開發工具邊串連 → 正式數據連續 5 次穩定跑通全流程 → 用戶 Try Run → 驗收後正式上線"},
+    {name:"LabMind 串連"}
+  ],
+  tracks:[
+    {name:"環境與框架", label:"本地模型與 ADK 框架", group:0, row:"one",
+     steps:[{n:"部署與實時調整", short:"部署・實時調整", s:"2026-10-26", e:"2026-11-27", kind:"build"}],
+     ms:[["2026-11-25","判斷點：本地模型能否跑完 Bundle 工作流","gate","不行就啟動備案：改接雲端模型、恢復兜底規則，或先拿掉 AI 分析"]]},
+    {name:"Bundle 驗證", label:"Bundle 驗證", sub:"Simon、Gary", group:1, row:"one",
+     steps:[{n:"工具開發與工作流串連", short:"", s:"2026-11-09", e:"2026-11-25", kind:"build"},
+            {n:"用戶 Try Run", short:"Try Run", s:"2026-11-30", e:"2026-12-11", kind:"try"}],
+     ms:[["2026-11-18","正式數據首次跑通全流程","first"],["2026-11-25","正式數據連續 5 次穩定跑通全流程","stable"],["2026-12-11","正式上線","live"]]},
+    {name:"proxima 驗證", label:"proxima 驗證", sub:"景棠", group:1, row:"one",
+     steps:[{n:"工具開發與工作流串連", short:"", s:"2026-11-09", e:"2026-11-27", kind:"build"},
+            {n:"用戶 Try Run", short:"Try Run", s:"2026-11-30", e:"2026-12-11", kind:"try"}],
+     ms:[["2026-11-20","正式數據首次跑通全流程","first"],["2026-11-27","正式數據連續 5 次穩定跑通全流程","stable"],["2026-12-11","正式上線","live"]]},
+    {name:"EFI 驗證", label:"EFI 驗證", sub:"熙宁", group:1, row:"one",
+     steps:[{n:"工具開發與工作流串連", short:"", s:"2026-11-12", e:"2026-12-02", kind:"build"},
+            {n:"用戶 Try Run", short:"Try Run", s:"2026-12-03", e:"2026-12-11", kind:"try"}],
+     ms:[["2026-11-27","正式數據首次跑通全流程","first"],["2026-12-02","正式數據連續 5 次穩定跑通全流程","stable"],["2026-12-11","正式上線","live"]]},
+    {name:"Panic", label:"Panic", sub:"Simon、Gary", group:1, row:"one",
+     steps:[{n:"工具開發與工作流串連", short:"", s:"2026-12-01", e:"2026-12-18", kind:"build"},
+            {n:"用戶 Try Run（含元旦）", short:"Try Run", s:"2026-12-21", e:"2027-01-08", kind:"try"}],
+     ms:[["2026-11-27","串口方案定案（Agent 操作，或只讀取結果）","gate"],["2026-12-11","正式數據首次跑通全流程","first"],["2026-12-18","正式數據連續 5 次穩定跑通全流程","stable"],["2027-01-08","正式上線","live"]]},
+    {name:"開發、FA", label:"開發、FA", sub:"可能涉及跨系統", group:1, row:"one",
+     steps:[{n:"技術調研（跨哪些系統、連哪種工站）", short:"技術調研", s:"2026-12-14", e:"2026-12-25", kind:"build"}],
+     ms:[["2027-01-08","給出開發與 FA 的時程","gate"]]},
+    {name:"LabMind 串連", group:2, row:"each", steps:[
+      {n:"1 研究 LabMind 設計", s:"2026-11-16", e:"2026-12-11", kind:"build", ms:[["2026-12-11","和 LabMind 團隊定案方案 A／B","gate"]]},
+      {n:"資源評估（模型、硬體）", sub:"用驗證 Try Run 的實測數據", s:"2026-12-07", e:"2026-12-18", kind:"build"},
+      {n:"2 設計用戶界面與管理介面", sub:"含開發與 FA 工作流設計", s:"2026-12-14", e:"2026-12-25", kind:"build"},
+      {n:"3 部署方案提案", sub:"含模型與硬體需求", s:"2026-12-28", e:"2027-01-08", kind:"build", ms:[["2027-01-08","部署方案提案會","gate"]]},
+      {n:"4 正式串連與測試", sub:"硬體到位後約 3–4 週", s:null},
+      {n:"5 用戶 Try Run", sub:"串連完成後約 2 週", s:null}]}
+  ]
+};
+
+/* 每條工作線一筆；state＝一句話狀態（用來比對昨日變化），update＝最新進展原話 */
+const IDLE_PRE = "二級區域環境就位後才可開始開發";
+const base = () => ([
+  {no:1, name:"二級區域本地部署大模型", status:"green", state:"部署中", owners:"Gary、万峰",
+   update:"部署中。"},
+  {no:2, name:"ADK 落地框架", status:"green", state:"開發中", owners:"Simon、Gary",
+   update:"開發中，已驗證可在二級區域運行。"},
+  {no:3, name:"共性自動化工具", status:"idle", state:"未啟動", prereq:IDLE_PRE,
+   stages:["開發測試","用戶驗收","打包成 MCP 格式"],
+   items:[["郵箱","万峰"],["雷達","熙宁"],["刷機","Simon、Gary"],["Panic","Simon、Gary"],["Insight","景棠"],["收集 log","景棠"]],
+   issues:[{type:"handled", mod:"開發、FA", title:"Insight 沒有可用的 API", ask:"景棠研究以爬蟲取得 API。屬 FA 工作流，優先級調低，先做驗證與 Panic"}]},
+  {no:4, name:"自動化工具", status:"idle", state:"未啟動", prereq:IDLE_PRE,
+   stages:["開發測試","用戶驗收","打包成 MCP 格式"],
+   items:[["Bundle 驗證","Simon、Gary"],["EFI 驗證","熙宁"],["proxima 驗證","景棠"]],
+   issues:[{type:"handled", title:"Agent 在辦公電腦，無法合規連到工站電腦", ask:"驗證：改用兩個 USB 轉網口連接，已驗證能正常刷機。Panic：可用 USB 串口通訊，但較複雜且已有自動化，優先級調低"}]},
+  {no:5, name:"工作流建置", status:"idle", state:"未啟動",
+   stages:["節點串連","測試調整","用戶驗收","打包成 A2A 接口"],
+   items:[["Bundle 驗證工作流","—"],["EFI 驗證工作流","—"],["proxima 驗證工作流","—"]]},
+  {no:6, name:"Try Run", status:"idle", state:"未啟動", items:[["Try Run","—"]]},
+  {no:7, name:"串連 LabMind 模塊", status:"idle", state:"未啟動",
+   stages:["工作流調整","測試適配","用戶驗收"], items:[["串連 LabMind 模塊","—"]],
+   issues:[{type:"risk", title:"各工作流的 Agent 只能做簡單問答", ask:"沒有算力支援進展分析與 debug；需先了解 LabMind 是否有這項需求"}]}
+]);
+
+const d30 = base();
+Object.assign(d30[0], {
+  status:"yellow", state:"部署完成・問題分析中",
+  update:"部署完成。測試時發現記憶體容易爆滿，大模型服務會停止；初步懷疑是模型思考鏈過長導致記憶體不足，万峰正在分析具體原因。",
+  next:"找出記憶體不足的原因並修正", eta:"",
+  issues:[{type:"risk", title:"記憶體不足導致大模型服務停止", ask:"万峰分析中"}]
+});
+/* 新的一天：複製前一天，只改有變動的工作線。items：[名稱, 負責人, 狀態文字, todo|doing|done] */
+const day = (prev, fn) => { const d = structuredClone(prev); fn(d); return d; };
+const MEM = {type:"handled", title:"記憶體不足導致大模型服務停止（10/30 回報）", ask:"原因：使用的不是官方模型，而是社群以 Claude 推理資料再訓練的 Qwen 版本。這類模型思考鏈特別長，記憶體用量隨輸出長度增加，最後耗盡記憶體、服務被終止。換回官方模型後已無此問題。\n預防：之後只採用官方發布的模型，並在部署前做長輸出壓力測試。"};
+
+const d1102 = day(d30, d => {
+  Object.assign(d[0], {status:"green", state:"部署完成・簡單測試可用", update:"部署完成，簡單測試後可用。", next:"", issues:[MEM]});
+  Object.assign(d[1], {state:"已遷移至二級區域", update:"框架已遷移到二級區域。"});
+});
+const d1103 = day(d1102, d => {
+  Object.assign(d[0], {status:"yellow", state:"接入 ADK 後頻繁重啟",
+    update:"接入 ADK 專案後，發現 LLM 頻繁重啟；懷疑是雷電線頻繁掉線導致。", next:"排查雷電線連線問題",
+    issues:[{type:"risk", title:"LLM 頻繁重啟", ask:"懷疑雷電線頻繁掉線，排查中"}]});
+  Object.assign(d[1], {state:"已接入本地 LLM", update:"ADK 成功接入本地 LLM。"});
+  Object.assign(d[2], {status:"green", state:"3 項進行中・3 項未開始", prereq:"",
+    update:"雷達：下載、上傳、檢測更新等基本功能已實現，正在測試工具穩定性。刷機：開發中。收集 log：已完成刷機 log 收集。郵箱、Panic、Insight 未開始。",
+    items:[["郵箱","万峰","未開始","todo"],["雷達","熙宁","基本功能完成・測試穩定性","doing"],["刷機","Simon、Gary","開發中","doing"],["Panic","Simon、Gary","未開始","todo"],["Insight","景棠","未開始","todo"],["收集 log","景棠","刷機 log 已完成","doing"]]});
+  Object.assign(d[3], {status:"green", state:"2 項開發中・1 項未開始", prereq:"",
+    update:"Bundle 驗證、proxima 驗證開始開發；EFI 驗證未開始。",
+    items:[["Bundle 驗證","Simon、Gary","開發中","doing"],["EFI 驗證","熙宁","未開始","todo"],["proxima 驗證","景棠","開發中","doing"]]});
+});
+const d1104 = day(d1103, d => {
+  Object.assign(d[0], {status:"green", state:"連線穩定・未再重啟",
+    update:"更換 KPD 的雷電線後連線較穩定，未再出現大模型重啟。", next:"",
+    issues:[{type:"handled", title:"LLM 頻繁重啟", ask:"更換 KPD 雷電線後連線穩定，未再出現重啟"}]});
+  Object.assign(d[1], {state:"框架調試成功", update:"框架調試成功。"});
+  Object.assign(d[2], {
+    update:"雷達：定時下載 diags root 功能已實現，正在把程式打包成可執行檔。刷機：開發中。收集 log：已完成刷機 log 收集。郵箱、Panic、Insight 未開始。"});
+  d[2].items[1][2] = "定時下載完成・打包成執行檔";
+});
+
+const d1105 = day(d1104, d => {
+  Object.assign(d[0], {status:"yellow", state:"可用・能力與速度不足",
+    update:"部署完成，可用。測試接入 Agent 寫程式碼，發現模型不夠聰明且運行很慢。", next:"",
+    issues:[{type:"risk", title:"本地模型能力不足、運行很慢", ask:"接入 Agent 寫程式碼測試時表現不佳且速度慢；可能影響驗證工作流最後一步的 AI 分析品質與耗時，待評估"}]});
+  Object.assign(d[2], {state:"4 項進行中・2 項未開始",
+    update:"郵箱：發送郵件腳本開發完成。雷達：定時下載 diags root 功能已實現，正在把程式打包成可執行檔。刷機：開發中。收集 log：已完成刷機 log 收集。Panic、Insight 未開始。"});
+  d[2].items[0][2] = "發信腳本完成"; d[2].items[0][3] = "doing";
+  d[3].items[1][2] = "未開始";
+});
+
+const d1106 = day(d1105, d => {
+  Object.assign(d[3], {
+    update:"Bundle 驗證：開發中。proxima 驗證：root FW 開發已完成，待刷機測試。EFI 驗證：未開始。"});
+  d[3].items[2][2] = "root FW 完成・待刷機測試";
+});
+
+/* 11/11：本地模型回報「部署完成，可用」，與 11/05 相同、能力與速度風險未解除，維持不變 */
+const d1111 = day(d1106, d => {
+  Object.assign(d[1], {state:"輕量版框架可用", update:"框架調試成功，輕量版框架可用。"});
+  Object.assign(d[2], {state:"1 項完成・3 項進行中・2 項未開始",
+    update:"郵箱：發送郵件腳本開發完成。雷達：定時監控雷達功能已完成，已打包成 app。刷機：開發中。收集 log：已完成刷機 log 收集。Panic：未開始，優先級低。Insight：未開始。"});
+  d[2].items[1][2] = "定時監控完成・已打包成 app"; d[2].items[1][3] = "done";
+  d[2].items[3][2] = "未開始・優先級低";
+  Object.assign(d[3], {
+    update:"Bundle 驗證：開發中，已開發 4 個自動化節點，串接其中 2 個；串接的 2 個節點已在實際業務中正常使用。proxima 驗證：開發中，已開發 2 個自動化節點。EFI 驗證：本次未回報。"});
+  d[3].items[0][2] = "4 節點完成・串接 2 個・已實際使用";
+  d[3].items[2][2] = "2 個自動化節點完成";
+  Object.assign(d[4], {status:"green", state:"1 項進行中・2 項未開始", update:"Bundle 驗證：已串聯 2 個節點。EFI、proxima 本次未回報。"});
+  d[4].items[0] = ["Bundle 驗證工作流","Simon、Gary","已串聯 2 個節點","doing"];
+  Object.assign(d[5], {status:"green", state:"Bundle 部分節點試用中", update:"Bundle 驗證：串聯的 2 個節點已在實際業務中正常使用。EFI、proxima 本次未回報。"});
+  d[5].items[0] = ["Bundle 驗證（2 個節點）","Simon、Gary","可正常使用","doing"];
+});
+
+const REPORTS = [
+  {date:"2026-11-11", projects:d1111},
+  {date:"2026-11-06", projects:d1106},
+  {date:"2026-11-05", projects:d1105},
+  {date:"2026-11-04", projects:d1104},
+  {date:"2026-11-03", projects:d1103},
+  {date:"2026-11-02", projects:d1102},
+  {date:"2026-10-30", projects:d30},
+  {date:"2026-10-29", projects:base()}
+];
+
+const LABEL = {done:"✓ 已完成", green:"● 正常", yellow:"▲ 注意", red:"■ 受阻", idle:"○ 未啟動"};
+const TAG = {decide:"需決策", risk:"待追蹤", handled:"已有對策"};
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const key = d => "d" + d.replaceAll("-","");
+const wk = d => "日一二三四五六"[new Date(d+"T00:00:00").getDay()];
+const md = d => d.slice(5).replace("-","/");
+const issueHTML = x => `<div class="issue ${x.type}"><span class="k">${TAG[x.type]}</span><div class="v"><div class="t">${esc(x.title)}</div><div class="ask">${esc(x.ask)}</div></div></div>`;
+
+/* 模塊＝日報的呈現單位，對應整體時程。src＝整條工作線的進展原話；rows＝工作線裡的單項（工具），track＝對應 PLAN 的時程線。
+   工作線 06 Try Run、05 工作流建置已由時程裡的里程碑取代，不再單獨顯示。 */
+const MODULES = [
+  {name:"環境與框架", track:"環境與框架", src:[{ws:1, label:"本地模型"}, {ws:2, label:"ADK 框架"}]},
+  {name:"驗證", rows:[{ws:4, item:"Bundle 驗證", track:"Bundle 驗證"}, {ws:4, item:"proxima 驗證", track:"proxima 驗證"}, {ws:4, item:"EFI 驗證", track:"EFI 驗證"}]},
+  {name:"共性工具", note:"各工作流共用；刷機需在 Bundle 首次跑通前（11/18）可用", rows:[{ws:3, item:"郵箱"}, {ws:3, item:"雷達"}, {ws:3, item:"刷機"}, {ws:3, item:"收集 log"}]},
+  {name:"Panic", track:"Panic", rows:[{ws:3, item:"Panic", label:"Panic 工具（兩條共用）"},
+    {item:"CoreOS Panic 工作流", owner:"Simon、Gary"}, {item:"Diags Panic 工作流", owner:"熙宁"}]},
+  {name:"開發、FA", track:"開發、FA", rows:[{ws:3, item:"Insight", label:"Insight 工具（FA 用）"},
+    {item:"開發技術調研", owner:"熙宁"}, {item:"FA 技術調研", owner:"万峰、景棠"}]},
+  {name:"LabMind 串連", track:"LabMind 串連", src:[{ws:7}]}
+];
+const HOME = {1:"環境與框架", 2:"環境與框架", 3:"共性工具", 4:"驗證", 5:"驗證", 6:"驗證", 7:"LabMind 串連"};
+const RANK = {red:4, yellow:3, green:2, done:1, idle:0};
+
+/* 從某天的日報算出模塊內容 */
+function modOf(r, M){
+  const P = no => r.projects.find(p => p.no === no);
+  const lines = (M.src||[]).map(s => { const p = P(s.ws); return {label:s.label, text:p.update, status:p.status, owners:p.owners||"", next:p.next, eta:p.eta}; });
+  const rows = (M.rows||[]).map(s => { const p = s.ws ? P(s.ws) : {status:"idle"}; const it = (p.items||[]).find(i => i[0] === s.item) || [s.item, s.owner || "—"];
+    return {...s, owner:it[1], lab:it[2] || "未開始", k:it[3] || "todo", status: it[3] && it[3] !== "todo" ? p.status : "idle"}; });
+  const issues = r.projects.flatMap(p => (p.issues||[]).filter(x => (x.mod || HOME[p.no]) === M.name));
+  const sts = [...lines, ...rows].map(x => x.status);
+  const status = sts.every(s => s === "done") ? "done" : sts.reduce((a,b) => RANK[b] > RANK[a] ? b : a, "idle");
+  const owners = [...new Set([...lines.flatMap(l => l.owners.split("、")), ...rows.flatMap(x => x.owner.split("、"))].filter(o => o && o !== "—" && o !== "待指派"))].join("、");
+  const sig = JSON.stringify([lines.map(l => [l.text, l.status]), rows.map(x => [x.lab, x.k]), issues.map(x => x.title + x.ask)]);
+  return {lines, rows, issues, status, owners, sig};
+}
+function lastChange(idx, M){
+  for (let i = idx; i < REPORTS.length-1; i++) if (modOf(REPORTS[i], M).sig !== modOf(REPORTS[i+1], M).sig) return REPORTS[i].date;
+  return REPORTS[REPORTS.length-1].date;
+}
+
+/* ---- 時程計算 ---- */
+const dn = s => Date.UTC(+s.slice(0,4), +s.slice(5,7)-1, +s.slice(8,10)) / 864e5;
+const mdd = s => `${+s.slice(5,7)}/${+s.slice(8,10)}`;
+const rng = x => x.s ? (x.e ? `${mdd(x.s)}–${mdd(x.e)}` : `${mdd(x.s)} 起・結束待定`) : "時程待定";
+const t0 = new Date(), TODAY = Date.UTC(t0.getFullYear(), t0.getMonth(), t0.getDate()) / 864e5;
+const left = d => d === TODAY ? "今天" : d > TODAY ? `剩 ${d - TODAY} 天` : `已過 ${TODAY - d} 天`;
+const TRACK = name => PLAN.tracks.find(tr => tr.name === name);
+function trackInfo(tr){
+  const st = tr.steps;
+  const cur = st.filter(x => x.s && dn(x.s) <= TODAY && TODAY <= dn(x.e));
+  const last = cur.length ? st.indexOf(cur[cur.length-1]) : -1;
+  const nxt = st.find((x,i) => i > last && !(x.s && dn(x.s) <= TODAY));
+  const allPast = !cur.length && st.every(x => x.s && dn(x.e) < TODAY);
+  const nx = cur.length || allPast ? nxt : st[st.indexOf(nxt)+1];
+  const ms = [...(tr.ms||[]), ...st.flatMap(x => x.ms||[])].sort((a,b) => dn(a[0]) - dn(b[0]));
+  return {cur, nxt, nx, allPast, m: ms.find(m => dn(m[0]) >= TODAY), live: ms.find(m => m[2] === "live")};
+}
+function schedHTML(tr){
+  const I = trackInfo(tr), out = [];
+  if (I.cur.length) I.cur.forEach(x => out.push(`<div>現在：<b>${esc(x.n)}</b>　ETA <b class="mono">${mdd(x.e)}</b> <span class="dim">（${left(dn(x.e))}）</span></div>`));
+  else if (I.allPast) out.push(`<div><b>依計畫已結束</b></div>`);
+  else if (I.nxt) out.push(`<div>${I.nxt.s ? `<b class="mono">${mdd(I.nxt.s)}</b> 開始` : "時程待定"}：<b>${esc(I.nxt.n)}</b>${I.nxt.s ? ` <span class="dim">（${dn(I.nxt.s) - TODAY} 天後）</span>` : ""}</div>`);
+  if (I.m) out.push(`<div>下一個里程碑：<b>${esc(I.m[1])}</b>　<b class="mono">${mdd(I.m[0])}</b> <span class="dim">（${left(dn(I.m[0]))}）${I.m[3] ? "　" + esc(I.m[3]) : ""}</span></div>`);
+  if (I.nx) out.push(`<div class="dim">下一階段：${esc(I.nx.n)}（${rng(I.nx)}）</div>`);
+  return `<div class="sched"><span class="lbl">排程</span>${out.join("")}</div>`;
+}
+/* 工作流的關鍵步驟：工具開發與工作流串連 → 首次跑通 → 連續 5 次穩定跑通 → Try Run → 上線，依日期排序；標出已過／進行中／下一步 */
+function rowSteps(tr){
+  /* 工具開發與工作流串連只標開始日（它和兩個跑通里程碑重疊）；Try Run 保留區間。now＝目前所在階段（最後一個已開始的節點），next＝下一個節點 */
+  const items = [
+    ...tr.steps.filter(x => x.s).map(x => x.kind === "try"
+      ? {d:dn(x.s), end:dn(x.e), date:rng(x), n:"用戶 Try Run"}
+      : {d:dn(x.s), end:dn(x.s), date:mdd(x.s), n:x.n}),
+    ...[...(tr.ms||[]), ...tr.steps.flatMap(x => x.ms||[])].map(m => ({d:dn(m[0]), end:dn(m[0]), date:mdd(m[0]), n:(m[2] === "live" ? "◆ " : "") + m[1], k:m[2]}))
+  ].sort((a,b) => a.d - b.d);
+  let cur = -1; items.forEach((x,i) => { if (x.d <= TODAY) cur = i; });
+  return `<ol class="stepper">${items.map((x,i) => {
+    const st = i < cur ? "past" : i === cur ? (i === items.length-1 && x.end < TODAY ? "past" : "now") : i === cur+1 ? "next" : "";
+    const tag = st === "now" ? (x.end > TODAY ? `進行中・${left(x.end)}` : "進行中") : st === "next" ? (x.d === TODAY ? "今天" : `${x.d - TODAY} 天後`) : "";
+    return `<li class="${st}${x.k === "live" ? " live" : ""}"><span class="sd mono">${x.date}</span><span class="sn">${esc(x.n)}</span>${tag ? `<span class="sg">${tag}</span>` : ""}</li>`;
+  }).join("")}</ol>`;
+}
+
+function render(){
+  const idx = Math.max(0, REPORTS.findIndex(x => key(x.date) === location.hash.slice(1)));
+  const r = REPORTS[idx], prev = REPORTS[idx+1];
+  const [, m, d] = r.date.split("-");
+  $("h1").textContent = `${+m} 月 ${+d} 日進度`;
+  $("date").innerHTML = REPORTS.map((x,i) => `<option value="${key(x.date)}"${i===idx?" selected":""}>${x.date}（${wk(x.date)}）${i===0?"・最新":""}</option>`).join("");
+
+  const mods = MODULES.map(M => {
+    const cur = modOf(r, M), was = prev && modOf(prev, M);
+    return {M, ...cur, changed: !!was && was.sig !== cur.sig, was, last: lastChange(idx, M)};
+  });
+  const n = s => mods.filter(x => s.includes(x.status)).length;
+  const nDecide = mods.flatMap(x => x.issues).filter(x => x.type === "decide").length;
+  $("tally").innerHTML = `<span>進行中<b>${n(["green","yellow","red"])}</b></span><span>未啟動<b>${n(["idle"])}</b></span><span>已完成<b>${n(["done"])}</b></span><span class="${nDecide?"hot":""}">需老闆決策<b>${nDecide}</b></span>`;
+  $("c1").textContent = `${mods.length} 個模塊`;
+  $("rule").textContent = PLAN.rule;
+
+  $("mods").innerHTML = mods.map(x => {
+    const M = x.M, lives = [...new Set([M.track, ...(M.rows||[]).map(s => s.track)].filter(Boolean).map(n => trackInfo(TRACK(n)).live).filter(Boolean).map(l => l[0]))];
+    const rowChanged = s => x.was && (() => { const w = x.was.rows.find(y => y.item === s.item); return w && (w.lab !== s.lab || w.k !== s.k); })();
+    /* 摘要：優先用排程現在狀態；否則用第一條進展原話 */
+    const I = M.track ? trackInfo(TRACK(M.track)) : null;
+    const tldr = I && I.cur.length ? I.cur.map(c => `${c.n}　ETA ${mdd(c.e)}`).join("；")
+      : I && I.nxt ? `${I.nxt.s ? mdd(I.nxt.s) + " 開始：" : ""}${I.nxt.n}`
+      : x.lines[0] ? x.lines[0].text
+      : x.rows.length ? x.rows.map(r => `${r.label || r.item}：${r.lab}`).join("、")
+      : "—";
+    const nextMs = I && I.m ? `下一個里程碑 ${mdd(I.m[0])}　${I.m[1]}` : "";
+    return `<article class="card" data-s="${x.status}" role="button" tabindex="0" aria-expanded="false">
+      <div class="hd"><h3>${esc(M.name)}</h3>
+        ${lives.length ? `<span class="livepill">◆ 上線 ${lives.map(mdd).join("、")}</span>` : ""}
+        ${x.changed ? `<span class="badge new">今日更新</span>` : `<span class="badge same">今日無變動</span>`}
+        <span class="pill">${LABEL[x.status]}</span></div>
+      <p class="tldr">${esc(tldr)}</p>
+      <div class="meta">${x.owners ? `負責 ${esc(x.owners)}` : ""}${nextMs ? `　·　${esc(nextMs)}` : ""}</div>
+      <span class="chev" aria-hidden="true">›</span>
+      <div class="cbody">
+      ${M.track ? schedHTML(TRACK(M.track)) : ""}
+      ${x.lines.length ? `<div class="prog">${x.lines.map(l => `<div>${x.lines.length > 1 ? `<b>${esc(l.label)}</b>` : ""}${esc(l.text)}</div>`).join("")}</div>` : ""}
+      ${x.lines.filter(l => l.next).map(l => `<dl class="kv"><dt>下一步</dt><dd>${esc(l.next)}</dd><dt>預計時間</dt><dd>${l.eta ? esc(l.eta) : `<em class="tbd">待工程師回報</em>`}</dd></dl>`).join("")}
+      ${M.note ? `<div class="sched"><span class="dim">${esc(M.note)}</span></div>` : ""}
+      ${x.rows.length ? `<div class="mrows">${x.rows.map(s => `<div class="mrow${s.track ? "" : " two"}">
+          <span class="nm">${esc(s.label || s.item)}${rowChanged(s) ? `<i>更新</i>` : ""}<small>${esc(s.owner)}</small></span>
+          <span class="st ${s.k}">${esc(s.lab)}</span>${s.track ? rowSteps(TRACK(s.track)) : ""}</div>`).join("")}</div>` : ""}
+      ${x.issues.map(issueHTML).join("")}
+      <div class="foot"><span>負責人：${esc(x.owners || "—")}</span><span>最後更新：<span class="mono">${md(x.last)}</span></span></div>
+      </div>
+    </article>`;
+  }).join("");
+  /* 桌機（>900px）：點卡片展開／收合；手機：全展開，不綁事件 */
+  const desktop = matchMedia("(min-width:901px)");
+  document.querySelectorAll("#mods .card").forEach(c => {
+    const open = e => { e.preventDefault(); c.setAttribute("aria-expanded", c.getAttribute("aria-expanded") === "true" ? "false" : "true"); };
+    c.addEventListener("click", e => { if (desktop.matches) open(e); });
+    c.addEventListener("keydown", e => { if (desktop.matches && (e.key === "Enter" || e.key === " ")) open(e); });
+  });
+}
+
+/* ---- 甘特圖 ---- */
+function renderGantt(){
+  const A = dn(PLAN.from), span = PLAN.weeks * 7, pct = d => ((d - A) / span * 100).toFixed(3) + "%";
+  const pctEnd = d => ((d + 1 - A) / span * 100).toFixed(3) + "%";
+  const pctMid = d => ((d + .5 - A) / span * 100).toFixed(3) + "%";
+  const inAxis = TODAY >= A && TODAY < A + span;
+  $("c2").textContent = `時程版本 ${mdd(PLAN.updated)}`;
+  const todayEl = inAxis ? `<span class="today" style="left:${pct(TODAY)}"></span>` : "";
+  let ticks = "";
+  for (let w = 0; w < PLAN.weeks; w++) { const x = new Date((A + w*7) * 864e5); ticks += `<span class="wk" style="left:${pct(A+w*7)}">${x.getUTCMonth()+1}/${x.getUTCDate()}</span>`; }
+  for (let d = A; d < A + span; d++) { const x = new Date(d * 864e5);
+    if (x.getUTCDate() === 1 || d === A) ticks += `<span class="mo" style="left:${pct(d)}">${x.getUTCFullYear()!==2026?x.getUTCFullYear()+" 年 ":""}${x.getUTCMonth()+1} 月</span>`; }
+  if (inAxis) ticks += `<span class="todayl" style="left:${pct(TODAY)}">今天 ${t0.getMonth()+1}/${t0.getDate()}</span>${todayEl}`;
+  const bar = x => {
+    if (!x.s) return `<span class="bar tbdbar" title="${esc(x.n)}">時程待定</span>`;
+    const st = dn(x.e) < TODAY ? "past" : (dn(x.s) <= TODAY ? "now" : "");
+    return `<span class="bar ${x.kind} ${st}" style="left:${pct(dn(x.s))};width:calc(${pctEnd(dn(x.e))} - ${pct(dn(x.s))})" title="${esc(x.n)}　${rng(x)}">${esc(x.short ?? rng(x))}</span>`;
+  };
+  const mark = ([d, txt, k, more]) => `<span class="mk ${k}" style="left:${pctMid(dn(d))}" title="${mdd(d)}　${esc(txt)}${more?"："+esc(more):""}"></span>` +
+    (k === "live" ? `<span class="msl" style="left:${pctMid(dn(d))}">上線 ${mdd(d)}</span>` : "");
+  const row = (label, sub, steps, ms) => `<div class="grow"><div class="lb">${esc(label)}${sub?`<small>${esc(sub)}</small>`:""}</div>
+    <div class="trk" style="--wks:${PLAN.weeks}">${steps.map(bar).join("")}${(ms||[]).map(mark).join("")}${todayEl}</div></div>`;
+  $("gantt").innerHTML = `<div class="gax"><span></span><div class="ticks">${ticks}</div></div>` +
+    PLAN.groups.map((g, gi) => `<div class="ghd"><span>${esc(g.name)}</span><span class="gn">${esc(g.note||"")}</span></div>` +
+      PLAN.tracks.filter(tr => tr.group === gi).map(tr => tr.row === "each"
+        ? tr.steps.map(x => row(x.n, x.sub, [x], x.ms)).join("")
+        : row(tr.label || tr.name, tr.sub, tr.steps, tr.ms)).join("")).join("");
+}
+
+/* 甘特圖展開狀態只記在本機瀏覽器 */
+try { if (localStorage.getItem("ganttOpen") === "1") $("gbox").open = true; } catch(e) {}
+$("gbox").addEventListener("toggle", () => { try { localStorage.setItem("ganttOpen", $("gbox").open ? "1" : "0"); } catch(e) {} });
+addEventListener("hashchange", render);
+$("date").addEventListener("change", e => { location.hash = e.target.value; });
+renderGantt();
+render();
+</script>
+</body>
+</html>
