@@ -17,18 +17,18 @@
 :root{
   --bg:#F3F6F5; --surface:#FFFFFF; --fg:#1B2724; --muted:#5E6B68; --line:#DCE4E1;
   --brand:#2E6B62; --brand-ink:#245850; --brand-soft:#E3F0EC; --on-brand:#FFFFFF;
-  --idle:#5F6B68; --idle-soft:#ECF0EE; --badge:#E7ECEA;
+  --idle:#5F6B68; --idle-soft:#ECF0EE; --badge:#E7ECEA; --warn:#A86200;
   --f-body:"Microsoft YaHei","微软雅黑","PingFang TC","PingFang SC","Noto Sans TC",system-ui,sans-serif;  /* 使用者指定微軟雅黑；Mac 用蘋方、其他系統用 Noto Sans TC */
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0F1614; --surface:#17211E; --fg:#E4ECE9; --muted:#9AA9A5; --line:#2A3834;
   --brand:#5FBFAE; --brand-ink:#7FD2C2; --brand-soft:#183531; --on-brand:#0F1614;
-  --idle:#A7B4B0; --idle-soft:#222D2A; --badge:#25312D;
+  --idle:#A7B4B0; --idle-soft:#222D2A; --badge:#25312D; --warn:#F0B055;
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0F1614; --surface:#17211E; --fg:#E4ECE9; --muted:#9AA9A5; --line:#2A3834;
   --brand:#5FBFAE; --brand-ink:#7FD2C2; --brand-soft:#183531; --on-brand:#0F1614;
-  --idle:#A7B4B0; --idle-soft:#222D2A; --badge:#25312D;
+  --idle:#A7B4B0; --idle-soft:#222D2A; --badge:#25312D; --warn:#F0B055;
   color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -92,6 +92,7 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}
 .ln{grid-column:2 / -1;font-size:13.5px;line-height:1.5}
 .ln b{font-weight:700}
 .ln.last{color:var(--muted)}
+.ln.issue b{color:var(--warn)}
 .ln.next{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 footer{font-size:11.5px;color:var(--muted)}
@@ -167,7 +168,7 @@ html.fit2 .ask b{font-size:15.5px}
      rel    與其他需求的關聯
      nums   推廣型要問的數字名稱
      rep    本週回報：{now:步驟索引或索引陣列（-1＝尚未開始）, subDone:子階段完成數, subs:[[子項,步驟索引]],
-                       pill:"狀態標籤文字（選填，覆寫自動判斷）", done:[...], next:[...], hl:[放進「本週成果」的完成事項：索引，或 {i:索引, s:主題, t:短句}], help:"", conclusion:"", nums:{...}}；null＝待回報
+                       pill:"狀態標籤文字（選填，覆寫自動判斷）", issue:"遇到的問題（不需副總幫忙；不算本週進度）", done:[...], next:[...], hl:[放進「本週成果」的完成事項：索引，或 {i:索引, s:主題, t:短句}], help:"", conclusion:"", nums:{...}}；null＝待回報
      last   最近一次的已知狀態（本週尚未回報時顯示）：{date, now, subs, text} */
 const WEEK = {from:"2026-11-17", to:"2026-11-23"};
 const ASOF = "2026-11-18";
@@ -183,7 +184,7 @@ const MODULES = [
     {proj:"Mac Mini 部署試驗", name:"驗證四台", type:"research", dri:"萬鋒", q:"模型上限與 Hiring Agent 端到端結果", rel:"以 AI Hiring Agent 驗證",
      desc:"硬體：Mac mini 24G × 4，雷靂 5 全互聯。已部署 Qwen3.6 35B A3B（4-bit），進入部署後運維。記憶體：只跑模型單機 13G；跑 AI Hiring Agent 單機 26G（超過實體 24G，會用到 Swap）。",
      rep:{pill:"運維中", conclusion:"可部署 Qwen3.6 35B 並正常對話；可跑 Hermes 架構的 AI Hiring Agent",
-          done:["發現閒置一段時間後系統會重啟，疑似作業系統問題"], next:["持續排查重啟問題（TBD）"]}},
+          issue:"發現閒置一段時間後系統會重啟，疑似作業系統問題", next:["持續排查重啟問題（TBD）"]}},
     {proj:"Codio 使用與活化", name:"IDE 串接研究", type:"research", dri:null, q:"從 IDE 使用 Codio 與直接使用的差異", rep:null},
     {proj:"新 Skill 研究與建置", name:"Presentation Skill", type:"deliver", dri:null, steps:SKILL, rel:"之後接上 Nomi",
      sub:{at:2, items:["目標／對象／架構／內容梳理","風格與排版","品管與檢查驗證"]}, rep:null},
@@ -201,7 +202,7 @@ const MODULES = [
      rep:null, last:{date:"2026-11-11", now:-1}},
     {proj:"Lab Collab Mate", name:"產品測試軟體開發", type:"deliver", dri:"熙宁", steps:WF, start:"2026-12-14", rel:"調研 Codio 融入工作流",
      ms:[["2026-12-14","開始調研"],["2027-01-08","給出時程"]], rep:null, last:{date:"2026-11-11", now:-1}},
-    {proj:"Lab Collab Mate", name:"產品失效分析", type:"deliver", dri:"万峰、景棠", steps:WF, start:"2026-12-14", rel:"調研 AI FA 融入工作流",
+    {proj:"Lab Collab Mate", name:"產品失效分析", type:"deliver", dri:"萬鋒、景棠", steps:WF, start:"2026-12-14", rel:"調研 AI FA 融入工作流",
      ms:[["2026-12-14","開始調研"],["2027-01-08","給出時程"]], rep:null, last:{date:"2026-11-11", now:-1}},
     {proj:"Lab Collab Mate", name:"LabMind 接入", type:"deliver", dri:null, steps:["架構研究","適配設計","資源評估與準備","正式串連測試","用戶 Try Run"],
      ms:[["2026-11-16","開始架構研究"],["2026-12-07","適配設計、資源評估與準備同時開始"],["2026-12-11","和 LabMind 團隊定案方案 A／B"],["2027-01-08","部署方案提案會"]],
@@ -289,6 +290,7 @@ function reqHTML(r, i){
   let rows = "";
   if (r.rep) {
     if (r.rep.conclusion) rows += `<div class="ln"><b>成果：</b>${esc(r.rep.conclusion)}</div>`;
+    if (r.rep.issue) rows += `<div class="ln issue"><b>問題：</b>${esc(r.rep.issue)}</div>`;
     const d = r.rep.done || [], n = r.rep.next || [];
     if (d.length) rows += `<div class="ln"><b>本週：</b>${esc(d[0])}${more(d)}</div>`;
     if (n.length) rows += `<div class="ln next" title="下週：${esc(n.join("；"))}"><b>下週：</b>${esc(n[0])}${more(n)}</div>`;

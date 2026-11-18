@@ -507,13 +507,13 @@ const PLAN = {
 /* 每條工作線一筆；state＝一句話狀態（用來比對昨日變化），update＝最新進展原話 */
 const IDLE_PRE = "二級區域環境就位後才可開始開發";
 const base = () => ([
-  {no:1, name:"二級區域本地部署大模型", status:"green", state:"部署中", owners:"Gary、万峰",
+  {no:1, name:"二級區域本地部署大模型", status:"green", state:"部署中", owners:"Gary、萬鋒",
    update:"部署中。"},
   {no:2, name:"ADK 落地框架", status:"green", state:"開發中", owners:"Simon、Gary",
    update:"開發中，已驗證可在二級區域運行。"},
   {no:3, name:"共性自動化工具", status:"idle", state:"未啟動", prereq:IDLE_PRE,
    stages:["開發測試","用戶驗收","打包成 MCP 格式"],
-   items:[["郵箱","万峰"],["雷達","熙宁"],["刷機","Simon、Gary"],["Panic","Simon、Gary"],["Insight","景棠"],["收集 log","景棠"]],
+   items:[["郵箱","萬鋒"],["雷達","熙宁"],["刷機","Simon、Gary"],["Panic","Simon、Gary"],["Insight","景棠"],["收集 log","景棠"]],
    issues:[{type:"handled", mod:"產品測試軟體開發、產品失效分析", title:"Insight 沒有可用的 API", ask:"景棠研究以爬蟲取得 API。屬 FA 工作流，優先級調低，先做驗證與 Panic"}]},
   {no:4, name:"自動化工具", status:"idle", state:"未啟動", prereq:IDLE_PRE,
    stages:["開發測試","用戶驗收","打包成 MCP 格式"],
@@ -531,9 +531,9 @@ const base = () => ([
 const d30 = base();
 Object.assign(d30[0], {
   status:"yellow", state:"部署完成・問題分析中",
-  update:"部署完成。測試時發現記憶體容易爆滿，大模型服務會停止；初步懷疑是模型思考鏈過長導致記憶體不足，万峰正在分析具體原因。",
+  update:"部署完成。測試時發現記憶體容易爆滿，大模型服務會停止；初步懷疑是模型思考鏈過長導致記憶體不足，萬鋒正在分析具體原因。",
   next:"找出記憶體不足的原因並修正", eta:"",
-  issues:[{type:"risk", title:"記憶體不足導致大模型服務停止", ask:"万峰分析中"}]
+  issues:[{type:"risk", title:"記憶體不足導致大模型服務停止", ask:"萬鋒分析中"}]
 });
 /* 新的一天：複製前一天，只改有變動的工作線。items：[名稱, 負責人, 狀態文字, todo|doing|done] */
 const day = (prev, fn) => { const d = structuredClone(prev); fn(d); return d; };
@@ -550,7 +550,7 @@ const d1103 = day(d1102, d => {
   Object.assign(d[1], {state:"已接入本地 LLM", update:"ADK 成功接入本地 LLM。"});
   Object.assign(d[2], {status:"green", state:"3 項進行中・3 項未開始", prereq:"",
     update:"雷達：下載、上傳、檢測更新等基本功能已實現，正在測試工具穩定性。刷機：開發中。收集 log：已完成刷機 log 收集。郵箱、Panic、Insight 未開始。",
-    items:[["郵箱","万峰","未開始","todo"],["雷達","熙宁","基本功能完成・測試穩定性","doing"],["刷機","Simon、Gary","開發中","doing"],["Panic","Simon、Gary","未開始","todo"],["Insight","景棠","未開始","todo"],["收集 log","景棠","刷機 log 已完成","doing"]]});
+    items:[["郵箱","萬鋒","未開始","todo"],["雷達","熙宁","基本功能完成・測試穩定性","doing"],["刷機","Simon、Gary","開發中","doing"],["Panic","Simon、Gary","未開始","todo"],["Insight","景棠","未開始","todo"],["收集 log","景棠","刷機 log 已完成","doing"]]});
   Object.assign(d[3], {status:"green", state:"2 項開發中・1 項未開始", prereq:"",
     update:"Bundle 驗證、proxima 驗證開始開發；EFI 驗證未開始。",
     items:[["Bundle 驗證","Simon、Gary","開發中","doing"],["EFI 驗證","熙宁","未開始","todo"],["proxima 驗證","景棠","開發中","doing"]]});
@@ -629,7 +629,7 @@ const MODULES = [
   {name:"產品 Panic 處理", w:3, track:"產品 Panic 處理", rows:[{ws:3, item:"Panic", label:"Panic 工具（兩條共用）"},
     {item:"CoreOS Panic 工作流", owner:"Simon、Gary"}, {item:"Diags Panic 工作流", owner:"熙宁"}]},
   {name:"產品測試軟體開發、產品失效分析", w:3, track:"產品測試軟體開發、產品失效分析", rows:[{ws:3, item:"Insight", label:"Insight 工具（FA 用）"},
-    {item:"Codio 融入工作流調研", owner:"熙宁"}, {item:"AI FA 融入工作流調研", owner:"万峰、景棠"}]}
+    {item:"Codio 融入工作流調研", owner:"熙宁"}, {item:"AI FA 融入工作流調研", owner:"萬鋒、景棠"}]}
 ];
 const HOME = {1:"環境與框架", 2:"環境與框架", 3:"共性工具", 4:"客戶軟體驗證", 5:"客戶軟體驗證", 6:"客戶軟體驗證", 7:"LabMind 串連"};
 const RANK = {red:4, yellow:3, green:2, done:1, idle:0};
