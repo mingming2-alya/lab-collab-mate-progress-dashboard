@@ -61,9 +61,11 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}
 .wins li{display:flex;align-items:baseline;gap:12px;padding:3px 20px;min-width:0;font-size:16px}
 .wins li + li{border-left:1px solid var(--line)}
 /* 4 則時排成兩欄兩列 */
-.wins ul.g2{row-gap:6px}
-.wins ul.g2 li:nth-child(odd){border-left:0}
-.wins ul.g2 li:nth-child(n+3){border-top:1px solid var(--line);padding-top:7px}
+.wcols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;padding:6px 0}
+.wcols ul{display:flex;flex-direction:column;align-items:stretch;padding:0 8px}
+.wcols ul + ul{border-left:1px solid var(--line)}
+.wcols li{border-left:0!important;padding-block:4px}
+.wcols li + li{border-top:1px solid var(--line)}
 .wins li b{color:var(--brand);font-size:17.5px;font-weight:900;white-space:nowrap;padding-right:10px;border-right:1px solid var(--line)}
 .wins li span{min-width:0}
 .wins .empty{padding:0 18px;color:var(--muted);align-self:center}
@@ -105,6 +107,7 @@ footer a{color:var(--brand-ink)}
 /* 矮螢幕（如筆電 1440×900）再壓縮，維持單屏 */
 /* 一頁不滾動的自動調整（由下方程式依實際高度決定）：
    預設＝寬鬆；超出一屏時 fit1＝模塊區緊湊、上方仍寬鬆；仍超出時 fit2＝全部緊湊 */
+html.fit1 .page{gap:12px}
 html.fit1 .board,html.fit1 .col{gap:10px}
 html.fit1 .mod > header{padding:5px 14px}
 html.fit1 .mod h3{font-size:17px}
@@ -122,8 +125,11 @@ html.fit2 .req{padding:4px 0 5px}
 html.fit2 .req h4{font-size:15px}
 html.fit2 .ln{font-size:13px;line-height:1.42}
 html.fit2 .wins ul{padding:4px 8px}
-html.fit2 .wins ul.g2{row-gap:2px}
-html.fit2 .wins ul.g2 li:nth-child(n+3){padding-top:3px}
+html.fit2 .wins li{font-size:13px;line-height:1.35;padding-top:1px;padding-bottom:1px}
+html.fit2 .wins li b{font-size:14px}
+html.fit2 .wcols{padding:3px 0}
+html.fit2 .wcols li{padding-block:1px}
+html.fit2 .wcols{padding:2px 0}
 html.fit2 .page{gap:9px;padding-block:6px 8px}
 html.fit2 .head h1{font-size:27px}
 html.fit2 .head .seg b{font-size:28px}
@@ -175,9 +181,9 @@ html.fit2 .ask b{font-size:15.5px}
      rel    與其他需求的關聯
      nums   推廣型要問的數字名稱
      rep    本週回報：{now:步驟索引或索引陣列（-1＝尚未開始）, subDone:子階段完成數, subs:[[子項,步驟索引]],
-                       pill:"狀態標籤文字（選填，覆寫自動判斷）", issue:"遇到的問題（不需副總幫忙；不算本週進度）", done:[...], next:[...], hl:[放進「本週成果」的完成事項：索引，或 {i:索引, s:主題, t:短句}], help:"", conclusion:"", nums:{...}}；null＝待回報
+                       pill:"狀態標籤文字（選填，覆寫自動判斷）", hideDone:true＝卡片不顯示本週（內容已在成果，只用於本週成果與統計）, issue:"遇到的問題（不需副總幫忙；不算本週進度）", done:[...], next:[...], hl:[放進「本週成果」的完成事項：索引，或 {i:索引, s:主題, t:短句}], help:"", conclusion:"", nums:{...}}；null＝待回報
      last   最近一次的已知狀態（本週尚未回報時顯示）：{date, now, subs, text} */
-const WEEK = {from:"2026-11-17", to:"2026-11-23"};
+const WEEK = {from:"2026-11-13", to:"2026-11-19"};  /* 週次：週五到隔週四 */
 const ASOF = "2026-11-18";
 
 const WF = ["設計規劃","節點開發","首次跑通","五次跑通","用戶驗收","上線"];
@@ -192,9 +198,11 @@ const MODULES = [
      desc:"硬體：Mac mini 24G × 4，雷靂 5 全互聯。已部署 Qwen3.6 35B A3B（4-bit），進入部署後運維。記憶體：只跑模型單機 13G；跑 AI Hiring Agent 單機 26G（超過實體 24G，會用到 Swap）。",
      rep:{pill:"運維中", conclusion:"可部署 Qwen3.6 35B 並正常對話；可跑 Hermes 架構的 AI Hiring Agent",
           issue:"發現閒置一段時間後系統會重啟，疑似作業系統問題", next:["持續排查重啟問題（TBD）"]}},
-    {proj:"Codio 使用與活化", name:"IDE 串接研究", type:"research", dri:null, q:"從 IDE 使用 Codio 與直接使用的差異",
+    {proj:"Codio 使用與活化", name:"IDE 串接研究", type:"research", dri:"Neo", q:"從 IDE 使用 Codio 與直接使用的差異",
      desc:"比較 Codio 的 IDE 插件與原生 TUI：插件在上手、多會話、閱讀輸出、選中代碼、引用檔案、跳回代碼都較直覺；TUI 把操作留在鍵盤上。產出 IDE 插件安裝 SOP（5 步）。11/16 結案，沒有規劃下一步。",
-     rep:{pill:"11/16 結案", conclusion:"IDE 插件體驗較佳：選中代碼自動引用、Diff 一鍵跳轉、多標籤並行；已產出插件安裝 SOP"}},
+     rep:{pill:"11/16 結案", conclusion:"IDE 插件體驗較佳：選中代碼自動引用、Diff 一鍵跳轉、多標籤並行；已產出插件安裝 SOP",
+          done:["完成 IDE 插件與原生 TUI 體驗比較，產出插件安裝 SOP，11/16 結案"], hideDone:true,
+          hl:[{i:0, s:"IDE 串接研究", t:"完成 IDE 插件與原生 TUI 比較，產出安裝 SOP，11/16 結案"}]}},
     {proj:"新 Skill 研究與建置", name:"Presentation Skill", type:"deliver", dri:"Alyanna", steps:SKILL, rel:"之後接上 Nomi",
      sub:{at:2, items:["目標／對象／架構／內容梳理","風格與排版","品管與檢查驗證"]},
      desc:"技能名 deck-architect（從頭到尾支援簡報全流程的 Skill）。進度來源：claude-base-skills repo 的 presentation-skill-generation 分支。目前在技能設計：方法論已用 4 份真實簡報驗證，正在做設計美感的風格定調；尚未用真實簡報從頭做到成品。",
@@ -268,13 +276,17 @@ const seg = (n, t) => `<div class="seg"><b class="num">${n}</b><span>${t}</span>
 $("head").innerHTML = `<h1>本週進度</h1><span class="wk num">｜ ${md(WEEK.from)}–${md(WEEK.to)}</span>` +
   seg(projCount, "項目") + seg(REQS.length, "需求") + seg(progressed, "本週有進度") + seg(helps.length, "待協調");
 
-/* 第二行：本週成果「主題｜成果」。回報的 hl 可寫 {i:完成事項索引, s:主題, t:短句}；只寫索引時，主題用需求名、內容用完成事項原文。最多 4 則 */
+/* 第二行：本週成果「主題｜成果」。回報的 hl 可寫 {i:完成事項索引, s:主題, t:短句}；只寫索引時，主題用需求名、內容用完成事項原文。最多 6 則 */
 let wins = reported.flatMap(r => (r.rep.hl || []).map(h => typeof h === "number"
   ? {s:r.name, t:r.rep.done[h]} : {s:h.s || r.name, t:h.t || r.rep.done[h.i]}));
 if (!wins.length) wins = reported.filter(hasDone).map(r => ({s:r.name, t:r.rep.done[0]}));
-wins = wins.slice(0, 4);
+wins = wins.slice(0, 6);
 $("wins").innerHTML = wins.length
-  ? `<ul class="${wins.length === 4 ? "g2" : ""}" style="--n:${wins.length === 4 ? 2 : wins.length}">${wins.map(w => `<li><b>${esc(w.s)}</b><span>${esc(w.t)}</span></li>`).join("")}</ul>`
+  ? (() => { const n = wins.length, c = n <= 3 ? n : 2;  /* 1–3 則一排；4 則以上兩欄 */
+      const li = w => `<li><b>${esc(w.s)}</b><span>${esc(w.t)}</span></li>`;
+      if (n <= 3) return `<ul style="--n:${c}">${wins.map(li).join("")}</ul>`;
+      const h = Math.ceil(n / 2);  /* 4 則以上：左右兩欄各自由上往下排 */
+      return `<div class="wcols"><ul>${wins.slice(0, h).map(li).join("")}</ul><ul>${wins.slice(h).map(li).join("")}</ul></div>`; })()
   : `<div class="empty">本週回報彙整中；負責人回覆後，這裡會列出本週最重要的成果。</div>`;
 
 /* 第三行：請副總協助（有事項才出現） */
@@ -318,7 +330,7 @@ function reqHTML(r, i){
     if (r.rep.conclusion) rows += `<div class="ln"><b>成果：</b>${esc(r.rep.conclusion)}</div>`;
     if (r.rep.issue) rows += `<div class="ln issue"><b>問題：</b>${esc(r.rep.issue)}</div>`;
     const d = r.rep.done || [], n = r.rep.next || [];
-    if (d.length) rows += `<div class="ln"><b>本週：</b>${esc(d[0])}${more(d)}</div>`;
+    if (d.length && !r.rep.hideDone) rows += `<div class="ln"><b>本週：</b>${esc(d[0])}${more(d)}</div>`;
     if (n.length) rows += `<div class="ln next" title="下週：${esc(n.join("；"))}"><b>下週：</b>${esc(n[0])}${more(n)}</div>`;
   } else if (r.last && r.last.text) {
     rows += `<div class="ln last"><b>上次（${md(r.last.date)}）：</b>${esc(r.last.text)}</div>`;
