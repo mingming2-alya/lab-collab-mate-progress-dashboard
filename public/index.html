@@ -167,7 +167,7 @@ html.fit2 .ask b{font-size:15.5px}
      rel    與其他需求的關聯
      nums   推廣型要問的數字名稱
      rep    本週回報：{now:步驟索引或索引陣列（-1＝尚未開始）, subDone:子階段完成數, subs:[[子項,步驟索引]],
-                       done:[...], next:[...], hl:[放進「本週成果」的完成事項：索引，或 {i:索引, s:主題, t:短句}], help:"", conclusion:"", nums:{...}}；null＝待回報
+                       pill:"狀態標籤文字（選填，覆寫自動判斷）", done:[...], next:[...], hl:[放進「本週成果」的完成事項：索引，或 {i:索引, s:主題, t:短句}], help:"", conclusion:"", nums:{...}}；null＝待回報
      last   最近一次的已知狀態（本週尚未回報時顯示）：{date, now, subs, text} */
 const WEEK = {from:"2026-11-17", to:"2026-11-23"};
 const ASOF = "2026-11-18";
@@ -204,7 +204,13 @@ const MODULES = [
   ]},
   {no:"③", name:"導入試用", col:2, reqs:[
     {proj:"Codio 使用與活化", name:"大型系統類開發", type:"promo", dri:null, rel:"與 Development Skill 共用 InvestGo 驗證", rep:null},
-    {proj:"Nomi 使用與活化", name:"AAS 系統重構", type:"deliver", dri:null, steps:null, desc:"xTrack 重構為 Xylon", rep:null}
+    {proj:"Nomi 使用與活化", name:"AAS 系統重構", type:"deliver", dri:"Tylee",
+     steps:["系統分析","需求梳理","原型確認","技術規劃","AI 開發測試","內部試用驗收","用戶單位確認","Xylon 架構重構"],
+     desc:"架構演進：原本建在 xTrack 系統管理架構 → Nomi 重構後為純 JSP（無系統管理架構）→ 下一階段改為 Xylon 系統管理架構。重構範圍止於驗收，不含正式部署與切換。用 Nomi 經 6 輪迭代（10/21–11/13），驗收 4 次退回後通過。",
+     rep:{now:5, pill:"內部驗收完成",
+          done:["用 Nomi 走完系統重構全流程，內部測試驗收完成"],
+          next:["跟用戶單位確認功能是否符合業務需求（時間待定）"],
+          hl:[{i:0, s:"AAS", t:"用 Nomi 走完系統重構全流程，內部測試驗收完成"}]}}
   ]},
   {no:"④", name:"推廣複用", col:2, reqs:[
     {proj:"AI Hiring Agent", name:"開放複用", type:"promo", dri:null, nums:["尋求","申請","已上線"], numUnit:"單位", rep:null},
@@ -246,6 +252,7 @@ if (helps.length) { $("ask").hidden = false; $("ask").innerHTML = `<b>請副總�
 const nowSet = v => new Set([].concat(v ?? []));
 function pill(r){
   const src = r.rep || r.last;
+  if (r.rep && r.rep.pill) return ["", r.rep.pill];
   if (r.type === "deliver") {
     if (!r.steps) return ["idle", r.rep ? "步驟待定" : "待回報"];
     const now = src ? src.now : null;
