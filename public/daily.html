@@ -465,7 +465,7 @@ h2{color:var(--brand-ink);font-weight:900}
 /* 整體時程。s／e＝開始／結束日；s:null＝整段待定。row:"one"＝所有步驟畫在同一列，"each"＝每步一列。
    kind：build＝工具開發與工作流串連・設計，try＝用戶 Try Run。ms＝里程碑 [日期, 說明, 類型]：first＝正式數據首次跑通全流程，stable＝正式數據連續 5 次穩定跑通全流程，gate＝判斷點／定案，live＝正式上線 */
 const PLAN = {
-  updated:"2026-11-11", from:"2026-10-26", weeks:12,
+  updated:"2026-11-18", from:"2026-10-26", weeks:12,
   rule:"進 Try Run 的標準：正式數據連續 5 次穩定跑通全流程、失敗時有看得懂的錯誤訊息、最後的 AI 分析結果經工程師確認可用。",
   groups:[
     {name:"環境與框架", note:"部署完成後，邊實作工作流邊調整模型問題"},
@@ -477,17 +477,18 @@ const PLAN = {
      steps:[{n:"部署與實時調整", short:"部署・實時調整", s:"2026-10-26", e:"2026-11-27", kind:"build"}],
      ms:[["2026-11-25","判斷點：本地模型能否跑完 Bundle 工作流","gate","不行就啟動備案：改接雲端模型、恢復兜底規則，或先拿掉 AI 分析"]]},
     {name:"Bundle 驗證", label:"Bundle 驗證", sub:"Simon、Gary", group:1, row:"one",
-     steps:[{n:"工具開發與工作流串連", short:"", s:"2026-11-09", e:"2026-11-25", kind:"build"},
-            {n:"用戶 Try Run", short:"Try Run", s:"2026-11-30", e:"2026-12-11", kind:"try"}],
-     ms:[["2026-11-18","正式數據首次跑通全流程","first"],["2026-11-25","正式數據連續 5 次穩定跑通全流程","stable"],["2026-12-11","正式上線","live"]]},
+     steps:[{n:"工具開發與工作流串連、開發自測", short:"", s:"2026-11-09", e:"2026-12-01", kind:"build"},
+            {n:"課長與 DRI 試用驗收", short:"Try Run", s:"2026-12-02", e:"2026-12-11", kind:"try"}],
+     ms:[["2026-11-24","正式數據首次跑通全流程","first"],["2026-12-01","正式數據連續 5 次穩定跑通全流程","stable"],["2026-12-11","正式上線","live"]]},
     {name:"proxima 驗證", label:"proxima 驗證", sub:"景棠", group:1, row:"one",
-     steps:[{n:"工具開發與工作流串連", short:"", s:"2026-11-09", e:"2026-11-27", kind:"build"},
-            {n:"用戶 Try Run", short:"Try Run", s:"2026-11-30", e:"2026-12-11", kind:"try"}],
-     ms:[["2026-11-20","正式數據首次跑通全流程","first"],["2026-11-27","正式數據連續 5 次穩定跑通全流程","stable"],["2026-12-11","正式上線","live"]]},
+     steps:[{n:"自動化節點開發", short:"", s:"2026-11-09", e:"2026-11-25", kind:"build"},
+            {n:"工作流串連", short:"串連", s:"2026-11-26", e:null, kind:"build"},
+            {n:"用戶 Try Run", short:"Try Run", s:null, kind:"try"}],
+     ms:[["2026-11-25","完成所有自動化節點開發","gate"],[null,"正式數據首次跑通全流程","first"],[null,"正式數據連續 5 次穩定跑通全流程","stable"],["2026-12-11","正式上線","live"]]},
     {name:"EFI 驗證", label:"EFI 驗證", sub:"熙宁", group:1, row:"one",
-     steps:[{n:"工具開發與工作流串連", short:"", s:"2026-11-12", e:"2026-12-02", kind:"build"},
-            {n:"用戶 Try Run", short:"Try Run", s:"2026-12-03", e:"2026-12-11", kind:"try"}],
-     ms:[["2026-11-27","正式數據首次跑通全流程","first"],["2026-12-02","正式數據連續 5 次穩定跑通全流程","stable"],["2026-12-11","正式上線","live"]]},
+     steps:[{n:"工具開發與工作流串連", short:"", s:"2026-11-12", e:null, kind:"build"},
+            {n:"用戶 Try Run", short:"Try Run", s:null, kind:"try"}],
+     ms:[[null,"正式數據首次跑通全流程","first"],[null,"正式數據連續 5 次穩定跑通全流程","stable"],["2026-12-11","正式上線","live"]]},
     {name:"產品 Panic 處理", label:"產品 Panic 處理", sub:"Simon、Gary", group:1, row:"one",
      steps:[{n:"工具開發與工作流串連", short:"", s:"2026-12-01", e:"2026-12-18", kind:"build"},
             {n:"用戶 Try Run（含元旦）", short:"Try Run", s:"2026-12-21", e:"2027-01-08", kind:"try"}],
@@ -598,7 +599,7 @@ const d1111 = day(d1106, d => {
   d[5].items[0] = ["Bundle 驗證（2 個節點）","Simon、Gary","可正常使用","doing"];
 });
 
-/* 11/18：Bundle、proxima、EFI 的時程預估由負責人回覆（寫在工作流建置的 next）；PLAN 的里程碑日期未改，待 PM 決定 */
+/* 11/18：Bundle、proxima、EFI 的時程預估由負責人回覆；PLAN 已依預估更新（時程版本 11/18），正式上線 12/11 為底線不變 */
 const d1118 = day(d1111, d => {
   Object.assign(d[0], {update:"部署完成，可用。"});
   Object.assign(d[2], {state:"3 項完成・1 項進行中・2 項未開始",
@@ -607,8 +608,8 @@ const d1118 = day(d1111, d => {
   d[2].items[1][2] = "運作正常・可直接使用";
   d[2].items[2][2] = "Atlas 刷機完成"; d[2].items[2][3] = "done";
   Object.assign(d[3], {state:"3 項開發中",
-    update:"Bundle 驗證：開發中，今天開發了 5 個自動化節點。EFI 驗證：開發中，開發了 1 個自動化節點。proxima 驗證：開發中，開發了 6 個自動化節點。"});
-  d[3].items[0][2] = "5 個自動化節點";
+    update:"Bundle 驗證：開發中，今天新增 5 個自動化節點（累計 9 個）。EFI 驗證：開發中，開發了 1 個自動化節點。proxima 驗證：開發中，開發了 6 個自動化節點。"});
+  d[3].items[0][2] = "9 個自動化節點（今天新增 5 個）";
   d[3].items[1][2] = "1 個自動化節點"; d[3].items[1][3] = "doing";
   d[3].items[2][2] = "6 個自動化節點";
   Object.assign(d[4], {update:"Bundle 驗證：一共串聯了 4 個節點。EFI、proxima 本次未回報。",
@@ -646,7 +647,7 @@ const issueHTML = x => `<div class="issue ${x.type}"><span class="k">${TAG[x.typ
 const MODULES = [
   {name:"客戶軟體驗證", w:6, rows:[{ws:4, item:"Bundle 驗證", track:"Bundle 驗證"}, {ws:4, item:"proxima 驗證", track:"proxima 驗證"}, {ws:4, item:"EFI 驗證", track:"EFI 驗證"}]},
   {name:"環境與框架", w:2, track:"環境與框架", src:[{ws:1, label:"本地模型"}, {ws:2, label:"ADK 框架"}]},
-  {name:"共性工具", w:2, note:"各工作流共用；刷機需在 Bundle 首次跑通前（11/18）可用", rows:[{ws:3, item:"郵箱"}, {ws:3, item:"雷達"}, {ws:3, item:"刷機"}, {ws:3, item:"收集 log"}]},
+  {name:"共性工具", w:2, note:"各工作流共用；刷機需在 Bundle 首次跑通前（11/24）可用", rows:[{ws:3, item:"郵箱"}, {ws:3, item:"雷達"}, {ws:3, item:"刷機"}, {ws:3, item:"收集 log"}]},
   {name:"LabMind 串連", w:2, track:"LabMind 串連", src:[{ws:7}]},
   {name:"產品 Panic 處理", w:3, track:"產品 Panic 處理", rows:[{ws:3, item:"Panic", label:"Panic 工具（兩條共用）"},
     {item:"CoreOS Panic 工作流", owner:"Simon、Gary"}, {item:"Diags Panic 工作流", owner:"熙宁"}]},
@@ -684,13 +685,13 @@ const left = d => d === TODAY ? "當天" : d > TODAY ? `剩 ${d - TODAY} 天` : 
 const TRACK = name => PLAN.tracks.find(tr => tr.name === name);
 function trackInfo(tr){
   const st = tr.steps;
-  const cur = st.filter(x => x.s && dn(x.s) <= TODAY && TODAY <= dn(x.e));
+  const cur = st.filter(x => x.s && dn(x.s) <= TODAY && (!x.e || TODAY <= dn(x.e)));
   const last = cur.length ? st.indexOf(cur[cur.length-1]) : -1;
   const nxt = st.find((x,i) => i > last && !(x.s && dn(x.s) <= TODAY));
-  const allPast = !cur.length && st.every(x => x.s && dn(x.e) < TODAY);
+  const allPast = !cur.length && st.every(x => x.s && x.e && dn(x.e) < TODAY);
   const nx = cur.length || allPast ? nxt : st[st.indexOf(nxt)+1];
-  const ms = [...(tr.ms||[]), ...st.flatMap(x => x.ms||[])].sort((a,b) => dn(a[0]) - dn(b[0]));
-  return {cur, nxt, nx, allPast, m: ms.find(m => dn(m[0]) >= TODAY), live: ms.find(m => m[2] === "live")};
+  const ms = [...(tr.ms||[]), ...st.flatMap(x => x.ms||[])].filter(m => m[0]).sort((a,b) => dn(a[0]) - dn(b[0]));
+  return {cur, nxt, nx, allPast, m: ms.find(m => m[0] && dn(m[0]) >= TODAY), live: ms.find(m => m[2] === "live")};
 }
 function schedHTML(tr){
   const I = trackInfo(tr), out = [];
@@ -708,7 +709,7 @@ function vSteps(tr){
     ...tr.steps.map(x => x.s
       ? {d:dn(x.s), end:dn(x.e), date:rng(x), n:x.n, sub:x.sub, t:"step"}
       : {d:Infinity, end:Infinity, date:"TBD", n:x.n, sub:x.sub, t:"tbd"}),
-    ...[...(tr.ms||[]), ...tr.steps.flatMap(x => x.ms||[])].map(m => ({d:dn(m[0]), end:dn(m[0]), date:mdd(m[0]), n:m[1], sub:m[3], t:"ms", k:MSK[m[2]] || "ms"}))
+    ...[...(tr.ms||[]), ...tr.steps.flatMap(x => x.ms||[])].map(m => m[0] ? ({d:dn(m[0]), end:dn(m[0]), date:mdd(m[0]), n:m[1], sub:m[3], t:"ms", k:MSK[m[2]] || "ms"}) : ({d:Infinity, end:Infinity, date:"TBD", n:m[1], sub:m[3], t:"tbd"}))
   ].sort((a,b) => a.d - b.d || (a.t === "ms") - (b.t === "ms"));
   let nextSet = false;
   return `<div class="tl"><span class="lbl">時程</span><ol class="vsteps">${items.map(x => {
@@ -721,18 +722,30 @@ function vSteps(tr){
   }).join("")}</ol></div>`;
 }
 /* 工作流的關鍵步驟：工具開發與工作流串連 → 首次跑通 → 連續 5 次穩定跑通 → Try Run → 上線，依日期排序；標出已過／進行中／下一步 */
+/* 沒有日期（TBD）的項目：依宣告順序，排在下一個有日期項目之前（例如排在 12/11 正式上線之前） */
+function tbdOrder(list){
+  const dated = list.filter(x => !x.tbd).sort((a,b) => a.d - b.d);
+  const last = dated.length ? dated[dated.length-1].d : TODAY + 60;
+  list.forEach((x, i) => { if (x.tbd) {
+    const nx = list.slice(i + 1).find(y => !y.tbd && y.k === "live") || list.slice(i + 1).find(y => !y.tbd);
+    const rank = {first:1, stable:2, try:3}[x.k] || 0;  /* TBD 之間的固定順序：首次跑通 → 五次穩定 → Try Run */
+    x.d = x.end = (nx ? nx.d : last + 1) - 0.5 + rank * 0.01 + i * 0.0001; } });
+  return list.sort((a,b) => a.d - b.d);
+}
 function rowSteps(tr){
   /* 工具開發與工作流串連只標開始日（它和兩個跑通里程碑重疊）；Try Run 保留區間。now＝目前所在階段（最後一個已開始的節點），next＝下一個節點 */
-  const items = [
-    ...tr.steps.filter(x => x.s).map(x => x.kind === "try"
-      ? {d:dn(x.s), end:dn(x.e), date:rng(x), n:"用戶 Try Run"}
+  const items = tbdOrder([
+    ...tr.steps.map(x => !x.s ? {tbd:true, date:"TBD", n:x.kind === "try" ? "用戶 Try Run" : x.n, k:x.kind === "try" ? "try" : ""}
+      : x.kind === "try" ? {d:dn(x.s), end:x.e ? dn(x.e) : dn(x.s), date:rng(x), n:"用戶 Try Run"}
       : {d:dn(x.s), end:dn(x.s), date:mdd(x.s), n:x.n}),
-    ...[...(tr.ms||[]), ...tr.steps.flatMap(x => x.ms||[])].map(m => ({d:dn(m[0]), end:dn(m[0]), date:mdd(m[0]), n:(m[2] === "live" ? "◆ " : "") + m[1], k:m[2]}))
-  ].sort((a,b) => a.d - b.d);
+    ...[...(tr.ms||[]), ...tr.steps.flatMap(x => x.ms||[])].map(m => m[0]
+      ? {d:dn(m[0]), end:dn(m[0]), date:mdd(m[0]), n:(m[2] === "live" ? "◆ " : "") + m[1], k:m[2]}
+      : {tbd:true, date:"TBD", n:m[1], k:m[2]})
+  ]);
   let cur = -1; items.forEach((x,i) => { if (x.d <= TODAY) cur = i; });
   return `<ol class="stepper">${items.map((x,i) => {
     const st = i < cur ? "past" : i === cur ? (i === items.length-1 && x.end < TODAY ? "past" : "now") : i === cur+1 ? "next" : "";
-    const tag = st === "now" ? (x.end > TODAY ? `進行中・${left(x.end)}` : "進行中") : st === "next" ? (x.d === TODAY ? "當天" : `${x.d - TODAY} 天後`) : "";
+    const tag = st === "now" ? (x.end > TODAY && !x.tbd ? `進行中・${left(x.end)}` : "進行中") : st === "next" ? (x.tbd ? "" : x.d === TODAY ? "當天" : `${x.d - TODAY} 天後`) : "";
     return `<li class="${st}${x.k === "live" ? " live" : ""}"><span class="sd mono">${x.date}</span><span class="sn">${esc(x.n)}</span>${tag ? `<span class="sg">${tag}</span>` : ""}</li>`;
   }).join("")}</ol>`;
 }
@@ -820,13 +833,14 @@ function renderGantt(){
   if (inAxis) ticks += `<span class="todayl" style="left:${pct(TODAY)}">資料日 ${mdd(new Date(TODAY * 864e5).toISOString().slice(0,10))}</span>${todayEl}`;
   const bar = x => {
     if (!x.s) return `<span class="bar tbdbar" title="${esc(x.n)}">TBD</span>`;
+    if (!x.e) return `<span class="bar ${x.kind} open ${dn(x.s) <= TODAY ? "now" : ""}" style="left:${pct(dn(x.s))};width:calc(${pctEnd(TODAY + 14)} - ${pct(dn(x.s))})" title="${esc(x.n)}　${rng(x)}">${esc(x.short ?? rng(x))}</span>`;
     const st = dn(x.e) < TODAY ? "past" : (dn(x.s) <= TODAY ? "now" : "");
     return `<span class="bar ${x.kind} ${st}" style="left:${pct(dn(x.s))};width:calc(${pctEnd(dn(x.e))} - ${pct(dn(x.s))})" title="${esc(x.n)}　${rng(x)}">${esc(x.short ?? rng(x))}</span>`;
   };
-  const mark = ([d, txt, k, more]) => `<span class="mk ${k}" style="left:${pctMid(dn(d))}" title="${mdd(d)}　${esc(txt)}${more?"："+esc(more):""}"></span>` +
+  const mark = ([d, txt, k, more]) => !d ? "" : `<span class="mk ${k}" style="left:${pctMid(dn(d))}" title="${mdd(d)}　${esc(txt)}${more?"："+esc(more):""}"></span>` +
     (k === "live" ? `<span class="msl" style="left:${pctMid(dn(d))}">上線 ${mdd(d)}</span>` : "");
   const row = (label, sub, steps, ms) => `<div class="grow"><div class="lb">${esc(label)}${sub?`<small>${esc(sub)}</small>`:""}</div>
-    <div class="trk" style="--wks:${PLAN.weeks}">${steps.map(bar).join("")}${(ms||[]).map(mark).join("")}${todayEl}</div></div>`;
+    <div class="trk" style="--wks:${PLAN.weeks}">${(steps.some(x => x.s) ? steps.filter(x => x.s) : steps).map(bar).join("")}${(ms||[]).map(mark).join("")}${todayEl}</div></div>`;
   $("gantt").innerHTML = `<div class="gax"><span></span><div class="ticks">${ticks}</div></div>` +
     PLAN.groups.map((g, gi) => `<div class="ghd"><span>${esc(g.name)}</span><span class="gn">${esc(g.note||"")}</span></div>` +
       PLAN.tracks.filter(tr => tr.group === gi).map(tr => tr.row === "each"

@@ -219,9 +219,10 @@ const MODULES = [
   ]},
   {no:"②", name:"案例開發", col:1, reqs:[
     {proj:"Lab Collab Mate", name:"客戶軟體驗證", type:"deliver", dri:"Simon、Gary、景棠、熙宁", steps:WF,
-     ms:[["2026-11-18","Bundle 首次跑通"],["2026-11-20","proxima 首次跑通"],["2026-11-25","Bundle 五次跑通"],["2026-11-27","proxima 五次跑通、EFI 首次跑通"],["2026-12-02","EFI 五次跑通"],["2026-12-11","正式上線"]],
+     ms:[["2026-11-24","Bundle 首次跑通"],["2026-11-25","proxima 自動化節點開發完成"],["2026-12-01","Bundle 五次跑通"],["2026-12-11","正式上線（proxima、EFI 首次跑通 TBD）"]],
      rep:{now:1, subs:[["Bundle",1],["proxima",1],["EFI",1]],
-          done:["Bundle 串聯 4 個節點，可跑通查看、下載新 bundle 與刷機", "proxima 開發 6 個、EFI 開發 1 個自動化節點"],
+          done:["Bundle 串聯 4 個節點，可跑通查看、下載新 bundle 與刷機", "Bundle 累計 9 個、proxima 6 個、EFI 1 個自動化節點"],
+          hl:[{i:0, s:"客戶軟體驗證", t:"Bundle 串聯 4 個節點，查看、下載新 bundle 與刷機已能跑通"}],
           issue:"proxima、EFI 首次跑通時間 TBD（EFI 因支援客戶 STFL 轉 burn-in 延緩）",
           next:["Bundle 本週串接完成，下週二（11/24）首次跑通全流程"]}},
     {proj:"Lab Collab Mate", name:"產品 Panic 處理", type:"deliver", dri:"Simon、Gary、熙宁", steps:WF, start:"2026-12-01",
@@ -240,12 +241,11 @@ const MODULES = [
      desc:"大型系統類開發：以 InvestGo 部門 IDL 資訊更新看板需求為試點，用 Codio 搭配開發 Skill 走開發流程。",
      rep:{done:["用 Codio 搭配開發設計文檔生成 Skill，依 SRS 自動生成開發設計文檔（技能實測驗證中）"],
           next:["結合 Vibe Coding Skill，開展程式碼生成測試"],
-          hl:[{i:0, s:"InvestGo IDL 資訊更新看板", t:"Codio 搭配 Development Skill，依 SRS 產出開發設計文檔"}]}},
+          hl:[{i:0, s:"InvestGo、PCC", t:"Codio 搭配 Development Skill，自動產出開發設計文檔與看板 UI 設計"}]}},
     {proj:"Codio 使用與活化", name:"PCC 人力活化系統", type:"promo", dri:"Lucas", rel:"與 Development Skill 共用驗證",
      desc:"大型系統類開發：以 PCC 人力活化系統需求為試點，用 Codio 搭配開發 Skill 走開發流程。",
      rep:{done:["用 Codio 搭配原型生成 Skill，依需求自動生成看板 UI 設計（技能實測驗證中）"],
-          next:["依定稿的 UI 設計生成對應的 SRS"],
-          hl:[{i:0, s:"PCC 人力活化系統", t:"Codio 搭配 Development Skill，依需求產出看板 UI 設計"}]}},
+          next:["依定稿的 UI 設計生成對應的 SRS"]}},
     {proj:"Nomi 使用與活化", name:"AAS 系統重構", type:"deliver", dri:"Tylee",
      steps:["系統分析","需求梳理","原型確認","技術規劃","AI 開發測試","內部試用驗收","用戶單位確認","Xylon 架構重構"],
      desc:"架構演進：原本建在 xTrack 系統管理架構 → Nomi 重構後為純 JSP（無系統管理架構）→ 下一階段改為 Xylon 系統管理架構。重構範圍止於驗收，不含正式部署與切換。用 Nomi 經 6 輪迭代（10/21–11/13），驗收 4 次退回後通過。",
@@ -334,9 +334,9 @@ function reqHTML(r, i){
   let rows = "";
   if (r.rep) {
     if (r.rep.conclusion) rows += `<div class="ln"><b>成果：</b>${esc(r.rep.conclusion)}</div>`;
-    if (r.rep.issue) rows += `<div class="ln issue"><b>問題：</b>${esc(r.rep.issue)}</div>`;
     const d = r.rep.done || [], n = r.rep.next || [];
     if (d.length && !r.rep.hideDone) rows += `<div class="ln"><b>本週：</b>${esc(d[0])}${more(d)}</div>`;
+    if (r.rep.issue) rows += `<div class="ln issue"><b>問題：</b>${esc(r.rep.issue)}</div>`;
     if (n.length) rows += `<div class="ln next" title="下週：${esc(n.join("；"))}"><b>下週：</b>${esc(n[0])}${more(n)}</div>`;
   } else if (r.last && r.last.text) {
     rows += `<div class="ln last"><b>上次（${md(r.last.date)}）：</b>${esc(r.last.text)}</div>`;
