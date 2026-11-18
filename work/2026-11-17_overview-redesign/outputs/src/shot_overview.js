@@ -16,7 +16,7 @@ const url = 'file://' + path.resolve(root, 'public', 'index.html');
     await p.waitForTimeout(400);
     const m = await p.evaluate(() => ({
       sh: document.documentElement.scrollHeight, sw: document.documentElement.scrollWidth,
-      rows: document.querySelectorAll('.req').length,
+      rows: document.querySelectorAll('.req, .card').length,
       undef: document.body.innerText.includes('undefined') || document.body.innerText.includes('NaN'),
     }));
     const desktop = w >= 1440;
