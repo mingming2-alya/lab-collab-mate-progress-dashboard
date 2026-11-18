@@ -1,0 +1,22 @@
+/* 風格 B｜現代卡片：淺陰影、圓角，四個模塊各有自己的顏色 */
+:root{--bg:#F4F5F9;--panel:#FFFFFF;--line:#E8EAF0;
+  --m1:#6D4AE8;--m1s:#F0ECFD;--m2:#2563EB;--m2s:#E8F0FE;--m3:#0E8A84;--m3s:#E3F5F3;--m4:#C2410C;--m4s:#FDEEE6}
+body{background:var(--bg)}
+.kpi,.hl{border:0;box-shadow:0 1px 3px rgba(20,30,60,.08),0 4px 14px rgba(20,30,60,.05);border-radius:14px}
+.kpi{border-left:0;border-top:4px solid var(--c)}
+.hl{border-left:0;border-top:4px solid var(--ok)}
+.board{gap:18px}
+.col{gap:18px}
+.mod{border:0;border-radius:16px;box-shadow:0 1px 3px rgba(20,30,60,.08),0 6px 18px rgba(20,30,60,.06)}
+.mod > header{background:var(--mc);color:#FFF}
+.mod h3 .no{color:var(--mc)}
+.mod[data-m="1"]{--mc:var(--m1);--ms:var(--m1s)}
+.mod[data-m="2"]{--mc:var(--m2);--ms:var(--m2s)}
+.mod[data-m="3"]{--mc:var(--m3);--ms:var(--m3s)}
+.mod[data-m="4"]{--mc:var(--m4);--ms:var(--m4s)}
+.mbody{background:var(--ms);padding:10px;gap:8px}
+.proj{color:var(--mc)}
+.req{border:0;border-radius:10px;box-shadow:0 1px 2px rgba(20,30,60,.06)}
+.pill{color:var(--mc);background:var(--ms)}
+.pill.idle{color:var(--idle);background:var(--idle-soft)}
+.hl li .p{color:var(--m2)}

@@ -1,0 +1,13 @@
+/* 風格 C｜深色主題：深藍底、亮色字，適合投影到大螢幕 */
+:root{color-scheme:dark;
+  --bg:#0E1622;--surface:#16212F;--panel:#121C29;--fg:#E8EEF5;--muted:#93A3B5;--line:#253447;--seg:#2C3D52;
+  --accent:#5CC8FF;--accent-soft:#16344A;--on-accent:#0E1622;
+  --ok:#4ADE80;--ok-soft:#123326;--bad:#FF7A70;--bad-soft:#3A1A1A;--idle:#A3B0BD;--idle-soft:#223042;--new:#C4A5FF;--new-soft:#2C2445}
+body{background:radial-gradient(1200px 600px at 20% -10%,#17304A 0%,var(--bg) 60%)}
+.kpi,.hl,.mod,.req{border-color:var(--line)}
+.kpi > b{text-shadow:0 0 18px color-mix(in srgb,var(--c) 45%,transparent)}
+.mod > header{background:linear-gradient(90deg,#1B4A6B,#163A55);color:var(--fg)}
+.mod h3{color:var(--fg)}
+.mod h3 .no{background:var(--accent);color:var(--on-accent)}
+.req{background:var(--surface)}
+.hl li .p{color:var(--accent)}

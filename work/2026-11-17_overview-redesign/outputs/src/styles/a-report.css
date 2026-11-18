@@ -1,0 +1,27 @@
+/* 風格 A｜簡報一頁式：白底、細線分隔、襯線標題，幾乎不用色塊，靠留白與字級分層 */
+:root{--bg:#FFFFFF;--panel:#FFFFFF;--line:#E3E6EA;--accent:#1B3A5C;--accent-soft:#EEF2F6}
+body{background:#FFFFFF}
+h1{font-size:28px}
+.kpi{background:none;border:0;border-left:1px solid var(--line);border-radius:0;padding:2px 14px}
+.kpi:first-child{border-left:0;padding-left:0}
+.kpi > b{font-family:var(--f-display);font-weight:700;color:var(--fg)}
+.kpi.help{border:0;border-top:1px solid var(--line);padding:6px 0 0;border-radius:0}
+.kpi.help > b{color:var(--bad)}
+.hl{border:0;border-left:3px solid var(--fg);border-radius:0;padding:2px 0 2px 18px;background:none}
+.hl h2{color:var(--fg);letter-spacing:.14em}
+.hl li::before{color:var(--fg)}
+.hl li .p{color:var(--accent)}
+.board{gap:28px}
+.col{gap:22px}
+.mod{background:none;border:0;border-radius:0;overflow:visible}
+.mod > header{background:none;color:var(--fg);padding:0 0 6px;border-bottom:2px solid var(--fg)}
+.mod h3{font-family:var(--f-display);font-size:19px}
+.mod h3 .no{background:var(--fg);color:#FFF;width:24px;height:24px}
+.mod > header span{color:var(--muted)}
+.mbody{padding:4px 0 0;gap:0}
+.proj{padding:8px 0 2px;color:var(--accent);letter-spacing:.06em}
+.req{background:none;border:0;border-radius:0;border-bottom:1px solid var(--line);padding:6px 0 7px}
+.pill{background:none;border:1px solid currentColor;padding:0 8px}
+.pill.idle{background:none}
+.pill.ok{background:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#11161C;--panel:#11161C}body{background:#11161C}.mod h3 .no{color:#11161C}}

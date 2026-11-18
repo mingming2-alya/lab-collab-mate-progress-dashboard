@@ -4,7 +4,7 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
-const [root, out] = process.argv.slice(2);
+const [root, out, cssPath] = process.argv.slice(2);  // cssPath（選填）：風格示意用的覆寫樣式
 const src = fs.readFileSync(path.resolve(root, 'public', 'index.html'), 'utf8');
 
 const SAMPLE = {
@@ -32,11 +32,12 @@ MODULES.forEach(p => p.reqs.forEach(r => { if (__S[r.name]) r.rep = __S[r.name];
 const banner = '<div style="background:#B3261E;color:#fff;font-weight:700;text-align:center;font-size:13px;padding:3px 0">示意資料：以下內容為版面示意，不是真實回報</div>';
 const html = src.replace('/* ===== 計算與呈現 ===== */', inject).replace('<div class="page">', banner + '<div class="page">');
 if (!html.includes('示意資料：')) throw new Error('示意橫條沒有插入成功');
+const styled = cssPath ? html.replace('</style>', fs.readFileSync(cssPath, 'utf8') + '\n</style>') : html;
 
 (async () => {
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
-  await p.setContent(html);
+  await p.setContent(styled);
   await p.waitForTimeout(300);
   const sh = await p.evaluate(() => document.documentElement.scrollHeight);
   console.log(`示意版 1440x900 scrollHeight=${sh}（含示意橫條 約 25px）`);
