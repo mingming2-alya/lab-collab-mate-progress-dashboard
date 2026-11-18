@@ -95,6 +95,16 @@ GitHub 上專門做「主管週報版面」的 repo 很少且品質不佳（多�
 
 ## 過程紀錄（由新到舊）
 
+### 2026-11-18（AI Hiring Agent、Presentation Skill 本週進度）
+- 新輸入（使用者口述）：AI Hiring Agent 本週 PCC 與 Non Phone OPM 派人了解，已提供操作影片與部署準備簡報；待需求單位確認有無導入需求，並準備部署的硬體與模型。
+- 新輸入（連結）：Presentation Skill 進度在 claude-base-skills repo 的 presentation-skill-generation 分支；讀取後摘要於 `inputs/SUMMARY_PresentationSkill-進度.md`。
+- 寫入總覽頁：
+  - 開放複用：尋求 2（PCC、Non Phone OPM），申請、已上線未提供故顯示「–」；本週、下週如上；列入本週成果「AI Hiring Agent｜PCC、Non Phone OPM 來了解，已提供操作影片與部署準備簡報」。
+  - Presentation Skill：目前步驟「建置」、子階段完成 1 個（共 3 個）；本週「完成 12 款風格意象圖」「依審閱回饋重做三款」；下週「討論 12 款並選出首批 3 款，進入逐風格設計排法」；滑鼠提示附專案說明與「尚未用真實簡報從頭做到成品」。
+- 頂部「本週有進度」變為 3（AAS、AI Hiring Agent、Presentation Skill）。
+- 驗證：三種桌機單屏、三欄底部切齊、平板手機無橫向溢出、console 無錯誤。
+- 待確認：開放複用累計的申請、已上線單位數；Presentation Skill 的步驟對應與 DRI；是否放進本週成果。
+
 ### 2026-11-18（對齊定案、萬鋒統一、問題不算進度）
 - 使用者確認：AAS 與 Mac Mini 兩份對齊結論 100% 正確；「万峰」與「萬鋒」同一人，統一寫「萬鋒」；四台的重啟問題不算本週進度。
 - 改法：總覽頁與日報頁「万峰」→「萬鋒」（日報頁 6 處、總覽頁 1 處）；總覽頁新增資料欄位 `rep.issue`，以「問題：」（橘色標籤）呈現、不計入「本週有進度」，驗證四台改用此欄位，頂部「本週有進度」由 2 變 1；訊息範本補充問題的處理方式；兩份摘要標記定案。

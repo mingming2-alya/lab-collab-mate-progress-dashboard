@@ -187,7 +187,11 @@ const MODULES = [
           issue:"發現閒置一段時間後系統會重啟，疑似作業系統問題", next:["持續排查重啟問題（TBD）"]}},
     {proj:"Codio 使用與活化", name:"IDE 串接研究", type:"research", dri:null, q:"從 IDE 使用 Codio 與直接使用的差異", rep:null},
     {proj:"新 Skill 研究與建置", name:"Presentation Skill", type:"deliver", dri:null, steps:SKILL, rel:"之後接上 Nomi",
-     sub:{at:2, items:["目標／對象／架構／內容梳理","風格與排版","品管與檢查驗證"]}, rep:null},
+     sub:{at:2, items:["目標／對象／架構／內容梳理","風格與排版","品管與檢查驗證"]},
+     desc:"技能名 deck-architect（從頭到尾支援簡報全流程的 Skill）。進度來源：claude-base-skills repo 的 presentation-skill-generation 分支。目標／對象／架構／內容梳理（方法論）已用 4 份真實簡報驗證；目前在風格與排版（設計美感階段的風格定調）；尚未用真實簡報從頭做到成品。",
+     rep:{now:2, subDone:1,
+          done:["完成 12 款風格意象圖（插畫、積木、水彩可切換畫風）", "依審閱回饋重做顧問報告、週報、攝影雜誌三款"],
+          next:["討論 12 款並選出首批 3 款，進入逐風格設計排法"]}},
     {proj:"新 Skill 研究與建置", name:"Development Skill", type:"deliver", dri:null, steps:SKILL, rel:"由 Codio 執行，InvestGo 驗證",
      sub:{at:2, items:["需求梳理","SRS","原型設計","開發設計文檔","程式碼生成校正","上線運維","測試用例生成"]}, rep:null}
   ]},
@@ -219,7 +223,11 @@ const MODULES = [
           hl:[{i:0, s:"AAS", t:"用 Nomi 走完系統重構全流程，內部測試驗收完成"}]}}
   ]},
   {no:"④", name:"推廣複用", col:2, reqs:[
-    {proj:"AI Hiring Agent", name:"開放複用", type:"promo", dri:null, nums:["尋求","申請","已上線"], numUnit:"單位", rep:null},
+    {proj:"AI Hiring Agent", name:"開放複用", type:"promo", dri:null, nums:["尋求","申請","已上線"], numUnit:"單位",
+     rep:{nums:{"尋求":2},
+          done:["PCC、Non Phone OPM 派人了解，已提供操作影片與部署準備簡報"],
+          next:["待需求單位確認導入需求，並準備部署的硬體與模型"],
+          hl:[{i:0, s:"AI Hiring Agent", t:"PCC、Non Phone OPM 來了解，已提供操作影片與部署準備簡報"}]}},
     {proj:"Codio 使用與活化", name:"工具腳本類開發", type:"promo", dri:null, rep:null}
   ]}
 ];
