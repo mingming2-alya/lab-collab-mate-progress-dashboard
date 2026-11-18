@@ -177,8 +177,13 @@ const SKILL = ["現況調研","技能設計","建置","實測驗證","推廣接�
 
 const MODULES = [
   {no:"①", name:"課題研究", col:0, reqs:[
-    {proj:"Mac Mini 部署試驗", name:"驗證兩台", type:"research", dri:null, q:"可穩定運行的模型上限", rep:null},
-    {proj:"Mac Mini 部署試驗", name:"驗證四台", type:"research", dri:null, q:"模型上限與 Hiring Agent 端到端結果", rel:"以 AI Hiring Agent 驗證", rep:null},
+    {proj:"Mac Mini 部署試驗", name:"驗證兩台", type:"research", dri:"萬鋒", q:"可穩定運行的模型上限", rel:"跑 Lab Collab Mate 工作流",
+     desc:"硬體：Mac mini 24G × 2，雷靂 5 全互聯。已部署 Qwen3.6 35B A3B（4-bit），進入部署後運維：有 bug 且影響運行中的項目才 debug。",
+     rep:{pill:"運維中", conclusion:"可部署 Qwen3.6 35B 並正常對話；只能跑自定義輕量 Agent，接 3 個工具執行 Lab Collab Mate 工作流"}},
+    {proj:"Mac Mini 部署試驗", name:"驗證四台", type:"research", dri:"萬鋒", q:"模型上限與 Hiring Agent 端到端結果", rel:"以 AI Hiring Agent 驗證",
+     desc:"硬體：Mac mini 24G × 4，雷靂 5 全互聯。已部署 Qwen3.6 35B A3B（4-bit），進入部署後運維。記憶體：只跑模型單機 13G；跑 AI Hiring Agent 單機 26G（超過實體 24G，會用到 Swap）。",
+     rep:{pill:"運維中", conclusion:"可部署 Qwen3.6 35B 並正常對話；可跑 Hermes 架構的 AI Hiring Agent",
+          done:["發現閒置一段時間後系統會重啟，疑似作業系統問題"], next:["持續排查重啟問題（TBD）"]}},
     {proj:"Codio 使用與活化", name:"IDE 串接研究", type:"research", dri:null, q:"從 IDE 使用 Codio 與直接使用的差異", rep:null},
     {proj:"新 Skill 研究與建置", name:"Presentation Skill", type:"deliver", dri:null, steps:SKILL, rel:"之後接上 Nomi",
      sub:{at:2, items:["目標／對象／架構／內容梳理","風格與排版","品管與檢查驗證"]}, rep:null},
