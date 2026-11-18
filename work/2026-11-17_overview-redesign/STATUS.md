@@ -106,7 +106,7 @@ GitHub 上專門做「主管週報版面」的 repo 很少且品質不佳（多�
 - 使用者確認與更正（表單）：
   - 開放複用累計：尋求 2、申請 0、已上線 0。
   - Presentation Skill **目前在「技能設計」**（Claude 原對應為「建置、子階段完成 1 個」，更正）；兩個 Skill 的第一步名稱改為「**市場調研**」（原「現況調研」）。
-  - Presentation Skill 放進本週成果：「Presentation Skill｜完成 12 款風格意象圖」。
+  - Presentation Skill 放進本週成果；使用者再要求併入「簡報架構梳理技能」並優化用詞 →「Presentation Skill｜完成簡報架構梳理技能，產出 12 款風格意象圖」。
   - DRI：Presentation Skill、AI Hiring Agent 皆為 **Alyanna**。
 - 已套用以上更正；本週成果三則；三種桌機單屏、三欄底部切齊。
 
