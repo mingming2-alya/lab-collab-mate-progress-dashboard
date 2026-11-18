@@ -55,10 +55,10 @@ h1{font-family:var(--f-display);font-size:26px;line-height:1.2;font-weight:700}
 h1 .mono{font-family:var(--f-mono);font-size:.62em;color:var(--muted);font-weight:400;margin-left:10px}
 .asof{font-size:12.5px;color:var(--muted)}
 
-/* 頂部一列：左＝三個數字（完成事項、已回報並列；需要副總支援在下，直接寫出是什麼事），右＝本週亮點 */
+/* 頂部一列：左＝兩個數字（本週完成事項；需要副總支援，直接寫出是什麼事），右＝本週亮點。已回報數只放在右上小字給 PM 看 */
 .top{display:grid;grid-template-columns:minmax(380px,30%) minmax(0,1fr);gap:12px;align-items:stretch}
-.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:start}
-.kpi.help{grid-column:1 / -1;flex-wrap:wrap;row-gap:4px}
+.kpis{display:grid;grid-template-columns:1fr;grid-template-rows:auto 1fr;gap:10px}
+.kpi.help{flex-wrap:wrap;row-gap:4px;align-content:flex-start}
 .kpi.help .d{flex-basis:100%;border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:5px}
 .kpi.help .d div{white-space:normal}
 .kpi{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:8px 16px;min-width:0}
@@ -244,11 +244,10 @@ const projCount = new Set(REQS.map(r => r.proj)).size;
 
 /* 標題與三個數字 */
 $("h1").innerHTML = `本週進度<span class="mono">${md(WEEK.from)}–${md(WEEK.to)}</span>`;
-$("asof").textContent = `資料截至 ${md(ASOF)}・${projCount} 個項目・${REQS.length} 個需求`;
+$("asof").textContent = `資料截至 ${md(ASOF)}・${projCount} 個項目・${REQS.length} 個需求・已回報 ${reported.length}／${REQS.length}`;
 const kpi = (c, n, t, d, cls = "") => `<div class="kpi ${cls}" style="--c:var(${c})"><b>${n}</b><span class="t">${t}</span>${d ? `<div class="d">${d}</div>` : ""}</div>`;
 $("kpis").innerHTML =
   kpi("--ok", doneCount, "本週<br>完成事項") +
-  kpi("--accent", `${reported.length}<small>／${REQS.length}</small>`, "需求<br>已回報") +
   kpi(helps.length ? "--bad" : "--idle", helps.length, "需要<br>副總支援",
       helps.length ? helps.map(r => `<div title="${esc(r.rep.help)}"><b>${esc(r.name)}</b>：${esc(r.rep.help)}</div>`).join("") : `<div class="dim">本週沒有需要副總支援的事項</div>`, "help");
 
@@ -314,10 +313,9 @@ function reqHTML(r){
   return `<div class="req"><div class="rn" title="${esc(r.name)}">${esc(r.name)}</div>${st}<div class="meta" title="${esc(meta)}">${esc(meta)}</div><div class="st2">${st2}</div>${rows}</div>`;
 }
 function modHTML(m){
-  const n = m.reqs.filter(r => r.rep).length;
   let html = "", proj = null;
   m.reqs.forEach(r => { if (r.proj !== proj) { proj = r.proj; html += `<h4 class="proj">${esc(proj)}</h4>`; } html += reqHTML(r); });
-  return `<section class="mod"><header><h3><span class="no">${m.no}</span>${esc(m.name)}</h3><span>${m.reqs.length} 個需求・已回報 ${n}</span></header>${html}</section>`;
+  return `<section class="mod"><header><h3><span class="no">${m.no}</span>${esc(m.name)}</h3><span>${m.reqs.length} 個需求</span></header>${html}</section>`;
 }
 $("board").innerHTML = [0, 1, 2].map(c => `<div class="col">${MODULES.filter(m => m.col === c).map(modHTML).join("")}</div>`).join("");
 </script>
