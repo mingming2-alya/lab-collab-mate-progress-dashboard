@@ -103,7 +103,13 @@ GitHub 上專門做「主管週報版面」的 repo 很少且品質不佳（多�
 - 本週成果變 4 則：一排 4 則每則被折成 4–5 行，改成兩欄兩列；壓力測試 1440 溢出 2px，在全部緊湊模式收緊本週成果留白後 0px。
 - 頂部「本週有進度」變為 5、已回報 7／14。
 - 驗證：三種桌機單屏、三欄底部切齊、平板手機無橫向溢出、console 無錯誤。
-- 待確認：Development Skill 狀態寫「實測驗證」（使用者原話是「技能實測驗證階段」，對應五步的第 4 步）；本週成果兩則都和 InvestGo 有關，是否合併。
+- 使用者確認與更正（表單）：
+  - Development Skill 狀態「實測驗證」正確。
+  - InvestGo 本週成果改寫成 Codio 與 Skill 一起講：「InvestGo IDL 資訊更新看板｜Codio 搭配 Development Skill，依 SRS 自動產出開發設計文檔」。
+  - DRI：InvestGo、Development Skill 皆為 **Lucas**。
+  - 「IDL 資訊更新看板」放進 InvestGo 的標題 → 需求名稱「InvestGo IDL 資訊更新看板」，本週內容去掉重複的前綴。
+  - 本週成果的標題寫完整：「AAS」→「AAS 系統重構」。
+- 已套用；三種桌機單屏、三欄底部切齊、壓力測試 1440 0px。
 
 ### 2026-11-18（AI Hiring Agent、Presentation Skill 本週進度）
 - 新輸入（使用者口述）：AI Hiring Agent 本週 PCC 與 Non Phone OPM 派人了解，已提供操作影片與部署準備簡報；待需求單位確認有無導入需求，並準備部署的硬體與模型。
