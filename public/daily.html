@@ -450,7 +450,7 @@ h2{color:var(--brand-ink);font-weight:900}
   <section aria-labelledby="s2">
     <details class="gbox" id="gbox">
       <summary class="donehd"><h2 id="s2">完整時程 <span class="count" id="c2"></span></h2><span class="chev" aria-hidden="true">›</span><span class="hint">點擊展開甘特圖</span></summary>
-      <div class="gwrap"><div class="glegend"><span><i style="background:var(--accent)"></i>工具開發與工作流串連・設計</span><span><i data-k="try" style="background:var(--try)"></i>用戶 Try Run</span><span><i style="background:var(--idle-soft);border:1px solid var(--idle)"></i>已過</span><span><i style="border:1px dashed var(--idle)"></i>時程待定</span><span><i class="k" style="border-radius:50%;box-shadow:inset 0 0 0 2px var(--fg)"></i>正式數據首次跑通全流程</span><span><i class="k" style="border-radius:50%;background:var(--fg)"></i>正式數據連續 5 次穩定跑通全流程</span><span><i class="k" style="background:var(--warn);transform:rotate(45deg) scale(.85)"></i>判斷點／定案</span><span><i class="k" style="background:var(--ok);transform:rotate(45deg) scale(.85)"></i>正式上線（用戶驗收）</span><span style="color:var(--bad)">｜資料日（所選日報的日期）</span></div><div class="gantt" id="gantt"></div></div>
+      <div class="gwrap"><div class="glegend"><span><i style="background:var(--accent)"></i>工具開發與工作流串連・設計</span><span><i data-k="try" style="background:var(--try)"></i>用戶 Try Run</span><span><i style="background:var(--idle-soft);border:1px solid var(--idle)"></i>已過</span><span><i style="border:1px dashed var(--idle)"></i>TBD</span><span><i class="k" style="border-radius:50%;box-shadow:inset 0 0 0 2px var(--fg)"></i>正式數據首次跑通全流程</span><span><i class="k" style="border-radius:50%;background:var(--fg)"></i>正式數據連續 5 次穩定跑通全流程</span><span><i class="k" style="background:var(--warn);transform:rotate(45deg) scale(.85)"></i>判斷點／定案</span><span><i class="k" style="background:var(--ok);transform:rotate(45deg) scale(.85)"></i>正式上線（用戶驗收）</span><span style="color:var(--bad)">｜資料日（所選日報的日期）</span></div><div class="gantt" id="gantt"></div></div>
     </details>
   </section>
 
@@ -655,7 +655,7 @@ function lastChange(idx, M){
 /* ---- 時程計算 ---- */
 const dn = s => Date.UTC(+s.slice(0,4), +s.slice(5,7)-1, +s.slice(8,10)) / 864e5;
 const mdd = s => `${+s.slice(5,7)}/${+s.slice(8,10)}`;
-const rng = x => x.s ? (x.e ? `${mdd(x.s)}–${mdd(x.e)}` : `${mdd(x.s)} 起・結束待定`) : "時程待定";
+const rng = x => x.s ? (x.e ? `${mdd(x.s)}–${mdd(x.e)}` : `${mdd(x.s)} 起・結束 TBD`) : "TBD";
 /* 基準日＝所選日報的日期，不用瀏覽器當天：PM 提供新進度前，時程狀態與倒數不會自己變動。render() 會依所選日報更新。 */
 let TODAY = dn(REPORTS[0].date);
 const left = d => d === TODAY ? "當天" : d > TODAY ? `剩 ${d - TODAY} 天` : `已過 ${TODAY - d} 天`;
@@ -674,18 +674,18 @@ function schedHTML(tr){
   const I = trackInfo(tr), out = [];
   if (I.cur.length) I.cur.forEach(x => out.push(`<div>現在：<b>${esc(x.n)}</b>　ETA <b class="mono">${mdd(x.e)}</b> <span class="dim">（${left(dn(x.e))}）</span></div>`));
   else if (I.allPast) out.push(`<div><b>依計畫已結束</b></div>`);
-  else if (I.nxt) out.push(`<div>${I.nxt.s ? `<b class="mono">${mdd(I.nxt.s)}</b> 開始` : "時程待定"}：<b>${esc(I.nxt.n)}</b>${I.nxt.s ? ` <span class="dim">（${dn(I.nxt.s) - TODAY} 天後）</span>` : ""}</div>`);
+  else if (I.nxt) out.push(`<div>${I.nxt.s ? `<b class="mono">${mdd(I.nxt.s)}</b> 開始` : "TBD"}：<b>${esc(I.nxt.n)}</b>${I.nxt.s ? ` <span class="dim">（${dn(I.nxt.s) - TODAY} 天後）</span>` : ""}</div>`);
   if (I.m) out.push(`<div>下一個里程碑：<b>${esc(I.m[1])}</b>　<b class="mono">${mdd(I.m[0])}</b> <span class="dim">（${left(dn(I.m[0]))}）${I.m[3] ? "　" + esc(I.m[3]) : ""}</span></div>`);
   if (I.nx) out.push(`<div class="dim">下一階段：${esc(I.nx.n)}（${rng(I.nx)}）</div>`);
   return `<div class="sched"><span class="lbl">時程</span>${out.join("")}</div>`;
 }
-/* 單一時程線的直向時間軸（窄卡片用）：階段（含起訖）與里程碑依日期排序，標出已過／進行中／下一步；時程待定排最後 */
+/* 單一時程線的直向時間軸（窄卡片用）：階段（含起訖）與里程碑依日期排序，標出已過／進行中／下一步；TBD排最後 */
 function vSteps(tr){
   const MSK = {gate:"gate", live:"live"};
   const items = [
     ...tr.steps.map(x => x.s
       ? {d:dn(x.s), end:dn(x.e), date:rng(x), n:x.n, sub:x.sub, t:"step"}
-      : {d:Infinity, end:Infinity, date:"時程待定", n:x.n, sub:x.sub, t:"tbd"}),
+      : {d:Infinity, end:Infinity, date:"TBD", n:x.n, sub:x.sub, t:"tbd"}),
     ...[...(tr.ms||[]), ...tr.steps.flatMap(x => x.ms||[])].map(m => ({d:dn(m[0]), end:dn(m[0]), date:mdd(m[0]), n:m[1], sub:m[3], t:"ms", k:MSK[m[2]] || "ms"}))
   ].sort((a,b) => a.d - b.d || (a.t === "ms") - (b.t === "ms"));
   let nextSet = false;
@@ -744,11 +744,11 @@ function render(){
       const c = I.cur[I.cur.length-1];
       const phen = x.lines[0] ? x.lines[0].text : "";
       srow = `<div class="row"><span class="k">目前階段</span><b>${esc(c.n)}</b>${phen ? `<span class="dim">— ${esc(phen)}</span>` : ""}</div>` +
-             `<div class="row"><span class="k">預計完成</span><b class="mono">${mdd(c.e)}</b>${I.nx ? `<span class="k">下一階段</span><span>${esc(I.nx.n)}${I.nx.s ? `（<span class="mono">${mdd(I.nx.s)}</span> 開始）` : "（時程待定）"}</span>` : ""}</div>`;
+             `<div class="row"><span class="k">預計完成</span><b class="mono">${mdd(c.e)}</b>${I.nx ? `<span class="k">下一階段</span><span>${esc(I.nx.n)}${I.nx.s ? `（<span class="mono">${mdd(I.nx.s)}</span> 開始）` : "（TBD）"}</span>` : ""}</div>`;
     } else if (I && I.allPast) {
       srow = `<div class="row"><span class="k">狀態</span><b>依計畫已結束</b></div>`;
     } else if (I && I.nxt) {
-      srow = `<div class="row"><span class="k">尚未開始</span><b>${esc(I.nxt.n)}</b><span class="k">預計</span><b class="mono">${I.nxt.s ? mdd(I.nxt.s) + " 開始" : "時程待定"}</b></div>`;
+      srow = `<div class="row"><span class="k">尚未開始</span><b>${esc(I.nxt.n)}</b><span class="k">預計</span><b class="mono">${I.nxt.s ? mdd(I.nxt.s) + " 開始" : "TBD"}</b></div>`;
     }
     const sched = srow ? `<div class="ssum"><span class="lbl">時程</span>${srow}</div>` : "";
     return `<article class="card" data-s="${x.status}" data-w="${M.w||6}" role="button" tabindex="0" aria-expanded="true">
@@ -797,7 +797,7 @@ function renderGantt(){
     if (x.getUTCDate() === 1 || d === A) ticks += `<span class="mo" style="left:${pct(d)}">${x.getUTCFullYear()!==2026?x.getUTCFullYear()+" 年 ":""}${x.getUTCMonth()+1} 月</span>`; }
   if (inAxis) ticks += `<span class="todayl" style="left:${pct(TODAY)}">資料日 ${mdd(new Date(TODAY * 864e5).toISOString().slice(0,10))}</span>${todayEl}`;
   const bar = x => {
-    if (!x.s) return `<span class="bar tbdbar" title="${esc(x.n)}">時程待定</span>`;
+    if (!x.s) return `<span class="bar tbdbar" title="${esc(x.n)}">TBD</span>`;
     const st = dn(x.e) < TODAY ? "past" : (dn(x.s) <= TODAY ? "now" : "");
     return `<span class="bar ${x.kind} ${st}" style="left:${pct(dn(x.s))};width:calc(${pctEnd(dn(x.e))} - ${pct(dn(x.s))})" title="${esc(x.n)}　${rng(x)}">${esc(x.short ?? rng(x))}</span>`;
   };
