@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>Lab Collab Mate 每日進度</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
 <style>
 /* Layout: one column. Tabs → tally → one card per module (schedule + today's progress merged) → collapsible full gantt. Older rules kept below where reused: active workstreams as full cards (changed first) → not-started list with its issues shown → completed list (collapsed) → workflow scope. */
 :root{
@@ -379,6 +382,51 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
   footer span:nth-child(2){display:none}
   footer span:last-child{display:none}
 }
+
+/* ===== 統一風格（11-18，與總覽頁一致）：深青綠主色、微軟雅黑；版面與內容不動 =====
+   狀態燈號顏色（正常綠／注意橘／受阻紅／未啟動灰）保留，只在卡片標題列的狀態標籤上表示。
+   甘特圖「用戶 Try Run」改用石板藍，避免與主色深青綠混淆。 */
+:root{
+  --bg:#F3F6F5; --surface:#FFFFFF; --fg:#1B2724; --muted:#5E6B68; --line:#DCE4E1; --seg:#D2DCD8;
+  --accent:#2E6B62; --accent-soft:#E3F0EC; --brand:#2E6B62; --brand-ink:#245850; --brand-soft:#E3F0EC; --on-brand:#FFFFFF;
+  --new:#245850; --new-soft:#E3F0EC; --try:#4A6FA5; --try-soft:#E5ECF6;
+  --f-body:"Microsoft YaHei","微软雅黑","PingFang TC","PingFang SC","Noto Sans TC",system-ui,sans-serif;
+  --f-display:var(--f-body);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1614; --surface:#17211E; --fg:#E4ECE9; --muted:#9AA9A5; --line:#2A3834; --seg:#2E3D39;
+  --accent:#5FBFAE; --accent-soft:#183531; --brand:#5FBFAE; --brand-ink:#7FD2C2; --brand-soft:#183531; --on-brand:#0F1614;
+  --new:#7FD2C2; --new-soft:#183531; --try:#8AAEE0; --try-soft:#1C2A3D;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1614; --surface:#17211E; --fg:#E4ECE9; --muted:#9AA9A5; --line:#2A3834; --seg:#2E3D39;
+  --accent:#5FBFAE; --accent-soft:#183531; --brand:#5FBFAE; --brand-ink:#7FD2C2; --brand-soft:#183531; --on-brand:#0F1614;
+  --new:#7FD2C2; --new-soft:#183531; --try:#8AAEE0; --try-soft:#1C2A3D;
+  color-scheme:dark}
+.tabs a[aria-current="page"]{border-bottom-color:var(--brand)}
+/* 標題列：左側直條＋粗黑體，統計數字併在同一行（數字在前、細直線分隔） */
+h1{font-family:var(--f-body);font-weight:900;letter-spacing:.04em;padding-left:14px;border-left:5px solid var(--brand);line-height:1.15}
+.ttl{gap:6px 0}
+.tally{gap:0;margin-left:10px}
+.tally span{display:inline-flex;flex-direction:row-reverse;align-items:baseline;gap:7px;background:none;border:0;border-left:1px solid var(--line);border-radius:0;padding:0 18px;font-size:15px;font-weight:700;color:var(--fg)}
+.tally b{font-family:var(--f-body);font-size:30px;font-weight:900;line-height:1;color:var(--brand);margin:0}
+.tally .hot{color:var(--bad)}
+.tally .hot b{color:var(--bad)}
+h2{color:var(--brand-ink);font-weight:900}
+.rule{border-left-color:var(--brand)}
+/* 模塊卡：深青綠標題列（同總覽頁），狀態改由標題列上的燈號標籤表示 */
+.card,.card[data-s]{border:1px solid var(--line);border-radius:10px;padding:0 0 10px;overflow:hidden}
+.card > :not(.hd):not(.chev){margin-inline:14px}
+.card .hd{background:var(--brand);color:var(--on-brand);padding:7px 14px}
+.card h3{color:var(--on-brand);font-weight:900;letter-spacing:.04em}
+.card .hd .pill{background:var(--surface);color:var(--c);box-shadow:inset 0 0 0 1px var(--cs)}
+.card .hd .badge.new{background:var(--on-brand);color:var(--brand-ink)}
+.card .hd .badge.same{background:color-mix(in srgb,var(--on-brand) 22%,transparent);color:var(--on-brand)}
+.card .hd .livepill{background:var(--on-brand);color:var(--ok)}
+.mrows,.blk{border-color:var(--line)}
+/* 甘特圖：Try Run 改石板藍 */
+.bar.try{--bc:var(--try);--bs:var(--try-soft)}
+.glegend i[data-k="try"]{background:var(--try)!important}
 </style>
 </head>
 <body>
@@ -402,7 +450,7 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
   <section aria-labelledby="s2">
     <details class="gbox" id="gbox">
       <summary class="donehd"><h2 id="s2">完整時程 <span class="count" id="c2"></span></h2><span class="chev" aria-hidden="true">›</span><span class="hint">點擊展開甘特圖</span></summary>
-      <div class="gwrap"><div class="glegend"><span><i style="background:var(--accent)"></i>工具開發與工作流串連・設計</span><span><i style="background:var(--ok)"></i>用戶 Try Run</span><span><i style="background:var(--idle-soft);border:1px solid var(--idle)"></i>已過</span><span><i style="border:1px dashed var(--idle)"></i>時程待定</span><span><i class="k" style="border-radius:50%;box-shadow:inset 0 0 0 2px var(--fg)"></i>正式數據首次跑通全流程</span><span><i class="k" style="border-radius:50%;background:var(--fg)"></i>正式數據連續 5 次穩定跑通全流程</span><span><i class="k" style="background:var(--warn);transform:rotate(45deg) scale(.85)"></i>判斷點／定案</span><span><i class="k" style="background:var(--ok);transform:rotate(45deg) scale(.85)"></i>正式上線（用戶驗收）</span><span style="color:var(--bad)">｜資料日（所選日報的日期）</span></div><div class="gantt" id="gantt"></div></div>
+      <div class="gwrap"><div class="glegend"><span><i style="background:var(--accent)"></i>工具開發與工作流串連・設計</span><span><i data-k="try" style="background:var(--try)"></i>用戶 Try Run</span><span><i style="background:var(--idle-soft);border:1px solid var(--idle)"></i>已過</span><span><i style="border:1px dashed var(--idle)"></i>時程待定</span><span><i class="k" style="border-radius:50%;box-shadow:inset 0 0 0 2px var(--fg)"></i>正式數據首次跑通全流程</span><span><i class="k" style="border-radius:50%;background:var(--fg)"></i>正式數據連續 5 次穩定跑通全流程</span><span><i class="k" style="background:var(--warn);transform:rotate(45deg) scale(.85)"></i>判斷點／定案</span><span><i class="k" style="background:var(--ok);transform:rotate(45deg) scale(.85)"></i>正式上線（用戶驗收）</span><span style="color:var(--bad)">｜資料日（所選日報的日期）</span></div><div class="gantt" id="gantt"></div></div>
     </details>
   </section>
 

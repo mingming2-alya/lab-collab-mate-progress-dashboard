@@ -24,6 +24,14 @@ TABS_CSS = """
 .tabs a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--user)}
 .tabs a:focus-visible{outline:2px solid var(--user);outline-offset:2px;border-radius:4px}
 .note-src{font-size:12px;color:var(--muted)}
+/* 統一風格（11-18，與總覽、每日進度頁一致）：深青綠主色、微軟雅黑、標題左側直條；架構圖本身的配色不動 */
+:root{--brand:#2E6B62;--page-bg:#F3F6F5}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--brand:#5FBFAE;--page-bg:#0F1614}}
+:root[data-theme="dark"]{--brand:#5FBFAE;--page-bg:#0F1614}
+body{background:var(--page-bg);font-family:"Microsoft YaHei","微软雅黑","PingFang TC","PingFang SC","Noto Sans TC",system-ui,sans-serif}
+.tabs a[aria-current="page"]{border-bottom-color:var(--brand)}
+.tabs a:focus-visible{outline-color:var(--brand)}
+h1{font-family:inherit;font-weight:900;letter-spacing:.04em;padding-left:14px;border-left:5px solid var(--brand);line-height:1.15}
 """
 
 html = f"""<!doctype html>
@@ -33,6 +41,9 @@ html = f"""<!doctype html>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>Lab Collab Mate 架構全貌</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
 <style>{style}{TABS_CSS}</style>
 </head>
 <body>

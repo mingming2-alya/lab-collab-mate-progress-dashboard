@@ -2,7 +2,7 @@
 
 - **狀態**：進行中。第二階段方案 A／B 已畫好，待和 LabMind 團隊確認。
 - **開始**：2026-11-09
-- **最後更新**：2026-11-11
+- **最後更新**：2026-11-18
 - **交付物**：[架構全貌頁（Artifact，第 21 版）](https://claude.ai/artifact/Wk9NHkqSibfzZLJsXvhyRj)
   - 原始檔：`outputs/lcm-architecture.html`
   - 產生腳本：`outputs/src/build.py`、`outputs/src/tpl.html`
@@ -67,6 +67,9 @@
 以附件為準，**先採用方案 B 對接**：它完全符合簡報第 14、15、19 頁的流程，不需要 LabMind 修改。如果 LabMind 之後支援在 Kanban 人工領取，再評估是否改用方案 A。
 
 ## 過程紀錄（由新到舊）
+
+### 2026-11-18
+- 配合三頁統一風格（見 `2026-11-17_overview-redesign`），在 `outputs/src/build_public_arch.py` 加入統一的外框樣式（深青綠分頁底線、標題左直條、微軟雅黑字體、頁面底色），重產 `public/arch.html`。架構圖內容與配色不動。
 
 ### 2026-11-11
 - 建立 `CLAUDE.md` 段落同步規則和 `work/` 結構，並補上本任務的紀錄。
