@@ -19,7 +19,7 @@ const SAMPLE = {
   '大型系統類開發': { done: ['InvestGo 需求完成需求梳理與 SRS 初稿'], next: ['InvestGo 原型設計評審'] },
   'IDE 串接研究': { conclusion: 'VS Code 可直接呼叫 Codio，開發體驗接近原生', done: ['完成 VS Code 串接測試'], next: ['測試 JetBrains 系列 IDE'] },
   'AAS 系統重構': { done: ['xTrack 既有模組盤點完成，共 18 個'], next: ['完成第一個模組重構'] },
-  '開放複用': { nums: { '尋求單位': 5, '申請單位': 3, '已上線單位': 1 }, hl: [0], done: ['財務處完成部署並開始試用'], next: ['協助品保處提交申請'] },
+  '開放複用': { nums: { '尋求': 5, '申請': 3, '已上線': 1 }, hl: [0], done: ['財務處完成部署並開始試用'], next: ['協助品保處提交申請'] },
   'Presentation Skill': { now: 2, subDone: 1, done: ['內容梳理子階段完成並在 3 份簡報試用'], next: ['完成風格與排版子階段'] },
   'Development Skill': { now: 2, subDone: 2, hl: [0], done: ['需求梳理、SRS 子階段完成，以 InvestGo 驗證'], next: ['完成原型設計子階段'] },
   '驗證兩台': { conclusion: '兩台可穩定運行 32B 模型，每秒約 12 字', done: ['完成 32B 模型 2 小時穩定性測試'], next: ['測試 70B 量化模型'] },
@@ -27,10 +27,11 @@ const SAMPLE = {
 };
 const inject = `
 const __S = ${JSON.stringify(SAMPLE)};
-PROJECTS.forEach(p => p.reqs.forEach(r => { if (__S[r.name]) r.rep = __S[r.name]; }));
+MODULES.forEach(p => p.reqs.forEach(r => { if (__S[r.name]) r.rep = __S[r.name]; }));
 /* ===== 計算與呈現 ===== */`;
 const banner = '<div style="background:#B3261E;color:#fff;font-weight:700;text-align:center;font-size:13px;padding:3px 0">示意資料：以下內容為版面示意，不是真實回報</div>';
-const html = src.replace('/* ===== 計算與呈現 ===== */', inject).replace('<div class="wrap">', banner + '<div class="wrap">');
+const html = src.replace('/* ===== 計算與呈現 ===== */', inject).replace('<div class="page">', banner + '<div class="page">');
+if (!html.includes('示意資料：')) throw new Error('示意橫條沒有插入成功');
 
 (async () => {
   const b = await chromium.launch();

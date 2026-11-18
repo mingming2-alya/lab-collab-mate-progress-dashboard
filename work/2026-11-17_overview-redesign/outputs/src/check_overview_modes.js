@@ -8,7 +8,7 @@ const mockSrc = fs.readFileSync(path.join(__dirname, 'mock_overview.js'), 'utf8'
 const SAMPLE = eval('(' + mockSrc.match(/const SAMPLE = (\{[\s\S]*?\n\});/)[1] + ')');
 const src = fs.readFileSync(path.resolve(root, 'public', 'index.html'), 'utf8');
 const html = src.replace('/* ===== 計算與呈現 ===== */',
-  `const __S = ${JSON.stringify(SAMPLE)};\nPROJECTS.forEach(p => p.reqs.forEach(r => { if (__S[r.name]) r.rep = __S[r.name]; }));\n/* ===== 計算與呈現 ===== */`);
+  `const __S = ${JSON.stringify(SAMPLE)};\nMODULES.forEach(p => p.reqs.forEach(r => { if (__S[r.name]) r.rep = __S[r.name]; }));\n/* ===== 計算與呈現 ===== */`);
 
 (async () => {
   const b = await chromium.launch();

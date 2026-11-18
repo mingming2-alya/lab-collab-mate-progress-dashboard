@@ -9,7 +9,7 @@ const src = fs.readFileSync(path.resolve(root, 'public', 'index.html'), 'utf8');
 const fill = `
 const __n = ${+nChars};
 const __t = k => "測試文字".repeat(Math.ceil(__n / 4)).slice(0, __n - 1) + k;
-PROJECTS.forEach(p => p.reqs.forEach(r => {
+MODULES.forEach(p => p.reqs.forEach(r => {
   r.rep = { now: r.steps ? 1 : null, done: [__t("一"), __t("二")], next: [__t("三"), __t("四")],
             conclusion: r.type === "research" ? __t("論") : undefined,
             nums: r.nums ? Object.fromEntries(r.nums.map((k, i) => [k, i + 2])) : undefined };
