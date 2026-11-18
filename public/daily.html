@@ -274,10 +274,14 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
 .ssum .row .k{color:var(--muted)}
 .ssum b.mono{font-size:14px}
 .ssum .dim{color:var(--muted);font-size:13px}
+/* 收合摘要裡的「現象」只留一行（完整原話在展開區），讓等高卡片不被單張撐高 */
+@media (min-width:901px){.ssum .row .dim{flex-basis:100%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 .card[data-s="idle"] .sum .prog{color:var(--muted)}
 @media (min-width:901px){
   .wrap{max-width:1360px;gap:14px;padding-block:14px 20px}
-  .mods{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:10px;align-items:start}
+  .mods{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:10px;align-items:stretch}
+  /* 收合時所有卡片等高（取最高者）；有卡片展開時不套用，避免其他列被撐高 */
+  .mods:not(:has(.card[aria-expanded="true"])){grid-auto-rows:1fr}
   .card{padding:11px 13px;gap:6px}
   .card h3{font-size:15.5px}
   .ssum{padding:6px 10px}
@@ -381,9 +385,8 @@ const PLAN = {
      ms:[["2027-01-08","給出產品測試軟體開發與產品失效分析的時程","gate"]]},
     {name:"LabMind 串連", group:2, row:"each", steps:[
       {n:"1 LabMind 架構研究", s:"2026-11-16", e:"2026-12-11", kind:"build", ms:[["2026-12-11","和 LabMind 團隊定案方案 A／B","gate"]]},
-      {n:"資源評估（模型、硬體）", sub:"用驗證 Try Run 的實測數據", s:"2026-12-07", e:"2026-12-18", kind:"build"},
       {n:"2 Lab Collab Mate 適配設計", sub:"含產品測試軟體開發與產品失效分析工作流設計", s:"2026-12-14", e:"2026-12-25", kind:"build"},
-      {n:"3 硬體資源部署準備", sub:"含模型與硬體需求", s:"2026-12-28", e:"2027-01-08", kind:"build", ms:[["2027-01-08","部署方案提案會","gate"]]},
+      {n:"3 資源評估與準備", sub:"模型與硬體需求評估（用驗證 Try Run 的實測數據）、部署方案提案", s:"2026-12-07", e:"2027-01-08", kind:"build", ms:[["2027-01-08","部署方案提案會","gate"]]},
       {n:"4 正式串連測試", sub:"硬體到位後約 3–4 週", s:null},
       {n:"5 用戶 Try Run", sub:"串連完成後約 2 週", s:null}]}
   ]

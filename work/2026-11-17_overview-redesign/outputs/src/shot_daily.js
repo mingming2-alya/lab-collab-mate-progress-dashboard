@@ -23,8 +23,16 @@ const url = 'file://' + path.resolve(root, 'public', 'daily.html');
       }),
     }));
     console.log(`${w}x${h} scrollHeight=${m.sh} 垂直溢出=${m.sh - h}px 橫向溢出=${m.sw - w}px`, errs.length ? 'ERR ' + errs.join(';') : 'console OK');
+    const cards = await p.evaluate(() => [...document.querySelectorAll('#mods .card')].map(c => Math.round(c.getBoundingClientRect().height)));
+    console.log('  卡片高度', JSON.stringify(cards));
     if (w === 1440) {
-      console.log(JSON.stringify(m.h3));
+      // 展開第一張卡時，其他卡不應被撐高
+      await p.click('#mods .card');
+      await p.waitForTimeout(200);
+      const exp = await p.evaluate(() => [...document.querySelectorAll('#mods .card')].map(c => Math.round(c.getBoundingClientRect().height)));
+      console.log('  展開第一張後', JSON.stringify(exp));
+      await p.click('#mods .card');
+      await p.waitForTimeout(200);
       await p.screenshot({ path: path.join(out, 'daily-renamed-1440.png') });
       for (const s of await p.$$('summary')) {
         if ((await s.textContent()).includes('完整時程')) { await s.click(); break; }
