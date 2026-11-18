@@ -70,9 +70,13 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}
 .ask div + div{margin-top:2px}
 
 /* 模塊卡：三欄，第三欄上下疊放 03、04 */
-.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:stretch}
 .col{display:flex;flex-direction:column;gap:12px;min-width:0}
-.mod{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.mod{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;flex:1 1 auto}
+/* 三欄底部切齊：較矮的欄把多出的高度平均分給各需求，需求內容在自己的格內垂直置中 */
+.mbody{flex:1 1 auto;display:flex;flex-direction:column}
+.mbody > .proj{flex:none}
+.mbody > .req{flex:1 1 auto;align-content:center}
 .mod > header{display:flex;align-items:baseline;gap:12px;background:var(--brand);color:var(--on-brand);padding:7px 16px}
 .mod h3{font-size:19px;font-weight:900;letter-spacing:.06em}
 .mod h3 .no{margin-right:10px}
