@@ -293,7 +293,30 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
   .card .cbody{display:none;border-top:1px dashed var(--line);margin-top:2px;padding-top:10px}
   .card[aria-expanded="true"] .cbody{display:flex;flex-direction:column;gap:10px}
   .card[aria-expanded="true"] .chev{transform:rotate(90deg)}
-  .card[aria-expanded="true"]{grid-column:1 / -1}
+}
+/* ---- 展開閱讀版面（課長用：完整但精簡） ---- */
+/* 時程只寫一次：展開時隱藏摘要裡的時程，保留展開區較完整的時程（含里程碑、備案、下一階段）；手機一律展開，同樣處理 */
+.card[aria-expanded="true"] .sum .ssum{display:none}
+@media (max-width:900px){.card .sum .ssum{display:none}}
+/* 工具／項目列壓成一行：名稱・負責人・狀態 */
+.mrow.two{padding:6px 12px}
+/* 展開時風險／對策說明不截斷（完整版） */
+.card[aria-expanded="true"] .sum .issue .ask{display:block;-webkit-line-clamp:unset;overflow:visible}
+.mrow.two .nm small{display:inline;margin-left:8px}
+@media (min-width:901px){
+  /* 6 欄格線：主業務整排、支援三張並排、排隊業務兩張並排；同排等高 */
+  .mods{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .card[data-w]{grid-column:span 6}
+  .card[data-w="2"]{grid-column:span 2}
+  .card[data-w="3"]{grid-column:span 3}
+  /* 工作流列：左欄名稱／負責人／節點數，右欄時程步驟條 */
+  .mrow:not(.two){grid-template-columns:190px minmax(0,1fr);grid-template-rows:auto 1fr;gap:4px 18px;padding:10px 12px}
+  .mrow:not(.two) .nm{grid-column:1;grid-row:1}
+  .mrow:not(.two) .st{grid-column:1;grid-row:2;justify-self:start;align-self:start;text-align:left}
+  .mrow:not(.two) .stepper{grid-column:2;grid-row:1 / span 2;margin:8px 0 0}
+}
+@media (min-width:901px) and (max-width:1199px){
+  .card[data-w="2"]{grid-column:span 3}
 }
 @media (min-width:901px) and (prefers-reduced-motion:reduce){.card .chev{transition:none}}
 /* 矮螢幕（≤960px，如筆電 1440×900）再壓縮，維持單屏 */
@@ -343,7 +366,7 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
   </section>
 
   <footer>
-    <span>資料來源：工程師當日回報訊息，由 PM 彙整。「排程」依 PM 規劃的時程版本，進行中與剩餘天數皆以所選日報的日期為基準，不隨瀏覽當天變動。</span>
+    <span>資料來源：工程師當日回報訊息，由 PM 彙整。「時程」依 PM 規劃的時程版本，進行中與剩餘天數皆以所選日報的日期為基準，不隨瀏覽當天變動。</span>
     <span>燈號：● 正常＝依計畫推進；▲ 注意＝有延誤可能，團隊可自行處理；■ 受阻＝需要外部協助；○ 未啟動＝尚未開工，非異常。</span>
     <span>「今日更新」＝與前一份日報相比有變動。</span>
   </footer>
@@ -508,15 +531,16 @@ const issueHTML = x => `<div class="issue ${x.type}"><span class="k">${TAG[x.typ
 
 /* 模塊＝日報的呈現單位，對應整體時程。src＝整條工作線的進展原話；rows＝工作線裡的單項（工具），track＝對應 PLAN 的時程線。
    工作線 06 Try Run、05 工作流建置已由時程裡的里程碑取代，不再單獨顯示。 */
+/* 排列：主業務（整排）→ 支援與平台（三張並排）→ 排隊中的業務（兩張並排）。w＝桌機 6 欄格線中佔幾欄 */
 const MODULES = [
-  {name:"環境與框架", track:"環境與框架", src:[{ws:1, label:"本地模型"}, {ws:2, label:"ADK 框架"}]},
-  {name:"客戶軟體驗證", rows:[{ws:4, item:"Bundle 驗證", track:"Bundle 驗證"}, {ws:4, item:"proxima 驗證", track:"proxima 驗證"}, {ws:4, item:"EFI 驗證", track:"EFI 驗證"}]},
-  {name:"共性工具", note:"各工作流共用；刷機需在 Bundle 首次跑通前（11/18）可用", rows:[{ws:3, item:"郵箱"}, {ws:3, item:"雷達"}, {ws:3, item:"刷機"}, {ws:3, item:"收集 log"}]},
-  {name:"產品 Panic 處理", track:"產品 Panic 處理", rows:[{ws:3, item:"Panic", label:"Panic 工具（兩條共用）"},
+  {name:"客戶軟體驗證", w:6, rows:[{ws:4, item:"Bundle 驗證", track:"Bundle 驗證"}, {ws:4, item:"proxima 驗證", track:"proxima 驗證"}, {ws:4, item:"EFI 驗證", track:"EFI 驗證"}]},
+  {name:"環境與框架", w:2, track:"環境與框架", src:[{ws:1, label:"本地模型"}, {ws:2, label:"ADK 框架"}]},
+  {name:"共性工具", w:2, note:"各工作流共用；刷機需在 Bundle 首次跑通前（11/18）可用", rows:[{ws:3, item:"郵箱"}, {ws:3, item:"雷達"}, {ws:3, item:"刷機"}, {ws:3, item:"收集 log"}]},
+  {name:"LabMind 串連", w:2, track:"LabMind 串連", src:[{ws:7}]},
+  {name:"產品 Panic 處理", w:3, track:"產品 Panic 處理", rows:[{ws:3, item:"Panic", label:"Panic 工具（兩條共用）"},
     {item:"CoreOS Panic 工作流", owner:"Simon、Gary"}, {item:"Diags Panic 工作流", owner:"熙宁"}]},
-  {name:"產品測試軟體開發、產品失效分析", track:"產品測試軟體開發、產品失效分析", rows:[{ws:3, item:"Insight", label:"Insight 工具（FA 用）"},
-    {item:"Codio 融入工作流調研", owner:"熙宁"}, {item:"AI FA 融入工作流調研", owner:"万峰、景棠"}]},
-  {name:"LabMind 串連", track:"LabMind 串連", src:[{ws:7}]}
+  {name:"產品測試軟體開發、產品失效分析", w:3, track:"產品測試軟體開發、產品失效分析", rows:[{ws:3, item:"Insight", label:"Insight 工具（FA 用）"},
+    {item:"Codio 融入工作流調研", owner:"熙宁"}, {item:"AI FA 融入工作流調研", owner:"万峰、景棠"}]}
 ];
 const HOME = {1:"環境與框架", 2:"環境與框架", 3:"共性工具", 4:"客戶軟體驗證", 5:"客戶軟體驗證", 6:"客戶軟體驗證", 7:"LabMind 串連"};
 const RANK = {red:4, yellow:3, green:2, done:1, idle:0};
@@ -564,7 +588,7 @@ function schedHTML(tr){
   else if (I.nxt) out.push(`<div>${I.nxt.s ? `<b class="mono">${mdd(I.nxt.s)}</b> 開始` : "時程待定"}：<b>${esc(I.nxt.n)}</b>${I.nxt.s ? ` <span class="dim">（${dn(I.nxt.s) - TODAY} 天後）</span>` : ""}</div>`);
   if (I.m) out.push(`<div>下一個里程碑：<b>${esc(I.m[1])}</b>　<b class="mono">${mdd(I.m[0])}</b> <span class="dim">（${left(dn(I.m[0]))}）${I.m[3] ? "　" + esc(I.m[3]) : ""}</span></div>`);
   if (I.nx) out.push(`<div class="dim">下一階段：${esc(I.nx.n)}（${rng(I.nx)}）</div>`);
-  return `<div class="sched"><span class="lbl">排程</span>${out.join("")}</div>`;
+  return `<div class="sched"><span class="lbl">時程</span>${out.join("")}</div>`;
 }
 /* 工作流的關鍵步驟：工具開發與工作流串連 → 首次跑通 → 連續 5 次穩定跑通 → Try Run → 上線，依日期排序；標出已過／進行中／下一步 */
 function rowSteps(tr){
@@ -619,7 +643,7 @@ function render(){
       srow = `<div class="row"><span class="k">尚未開始</span><b>${esc(I.nxt.n)}</b><span class="k">預計</span><b class="mono">${I.nxt.s ? mdd(I.nxt.s) + " 開始" : "時程待定"}</b></div>`;
     }
     const sched = srow ? `<div class="ssum"><span class="lbl">時程</span>${srow}</div>` : "";
-    return `<article class="card" data-s="${x.status}" role="button" tabindex="0" aria-expanded="true">
+    return `<article class="card" data-s="${x.status}" data-w="${M.w||6}" role="button" tabindex="0" aria-expanded="true">
       <div class="hd"><h3>${esc(M.name)}</h3>
         ${lives.length ? `<span class="livepill">◆ 上線 ${lives.map(mdd).join("、")}</span>` : ""}
         ${x.changed ? `<span class="badge new">今日更新</span>` : `<span class="badge same">今日無變動</span>`}
