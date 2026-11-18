@@ -618,6 +618,9 @@ const d1118 = day(d1111, d => {
   d[4].items[0] = ["Bundle 驗證工作流","Simon、Gary","已串聯 4 個節點","doing"];
   Object.assign(d[5], {state:"Bundle 部分節點試用中", update:"Bundle 驗證：能跑通查看新 bundle、下載新 bundle、刷機。EFI、proxima 本次未回報。"});
   d[5].items[0] = ["Bundle 驗證（查看、下載、刷機）","Simon、Gary","可跑通","doing"];
+  Object.assign(d[6], {status:"green", state:"架構研究中・已取得架構與程式碼",
+    update:"取得 LabMind 技術架構文件與相關程式碼。", next:"研讀 LabMind 架構與程式碼，評估 Lab Collab Mate 的接入方式"});
+  d[6].items[0] = ["LabMind 架構研究","—","已取得架構文件與程式碼","doing"];
 });
 
 const REPORTS = [
