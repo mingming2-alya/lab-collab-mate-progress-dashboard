@@ -202,14 +202,14 @@ const MODULES = [
      desc:"比較 Codio 的 IDE 插件與原生 TUI：插件在上手、多會話、閱讀輸出、選中代碼、引用檔案、跳回代碼都較直覺；TUI 把操作留在鍵盤上。產出 IDE 插件安裝 SOP（5 步）。11/16 結案，沒有規劃下一步。",
      rep:{pill:"11/16 結案", conclusion:"IDE 插件體驗較佳：選中代碼自動引用、Diff 一鍵跳轉、多標籤並行；已產出插件安裝 SOP",
           done:["完成 IDE 插件與原生 TUI 體驗比較，產出插件安裝 SOP，11/16 結案"], hideDone:true,
-          hl:[{i:0, o:6, s:"IDE 串接研究", t:"完成 IDE 插件與原生 TUI 比較，產出安裝 SOP，11/16 結案"}]}},
+          hl:[{i:0, o:6, s:"IDE 串接研究", t:"確認工程師在慣用的開發工具內用 Codio 體驗較好，已產出安裝 SOP，研究結案"}]}},
     {proj:"新 Skill 研究與建置", name:"Presentation Skill", type:"deliver", dri:"Alyanna", steps:SKILL, rel:"之後接上 Nomi",
      sub:{at:2, items:["目標／對象／架構／內容梳理","風格與排版","品管與檢查驗證"]},
      desc:"技能名 deck-architect（從頭到尾支援簡報全流程的 Skill）。進度來源：claude-base-skills repo 的 presentation-skill-generation 分支。目前在技能設計：方法論已用 4 份真實簡報驗證，正在做設計美感的風格定調；尚未用真實簡報從頭做到成品。",
      rep:{now:1,
           done:["完成 12 款風格意象圖（插畫、積木、水彩可切換畫風）", "依審閱回饋重做顧問報告、週報、攝影雜誌三款"],
           next:["討論 12 款並選出首批 3 款，進入逐風格設計排法"],
-          hl:[{i:0, o:5, s:"Presentation Skill", t:"完成簡報架構梳理技能，產出 12 款風格意象圖"}]}},
+          hl:[{i:0, o:5, s:"Presentation Skill", t:"AI 簡報技能已能梳理內容架構，並備妥 12 款視覺風格供選用"}]}},
     {proj:"新 Skill 研究與建置", name:"Development Skill", type:"deliver", dri:"Lucas", steps:SKILL, rel:"由 Codio 執行，InvestGo、PCC 驗證",
      sub:{at:2, items:["需求梳理","SRS","原型設計","開發設計文檔","程式碼生成校正","上線運維","測試用例生成"]},
      desc:"以 InvestGo 部門 IDL 資訊更新看板、PCC 人力活化系統兩個需求實測，與 Codio 的兩個案例共用驗證。",
@@ -222,7 +222,7 @@ const MODULES = [
      ms:[["2026-11-24","Bundle 首次跑通"],["2026-11-25","proxima 自動化節點開發完成"],["2026-12-01","Bundle 五次跑通"],["2026-12-11","正式上線（proxima、EFI 首次跑通 TBD）"]],
      rep:{now:1, subs:[["Bundle",1],["proxima",1],["EFI",1]],
           done:["Bundle 串聯 4 個節點，可跑通查看、下載新 bundle 與刷機", "Bundle 累計 9 個、proxima 6 個、EFI 1 個自動化節點"],
-          hl:[{i:0, s:"Lab Collab Mate", t:"Bundle 串聯 4 個節點，查看、下載新 bundle 與刷機已能跑通", o:1}],
+          hl:[{i:0, s:"Lab Collab Mate", t:"AI 已能自動完成客戶新版軟體的「查詢、下載、刷機」，預計 11/24 跑通驗證全流程", o:1}],
           issue:"proxima、EFI 首次跑通時間 TBD（EFI 因支援客戶 STFL 轉 burn-in 延緩）",
           next:["Bundle 本週串接完成，下週二（11/24）首次跑通全流程"]}},
     {proj:"Lab Collab Mate", name:"產品 Panic 處理", type:"deliver", dri:"Simon、Gary、熙宁", steps:WF, start:"2026-12-01",
@@ -243,7 +243,7 @@ const MODULES = [
      desc:"大型系統類開發：以 InvestGo 部門 IDL 資訊更新看板需求為試點，用 Codio 搭配開發 Skill 走開發流程。",
      rep:{done:["用 Codio 搭配開發設計文檔生成 Skill，依 SRS 自動生成開發設計文檔（技能實測驗證中）"],
           next:["結合 Vibe Coding Skill，開展程式碼生成測試"],
-          hl:[{i:0, o:4, s:"InvestGo、PCC", t:"Codio 搭配 Development Skill，自動產出開發設計文檔與看板 UI 設計"}]}},
+          hl:[{i:0, o:4, s:"InvestGo、PCC", t:"AI 已能從需求自動產出畫面設計與開發設計文件，正以 2 個真實案例驗證"}]}},
     {proj:"Codio 使用與活化", name:"PCC 人力活化系統", type:"promo", dri:"Lucas", rel:"與 Development Skill 共用驗證",
      desc:"大型系統類開發：以 PCC 人力活化系統需求為試點，用 Codio 搭配開發 Skill 走開發流程。",
      rep:{done:["用 Codio 搭配原型生成 Skill，依需求自動生成看板 UI 設計（技能實測驗證中）"],
@@ -254,14 +254,14 @@ const MODULES = [
      rep:{now:5, pill:"內部驗收完成",
           done:["用 Nomi 走完系統重構全流程，內部測試驗收完成"],
           next:["跟用戶單位確認功能是否符合業務需求（TBD）"],
-          hl:[{i:0, o:3, s:"AAS 系統重構", t:"用 Nomi 走完系統重構全流程，內部測試驗收完成"}]}}
+          hl:[{i:0, o:3, s:"AAS 系統重構", t:"用 AI 平台 Nomi 完成舊系統整套重構，通過內部驗收，下一步交業務單位確認"}]}}
   ]},
   {no:"④", name:"推廣複用", col:2, reqs:[
     {proj:"AI Hiring Agent", name:"開放複用", type:"promo", dri:"Alyanna", nums:["尋求","申請","已上線"], numUnit:"單位",
      rep:{nums:{"尋求":2, "申請":0, "已上線":0},
           done:["PCC、Non Phone OPM 派人了解，已提供操作影片與部署準備簡報"],
           next:["待需求單位確認導入需求，並準備部署的硬體與模型"],
-          hl:[{i:0, o:2, s:"AI Hiring Agent", t:"PCC、Non Phone OPM 來了解，已提供操作影片與部署準備簡報"}]}}
+          hl:[{i:0, o:2, s:"AI Hiring Agent", t:"2 個單位（PCC、Non Phone OPM）前來了解導入，已提供操作影片與部署說明"}]}}
   ]}
 ];
 
