@@ -90,6 +90,9 @@ h1 .mono{font-family:var(--f-mono);font-size:.62em;color:var(--muted);font-weigh
 .chip.ok{color:var(--ok);background:var(--ok-soft)}
 .line{font-size:13px;line-height:1.45;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .line b{color:var(--fg)}
+.line.multi{white-space:normal}
+.pgl > .line{flex:1 1 0}
+.nw{white-space:nowrap}
 .ms{font-size:12px;color:var(--muted)}
 .ms b{color:var(--fg)}
 
@@ -126,8 +129,11 @@ footer a{color:var(--accent)}
   h1{font-size:22px}
   .stat{padding:6px 14px}
   .stat b{font-size:24px}
-  .hl{padding:8px 16px 10px}
-  .hl li{font-size:15px}
+  .hl{padding:6px 16px 8px}
+  .hl h2{margin-bottom:3px}
+  .hl li{font-size:15px;line-height:1.4}
+  .hl ul{gap:2px 28px}
+  .help{padding:5px 16px}
   .card > header{padding:7px 14px 5px}
   .req{padding:4px 14px 5px;gap:1px}
   .board,.col{gap:10px}
@@ -285,12 +291,12 @@ function progressHTML(r){
     const started = now != null && [...nowSet(now)].some(i => i >= 0);
     const when = src && !r.rep && now != null ? `<span class="dim">（${md(src.date)}）</span>` : "";
     let text;
-    if (src && src.subs) text = src.subs.map(([n, i]) => `${esc(n)} <b>${i >= 0 ? esc(r.steps[i]) : "未開始"}</b>`).join("・") + when;
+    if (src && src.subs) text = src.subs.map(([n, i]) => `<span class="nw">${esc(n)} <b>${i >= 0 ? esc(r.steps[i]) : "未開始"}</b></span>`).join("・") + when;
     else if (now == null) text = `<span class="dim">${r.sub ? `建置含 ${r.sub.items.length} 個子階段` : "尚無回報"}</span>`;
     else if (!started) text = `<b>尚未開始</b>`;
     else if (r.sub && nowSet(now).has(r.sub.at)) text = `<b>${esc(r.steps[r.sub.at])}</b>：完成 ${src.subDone || 0} 個子階段、共 ${r.sub.items.length} 個${when}`;
     else text = `<b>${esc(stepName(r.steps, now))}</b>${when}`;
-    return `<div class="pgl">${trackHTML(r, now ?? -1, src && src.subDone)}<div class="line">${text}</div></div>` + msHTML(r.ms);
+    return `<div class="pgl">${trackHTML(r, now ?? -1, src && src.subDone)}<div class="line${src && src.subs ? " multi" : ""}">${text}</div></div>` + msHTML(r.ms);
   }
   if (r.type === "research") {
     const c = r.rep && r.rep.conclusion;
