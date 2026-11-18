@@ -5,146 +5,168 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>SW AI 推動全貌</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Grotesk:wght@500;700&display=swap">
 <style>
-/* 版面概念：成熟度泳道。由上往下四條泳道＝① 課題研究 → ② 案例開發 → ③ 導入試用 → ④ 推廣複用；
-   每條泳道左側是箭頭形的模塊標籤（標籤之間以 ↓ 串連），需求卡片在泳道內橫排，同泳道等高。
-   頂部：左＝本週摘要（四個數字＋需要副總幫忙的事），右＝本週亮點（項目・需求：亮點）。
-   四個模塊各一個色相，依路線由冷到暖（靛 → 藍 → 青 → 琥珀）；語意色（完成綠、求助紅）與模塊色分開。 */
+/* 總覽（給副總）：一頁不滾動，一眼看清單位本週動作。
+   閱讀順序：標題 → 左欄四個數字／右欄本週亮點 → 四大模塊。
+   四大模塊依成熟度路線排列：① 課題研究 → ② 案例開發 → ③ 導入試用 → ④ 推廣複用；每個模塊用實心標題列分界。
+   每個需求只留三樣：名稱＋狀態標籤、本週、下週（研究型多一行結論）；DRI、關聯、下一里程碑、子項狀態放在滑鼠提示。
+   沿用每日進度頁的設計 token（同配色、字體、狀態語意）。 */
 :root{
-  --bg:#F2F4F8; --surface:#FFFFFF; --sunk:#E9EDF3; --fg:#162033; --muted:#596579; --line:#DCE2EB;
-  --ok:#1D7A4B; --ok-soft:#E1F2E8; --bad:#B42318; --bad-soft:#FCE8E6; --idle:#5F6B7C; --idle-soft:#E7EBF0;
-  --l1:#4F46B8; --l1s:#ECEBFA; --l2:#1F66C7; --l2s:#E5EEFB; --l3:#0B7E70; --l3s:#E0F3F0; --l4:#B4530F; --l4s:#FBEDE2;
-  --on-lane:#FFFFFF;
-  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;
-  --f-num:"Space Grotesk","Noto Sans TC",ui-sans-serif,system-ui,sans-serif;
+  --bg:#F3F5F7; --surface:#FFFFFF; --fg:#18212B; --muted:#5D6B7A; --line:#DCE2E8; --seg:#D3DAE1;
+  --accent:#1E5A86; --accent-soft:#E3EDF5; --on-accent:#FFFFFF;
+  --ok:#1F7A4D; --ok-soft:#E2F2E9; --warn:#A86200; --warn-soft:#FBEFD9; --bad:#B3261E; --bad-soft:#FBE4E2;
+  --idle:#66727F; --idle-soft:#E8ECF0; --new:#6A3FB5; --new-soft:#EEE6FA;
+  --panel:#E9EEF3;
+  --f-display:"Noto Serif TC","Noto Serif CJK TC","Songti TC","Songti SC","STSong","PMingLiU","SimSun",serif;
+  --f-body:"PingFang TC","PingFang SC","Microsoft JhengHei","Microsoft YaHei","Noto Sans TC","Noto Sans CJK TC",system-ui,sans-serif;
+  --f-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0F141C; --surface:#18202B; --sunk:#131A23; --fg:#E7ECF3; --muted:#9AA6B6; --line:#2A3443;
-  --ok:#5CCB8E; --ok-soft:#163427; --bad:#FF8A80; --bad-soft:#3D1C1A; --idle:#A6B1BF; --idle-soft:#242E3B;
-  --l1:#A49BF2; --l1s:#24214A; --l2:#73A9F2; --l2s:#17263D; --l3:#52C7B4; --l3s:#112E2A; --l4:#F0A466; --l4s:#3A2516;
-  --on-lane:#0F141C;
+  --bg:#11161C; --surface:#19212A; --fg:#E6ECF1; --muted:#97A5B3; --line:#2B3642; --seg:#33404D;
+  --accent:#7FB6E0; --accent-soft:#1D3243; --on-accent:#0E1A24;
+  --ok:#5CC48C; --ok-soft:#173527; --warn:#F0B055; --warn-soft:#3A2A12; --bad:#F2857C; --bad-soft:#3E1D1B;
+  --idle:#A3B0BD; --idle-soft:#26303A; --new:#C3A6F2; --new-soft:#2E2442;
+  --panel:#0C1116;
   color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0F141C; --surface:#18202B; --sunk:#131A23; --fg:#E7ECF3; --muted:#9AA6B6; --line:#2A3443;
-  --ok:#5CCB8E; --ok-soft:#163427; --bad:#FF8A80; --bad-soft:#3D1C1A; --idle:#A6B1BF; --idle-soft:#242E3B;
-  --l1:#A49BF2; --l1s:#24214A; --l2:#73A9F2; --l2s:#17263D; --l3:#52C7B4; --l3s:#112E2A; --l4:#F0A466; --l4s:#3A2516;
-  --on-lane:#0F141C;
+  --bg:#11161C; --surface:#19212A; --fg:#E6ECF1; --muted:#97A5B3; --line:#2B3642; --seg:#33404D;
+  --accent:#7FB6E0; --accent-soft:#1D3243; --on-accent:#0E1A24;
+  --ok:#5CC48C; --ok-soft:#173527; --warn:#F0B055; --warn-soft:#3A2A12; --bad:#F2857C; --bad-soft:#3E1D1B;
+  --idle:#A3B0BD; --idle-soft:#26303A; --new:#C3A6F2; --new-soft:#2E2442;
+  --panel:#0C1116;
   color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5}
-.page{max-width:1600px;margin:0 auto;padding-block:12px 14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:12px}
+.page{max-width:1600px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 14px;display:flex;flex-direction:column;gap:12px}
 h1,h2,h3,h4{margin:0;text-wrap:balance}
-.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 .dim{color:var(--muted)}
 
 /* 分頁 */
 .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
 .tabs a{font-size:13.5px;font-weight:700;color:var(--muted);text-decoration:none;padding:6px 13px;border-bottom:3px solid transparent;margin-bottom:-1px}
 .tabs a:hover{color:var(--fg)}
-.tabs a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--fg)}
-.tabs a:focus-visible{outline:2px solid var(--l2);outline-offset:2px;border-radius:4px}
+.tabs a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--accent)}
+.tabs a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 
 /* 標題列 */
 .titlebar{display:flex;justify-content:space-between;align-items:flex-end;gap:8px 20px;flex-wrap:wrap}
-.eyebrow{font-size:11.5px;letter-spacing:.14em;color:var(--muted);font-weight:500}
-h1{font-size:26px;line-height:1.2;font-weight:900;letter-spacing:.02em}
-h1 .num{font-size:.7em;color:var(--muted);font-weight:500;margin-left:12px;letter-spacing:0}
+.eyebrow{font-size:11.5px;letter-spacing:.12em;color:var(--muted);font-weight:500}
+h1{font-family:var(--f-display);font-size:26px;line-height:1.2;font-weight:700}
+h1 .mono{font-family:var(--f-mono);font-size:.62em;color:var(--muted);font-weight:400;margin-left:10px}
 .asof{font-size:12.5px;color:var(--muted)}
 
-/* 頂部：本週摘要｜本週亮點 */
-.top{display:grid;grid-template-columns:minmax(400px,32%) minmax(0,1fr);gap:12px}
-.sum{background:var(--surface);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;overflow:hidden}
-.figs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
-.fig{padding:10px 16px 9px;display:flex;flex-direction:column;gap:1px}
-.fig + .fig{border-left:1px solid var(--line)}
-.fig b{font-family:var(--f-num);font-size:34px;font-weight:700;line-height:1;letter-spacing:-.01em}
-.fig span{font-size:12.5px;color:var(--muted);font-weight:500}
-.fig.go b{color:var(--ok)}
-.help{flex:1;border-top:1px solid var(--line);padding:9px 16px 10px;display:flex;gap:12px;align-items:flex-start}
-.help b.n{font-family:var(--f-num);font-size:34px;font-weight:700;line-height:1;color:var(--idle)}
-.help.on{background:var(--bad-soft)}
-.help.on b.n{color:var(--bad)}
-.help .t{font-size:12.5px;color:var(--muted);font-weight:500;line-height:1.35}
-.help.on .t{color:var(--bad);font-weight:700}
-.help .d{font-size:14px;line-height:1.5;margin-top:2px}
-.hl{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 18px 12px;min-width:0}
-.hl h2{font-size:13px;font-weight:700;letter-spacing:.12em;color:var(--ok);margin-bottom:6px;display:flex;align-items:center;gap:8px}
-.hl h2::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ok)}
+/* 頂部一列：左＝四個數字（項目數、需求數、本週有進度的需求數；需要副總幫忙，直接寫出是什麼事），右＝本週亮點。已回報數只放在右上小字給 PM 看 */
+.top{display:grid;grid-template-columns:minmax(380px,30%) minmax(0,1fr);gap:12px;align-items:stretch}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto 1fr;gap:10px}
+.kpi{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:8px 12px;min-width:0}
+.kpi > b{font-family:var(--f-mono);font-size:30px;line-height:1;color:var(--c);flex:none}
+.kpi .t{font-size:12.5px;color:var(--muted);font-weight:700;line-height:1.35}
+.kpi.help{grid-column:1 / -1;flex-wrap:wrap;row-gap:4px;align-content:flex-start;padding:8px 16px;gap:12px}
+.kpi.help .d{flex-basis:100%;font-size:14px;line-height:1.45;border-top:1px solid var(--line);padding-top:5px}
+
+/* 本週亮點：「項目・需求：進度亮點」，一行寫不完換第二行，不截斷 */
+.hl{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--ok);border-radius:10px;padding:9px 16px 10px;min-width:0}
+.hl h2{font-size:13px;letter-spacing:.08em;color:var(--ok);font-weight:700;margin-bottom:6px}
 .hl ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 28px}
-.hl li{font-size:15.5px;font-weight:700;line-height:1.45;padding-left:22px;position:relative}
-.hl li::before{content:"✓";position:absolute;left:0;top:0;color:var(--ok)}
-.hl li .p{color:var(--lc,var(--l2))}
+.hl li{font-size:16px;font-weight:700;line-height:1.45;padding-left:24px;position:relative}
+.hl li::before{content:"✓";position:absolute;left:0;color:var(--ok)}
+.hl li .p{color:var(--accent)}
 .hl .empty{font-size:14px;color:var(--muted)}
 
-/* 泳道 */
-.lanes{display:flex;flex-direction:column;gap:10px}
-.lane{display:grid;grid-template-columns:168px minmax(0,1fr);gap:12px;align-items:stretch;--lc:var(--l1);--ls:var(--l1s)}
-.lane[data-m="2"]{--lc:var(--l2);--ls:var(--l2s)}
-.lane[data-m="3"]{--lc:var(--l3);--ls:var(--l3s)}
-.lane[data-m="4"]{--lc:var(--l4);--ls:var(--l4s)}
-.tag{position:relative;background:var(--lc);color:var(--on-lane);border-radius:10px 0 0 10px;padding:10px 26px 10px 14px;display:flex;flex-direction:column;justify-content:center;gap:2px;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,0 100%)}
-.tag .no{font-family:var(--f-num);font-size:13px;font-weight:700;opacity:.85;letter-spacing:.08em}
-.tag h3{font-size:19px;font-weight:900;letter-spacing:.04em;line-height:1.25}
-.tag span{font-size:12.5px;font-weight:500;opacity:.92}
-.cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;min-width:0}
-.cards.n2{grid-template-columns:repeat(2,minmax(0,1fr))}
-.card{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--lc);border-radius:8px;padding:7px 12px 8px;display:flex;flex-direction:column;gap:2px;min-width:0}
-.ch{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
-.cp{font-size:11.5px;font-weight:700;color:var(--lc);letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.cn{font-size:15px;font-weight:700;line-height:1.35}
-.pill{font-size:12px;font-weight:700;padding:0 8px;border-radius:999px;white-space:nowrap;color:var(--lc);background:var(--ls)}
+/* 四大模塊：三欄，第三欄上下疊放 ③ ④；每個模塊＝實心標題列＋淺底面板，需求是面板上的白色區塊 */
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.mod{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.mod > header{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--accent);color:var(--on-accent)}
+.mod h3{font-size:17px;font-weight:700;letter-spacing:.02em}
+.mod h3 .no{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--on-accent);color:var(--accent);font-size:13px;margin-right:8px;vertical-align:1px}
+.mod > header span{font-size:12.5px;margin-left:auto;white-space:nowrap;opacity:.9}
+.mbody{padding:8px;display:flex;flex-direction:column;gap:6px}
+.proj{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;padding:2px 4px 0}
+
+/* 需求：名稱＋狀態、本週、下週（研究型多一行結論） */
+.req{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 12px 7px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.rh{display:flex;align-items:center;gap:10px;min-width:0}
+.rn{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.pill{margin-left:auto;flex:none;font-size:12.5px;font-weight:700;padding:1px 9px;border-radius:999px;white-space:nowrap;color:var(--accent);background:var(--accent-soft)}
 .pill.idle{color:var(--idle);background:var(--idle-soft)}
 .pill.ok{color:var(--ok);background:var(--ok-soft)}
-.ln{font-size:13.5px;line-height:1.45;display:grid;grid-template-columns:2.6em minmax(0,1fr);margin-top:1px}
-.ln .k{font-weight:700;font-size:12.5px;padding-top:1px}
+.ln{font-size:13.5px;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ln .k{display:inline-block;width:2.6em;font-weight:700}
 .ln.done .k{color:var(--ok)}
 .ln.next{color:var(--muted)}
-.ln.next > span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ln.next .k{color:var(--lc)}
+.ln.next .k{color:var(--accent)}
+.ln.concl .k{color:var(--new)}
 .ln.concl{font-weight:700}
-.ln.concl .k{color:var(--lc)}
-.ln small{color:var(--muted);font-weight:400}
-.ln.last{color:var(--muted);font-size:12.5px}
+.ln small{color:var(--muted);margin-left:4px;font-weight:400}
 
-footer{font-size:11.5px;color:var(--muted)}
-footer a{color:var(--l2)}
+footer{font-size:11.5px;color:var(--muted);display:flex;gap:4px 18px;flex-wrap:wrap;align-items:center}
+footer a{color:var(--accent)}
 
 /* 矮螢幕（如筆電 1440×900）再壓縮，維持單屏 */
-@media (min-width:1101px) and (max-height:960px){
+@media (min-width:901px) and (max-height:960px){
   .page{gap:9px;padding-block:6px 8px}
   h1{font-size:22px}
-  .fig{padding:6px 14px 5px}
-  .fig b,.help b.n{font-size:28px}
-  .help{padding:6px 14px 7px}
-  .hl{padding:7px 16px 8px}
-  .hl h2{margin-bottom:3px}
-  .hl li{font-size:14.5px;line-height:1.38}
+  .kpi{padding:5px 12px}
+  .kpi > b{font-size:24px}
+  .hl{padding:6px 16px 6px}
+  .hl h2{margin-bottom:4px}
+  .hl li{font-size:15px;line-height:1.35}
   .hl ul{gap:4px 24px}
-  .lanes{gap:7px}
-  .top{gap:10px}
-  .card{padding:5px 11px 6px;gap:1px}
-  .ln{font-size:13px;line-height:1.4}
-  .tag h3{font-size:17px}
+  .hl h2{margin-bottom:3px}
+  .board,.col{gap:12px}
+  .mod > header{padding:6px 14px}
+  .mbody{padding:6px;gap:5px}
+  .req{padding:4px 12px 5px;gap:1px}
 }
 
-/* 平板以下：泳道標籤移到上方、卡片兩欄；手機一欄 */
-@media (max-width:1100px){
-  .top{grid-template-columns:1fr}
-  .lane{grid-template-columns:1fr;gap:8px}
-  .tag{border-radius:10px;clip-path:none;flex-direction:row;align-items:baseline;gap:10px;padding:8px 14px}
-  .cards,.cards.n2{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
-@media (max-width:640px){
-  .cards,.cards.n2{grid-template-columns:1fr}
+/* 平板：兩欄；手機：一欄 */
+@media (max-width:1100px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}.top{grid-template-columns:1fr}}
+@media (max-width:760px){
+  .board{grid-template-columns:1fr}
   .hl ul{grid-template-columns:1fr}
-  .figs .fig b{font-size:28px}
+  .ln{white-space:normal}
 }
-@media (prefers-reduced-motion:no-preference){.card{transition:box-shadow .15s}.card:hover{box-shadow:0 2px 10px rgba(16,24,40,.08)}}
+
+/* ===== 風格 B｜現代卡片（使用者 11-18 選定）：淺陰影、圓角，四個模塊各一種顏色 =====
+   模塊色依路線：① 紫 ② 藍 ③ 綠松 ④ 橘；*s＝同色淡底。三個主題區塊都定義，深色模式用較亮的模塊色與深色淡底。 */
+:root{--bg:#F4F5F9;--panel:#FFFFFF;--line:#E8EAF0;
+  --m1:#6D4AE8;--m1s:#F0ECFD;--m2:#2563EB;--m2s:#E8F0FE;--m3:#0E8A84;--m3s:#E3F5F3;--m4:#C2410C;--m4s:#FDEEE6;--on-m:#FFFFFF;
+  --sh1:0 1px 3px rgba(20,30,60,.08),0 4px 14px rgba(20,30,60,.05);--sh2:0 1px 2px rgba(20,30,60,.06)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0F141C;--panel:#18202B;--line:#2A3443;
+  --m1:#A996F7;--m1s:#221D3F;--m2:#74A7F5;--m2s:#16253C;--m3:#4CC4B4;--m3s:#112D2A;--m4:#F2A06A;--m4s:#382315;--on-m:#0F141C;
+  --sh1:0 1px 3px rgba(0,0,0,.35);--sh2:0 1px 2px rgba(0,0,0,.3)}}
+:root[data-theme="dark"]{--bg:#0F141C;--panel:#18202B;--line:#2A3443;
+  --m1:#A996F7;--m1s:#221D3F;--m2:#74A7F5;--m2s:#16253C;--m3:#4CC4B4;--m3s:#112D2A;--m4:#F2A06A;--m4s:#382315;--on-m:#0F141C;
+  --sh1:0 1px 3px rgba(0,0,0,.35);--sh2:0 1px 2px rgba(0,0,0,.3)}
+body{background:var(--bg)}
+.kpi,.hl{border:0;box-shadow:var(--sh1);border-radius:14px}
+.kpi{border-left:0;border-top:4px solid var(--c)}
+.hl{border-left:0;border-top:4px solid var(--ok)}
+.board{gap:16px}
+.col{gap:16px}
+.mod{border:0;border-radius:16px;box-shadow:var(--sh1)}
+.mod > header{background:var(--mc);color:var(--on-m)}
+.mod h3 .no{background:var(--on-m);color:var(--mc)}
+.mod[data-m="1"]{--mc:var(--m1);--ms:var(--m1s)}
+.mod[data-m="2"]{--mc:var(--m2);--ms:var(--m2s)}
+.mod[data-m="3"]{--mc:var(--m3);--ms:var(--m3s)}
+.mod[data-m="4"]{--mc:var(--m4);--ms:var(--m4s)}
+.mbody{background:var(--ms);padding:10px;gap:8px}
+.proj{color:var(--mc)}
+.req{border:0;border-radius:10px;box-shadow:var(--sh2)}
+.pill{color:var(--mc);background:var(--ms)}
+.pill.idle{color:var(--idle);background:var(--idle-soft)}
+.pill.ok{color:var(--ok);background:var(--ok-soft)}
+.hl li .p{color:var(--m2)}
+@media (min-width:901px) and (max-height:960px){
+  .board,.col{gap:12px}
+  .mbody{padding:7px;gap:6px}
+  .mod > header{padding:5px 14px}
+}
 </style>
 </head>
 <body>
@@ -155,11 +177,13 @@ footer a{color:var(--l2)}
     <div class="asof" id="asof"></div>
   </div>
   <div class="top">
-    <section class="sum" aria-label="本週摘要"><div class="figs" id="figs"></div><div class="help" id="help"></div></section>
+    <div class="kpis" id="kpis"></div>
     <section class="hl" aria-labelledby="hlh"><h2 id="hlh">本週亮點</h2><div id="hl"></div></section>
   </div>
-  <main class="lanes" id="lanes" aria-label="四大模塊"></main>
-  <footer>進度以負責人最近一次回報為準；日期為 PM 規劃的時程。滑鼠移到卡片上可看 DRI、步驟、下一里程碑等細節；Lab Collab Mate 的工作流細節見 <a href="daily.html">每日進度</a>。</footer>
+  <main class="board" id="board" aria-label="四大模塊"></main>
+  <footer>
+    <span>進度以負責人最近一次回報為準；日期為 PM 規劃的時程。滑鼠移到需求上可看 DRI、步驟、下一里程碑等細節；Lab Collab Mate 的工作流細節見 <a href="daily.html">每日進度</a>。</span>
+  </footer>
 </div>
 <script>
 /* ===== 資料（每週由 PM 依負責人訊息回覆更新） =====
@@ -228,32 +252,29 @@ const BASE = dn(ASOF);
 const REQS = MODULES.flatMap(m => m.reqs);
 const reported = REQS.filter(r => r.rep);
 const helps = reported.filter(r => r.rep.help);
-const hasDone = r => r.rep && (r.rep.done || []).length > 0;
-const progressed = REQS.filter(hasDone).length;
+const progressed = reported.filter(r => (r.rep.done || []).length).length;
 const projCount = new Set(REQS.map(r => r.proj)).size;
-const laneOf = r => MODULES.findIndex(m => m.reqs.includes(r)) + 1;
 
-/* 標題與本週摘要 */
-$("h1").innerHTML = `本週進度<span class="num">${md(WEEK.from)}–${md(WEEK.to)}</span>`;
+/* 標題與四個數字 */
+$("h1").innerHTML = `本週進度<span class="mono">${md(WEEK.from)}–${md(WEEK.to)}</span>`;
 $("asof").textContent = `資料截至 ${md(ASOF)}・已回報 ${reported.length}／${REQS.length}`;
-$("figs").innerHTML =
-  `<div class="fig"><b>${projCount}</b><span>個項目</span></div>` +
-  `<div class="fig"><b>${REQS.length}</b><span>個需求</span></div>` +
-  `<div class="fig go"><b>${progressed}</b><span>個需求本週有進度</span></div>`;
-$("help").className = "help" + (helps.length ? " on" : "");
-$("help").innerHTML = `<b class="n">${helps.length}</b><div><div class="t">件需要副總幫忙</div>${helps.length
-  ? helps.map(r => `<div class="d"><b>${esc(r.name)}</b>：${esc(r.rep.help)}</div>`).join("")
-  : `<div class="d dim">本週沒有需要副總幫忙的事項</div>`}</div>`;
+const kpi = (c, n, t, d, cls = "") => `<div class="kpi ${cls}" style="--c:var(${c})"><b>${n}</b><span class="t">${t}</span>${d ? `<div class="d">${d}</div>` : ""}</div>`;
+$("kpis").innerHTML =
+  kpi("--accent", projCount, "個項目") +
+  kpi("--accent", REQS.length, "個需求") +
+  kpi("--ok", progressed, "個需求<br>本週有進度") +
+  kpi(helps.length ? "--bad" : "--idle", helps.length, "件需要<br>副總幫忙",
+      helps.length ? helps.map(r => `<div><b>${esc(r.name)}</b>：${esc(r.rep.help)}</div>`).join("") : `<div class="dim">本週沒有需要副總幫忙的事項</div>`, "help");
 
-/* 本週亮點：「項目・需求：進度亮點」，一行寫不完換第二行。回報中標記 hl 的完成事項；沒標記時取各需求第一件，最多 6 件 */
+/* 本週亮點：「項目・需求：進度亮點」。回報中標記 hl 的完成事項；沒標記時取各需求第一件，最多 6 件 */
 let hls = reported.flatMap(r => (r.rep.hl || []).map(i => [r.rep.done[i], r]));
-if (!hls.length) hls = reported.filter(hasDone).map(r => [r.rep.done[0], r]);
+if (!hls.length) hls = reported.filter(r => (r.rep.done || []).length).map(r => [r.rep.done[0], r]);
 hls = hls.slice(0, 6);
 $("hl").innerHTML = hls.length
-  ? `<ul>${hls.map(([t, r]) => `<li style="--lc:var(--l${laneOf(r)})"><span class="p">${esc(r.proj)}・${esc(r.name)}</span>：${esc(t)}</li>`).join("")}</ul>`
+  ? `<ul>${hls.map(([t, r]) => `<li><span class="p">${esc(r.proj)}・${esc(r.name)}</span>：${esc(t)}</li>`).join("")}</ul>`
   : `<div class="empty">本週回報彙整中；負責人回覆後，這裡會列出本週最重要的完成事項。</div>`;
 
-/* 狀態標籤：一個詞說清楚現在在哪 */
+/* 需求狀態標籤：一個詞說清楚現在在哪 */
 const nowSet = v => new Set([].concat(v ?? []));
 function pill(r){
   const src = r.rep || r.last;
@@ -263,14 +284,14 @@ function pill(r){
     if (now == null) return ["idle", "待回報"];
     const set = nowSet(now), started = [...set].some(i => i >= 0);
     if (!started) return ["idle", r.start ? `預計 ${md(r.start)} 開始` : "尚未開始"];
-    if (r.sub && set.has(r.sub.at)) return ["", `${r.steps[r.sub.at]}・${src.subDone || 0} 個子階段完成`];
+    if (r.sub && set.has(r.sub.at)) return ["", `${r.steps[r.sub.at]}・子階段 ${src.subDone || 0}／${r.sub.items.length}`.replace(/(\d+)／(\d+)/, "$1 個完成、共 $2 個")];
     return ["", [...set].filter(i => i >= 0).map(i => r.steps[i]).join("、")];
   }
   if (r.type === "research") return r.rep ? (r.rep.conclusion ? ["ok", "已有結論"] : ["", "測試中"]) : ["idle", "待回報"];
   if (r.nums) return r.rep && r.rep.nums ? ["", r.nums.map(n => `${n} ${r.rep.nums[n] ?? "–"}`).join("・")] : ["idle", "待回報"];
   return r.rep ? ["", "推廣中"] : ["idle", "待回報"];
 }
-/* 滑鼠提示：DRI、關聯、步驟、子項狀態、下一里程碑 */
+/* 滑鼠提示：DRI、關聯、下一里程碑、子項狀態、步驟 */
 function tip(r){
   const src = r.rep || r.last, t = [`DRI：${r.dri || "待補"}`];
   if (r.rel) t.push(`關聯：${r.rel}`);
@@ -282,25 +303,24 @@ function tip(r){
   if (r.desc) t.push(r.desc);
   return t.join("\n");
 }
-function cardHTML(r){
+function reqHTML(r){
   const [cls, word] = pill(r);
   let rows = "";
-  if (r.rep && r.rep.conclusion) rows += `<div class="ln concl"><span class="k">結論</span><span>${esc(r.rep.conclusion)}</span></div>`;
+  if (r.rep && r.rep.conclusion) rows += `<div class="ln concl"><span class="k">結論</span>${esc(r.rep.conclusion)}</div>`;
   if (r.rep) {
-    const ln = (arr, c, k) => `<div class="ln ${c}"${c === "next" && arr && arr.length ? ` title="下週：${esc(arr.join("；"))}"` : ""}><span class="k">${k}</span><span>${arr && arr.length ? esc(arr[0]) + (arr.length > 1 ? `<small>　等 ${arr.length} 件</small>` : "") : `<span class="dim">—</span>`}</span></div>`;
+    const ln = (arr, c, k) => `<div class="ln ${c}"><span class="k">${k}</span>${arr && arr.length ? esc(arr[0]) + (arr.length > 1 ? `<small>等 ${arr.length} 件</small>` : "") : `<span class="dim">—</span>`}</div>`;
     rows += ln(r.rep.done, "done", "本週") + ln(r.rep.next, "next", "下週");
   } else if (r.last && r.last.text) {
-    rows += `<div class="ln last"><span class="k">上次</span><span>${md(r.last.date)}：${esc(r.last.text)}</span></div>`;
+    rows += `<div class="ln next"><span class="k">上次</span>${md(r.last.date)}：${esc(r.last.text)}</div>`;
   }
-  return `<article class="card" title="${esc(tip(r))}"><div class="ch"><span class="cp">${esc(r.proj)}</span><span class="pill ${cls}">${esc(word)}</span></div><h4 class="cn">${esc(r.name)}</h4>${rows}</article>`;
+  return `<div class="req" title="${esc(tip(r))}"><div class="rh"><span class="rn">${esc(r.name)}</span><span class="pill ${cls}">${esc(word)}</span></div>${rows}</div>`;
 }
-function laneHTML(m, i){
-  const n = m.reqs.filter(hasDone).length;
-  return `<section class="lane" data-m="${i + 1}" aria-label="${esc(m.name)}">
-    <div class="tag"><span class="no">階段 ${i + 1}</span><h3>${esc(m.name)}</h3><span>${m.reqs.length} 個需求<br>本週 ${n} 個有進度</span></div>
-    <div class="cards${m.reqs.length <= 2 ? " n2" : ""}">${m.reqs.map(cardHTML).join("")}</div></section>`;
+function modHTML(m){
+  let html = "", proj = null;
+  m.reqs.forEach(r => { if (r.proj !== proj) { proj = r.proj; html += `<h4 class="proj">${esc(proj)}</h4>`; } html += reqHTML(r); });
+  return `<section class="mod" data-m="${MODULES.indexOf(m) + 1}"><header><h3><span class="no">${m.no.replace(/[①②③④]/, c => "①②③④".indexOf(c) + 1)}</span>${esc(m.name)}</h3><span>${m.reqs.length} 個需求</span></header><div class="mbody">${html}</div></section>`;
 }
-$("lanes").innerHTML = MODULES.map(laneHTML).join("");
+$("board").innerHTML = [0, 1, 2].map(c => `<div class="col">${MODULES.filter(m => m.col === c).map(modHTML).join("")}</div>`).join("");
 </script>
 </body>
 </html>
