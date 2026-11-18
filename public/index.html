@@ -60,6 +60,10 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}
 .wins ul{list-style:none;margin:0;padding:10px 8px;display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));align-items:center}
 .wins li{display:flex;align-items:baseline;gap:12px;padding:3px 20px;min-width:0;font-size:16px}
 .wins li + li{border-left:1px solid var(--line)}
+/* 4 則時排成兩欄兩列 */
+.wins ul.g2{row-gap:6px}
+.wins ul.g2 li:nth-child(odd){border-left:0}
+.wins ul.g2 li:nth-child(n+3){border-top:1px solid var(--line);padding-top:7px}
 .wins li b{color:var(--brand);font-size:17.5px;font-weight:900;white-space:nowrap;padding-right:10px;border-right:1px solid var(--line)}
 .wins li span{min-width:0}
 .wins .empty{padding:0 18px;color:var(--muted);align-self:center}
@@ -117,6 +121,9 @@ html.fit2 .proj{font-size:14px;padding:4px 0 3px}
 html.fit2 .req{padding:4px 0 5px}
 html.fit2 .req h4{font-size:15px}
 html.fit2 .ln{font-size:13px;line-height:1.42}
+html.fit2 .wins ul{padding:4px 8px}
+html.fit2 .wins ul.g2{row-gap:2px}
+html.fit2 .wins ul.g2 li:nth-child(n+3){padding-top:3px}
 html.fit2 .page{gap:9px;padding-block:6px 8px}
 html.fit2 .head h1{font-size:27px}
 html.fit2 .head .seg b{font-size:28px}
@@ -194,7 +201,11 @@ const MODULES = [
           next:["討論 12 款並選出首批 3 款，進入逐風格設計排法"],
           hl:[{i:0, s:"Presentation Skill", t:"完成簡報架構梳理技能，產出 12 款風格意象圖"}]}},
     {proj:"新 Skill 研究與建置", name:"Development Skill", type:"deliver", dri:null, steps:SKILL, rel:"由 Codio 執行，InvestGo 驗證",
-     sub:{at:2, items:["需求梳理","SRS","原型設計","開發設計文檔","程式碼生成校正","上線運維","測試用例生成"]}, rep:null}
+     sub:{at:2, items:["需求梳理","SRS","原型設計","開發設計文檔","程式碼生成校正","上線運維","測試用例生成"]},
+     desc:"以 InvestGo 部門 IDL 資訊更新看板需求實測，與 Codio（InvestGo）共用同一個驗證案例。",
+     rep:{now:3,
+          done:["以 InvestGo 實測：依 SRS 自動生成開發設計文檔"],
+          next:["結合 Vibe Coding Skill，測試程式碼生成"]}}
   ]},
   {no:"②", name:"案例開發", col:1, reqs:[
     {proj:"Lab Collab Mate", name:"客戶軟體驗證", type:"deliver", dri:"Simon、Gary、景棠、熙宁", steps:WF,
@@ -214,7 +225,11 @@ const MODULES = [
      rep:null}
   ]},
   {no:"③", name:"導入試用", col:2, reqs:[
-    {proj:"Codio 使用與活化", name:"大型系統類開發", type:"promo", dri:null, rel:"與 Development Skill 共用 InvestGo 驗證", rep:null},
+    {proj:"Codio 使用與活化", name:"InvestGo", type:"promo", dri:null, rel:"與 Development Skill 共用 InvestGo 驗證",
+     desc:"大型系統類開發：以 InvestGo 部門 IDL 資訊更新看板需求為試點，用 Codio 搭配開發 Skill 走開發流程。",
+     rep:{done:["IDL 資訊更新看板：用 Codio 搭配開發設計文檔生成 Skill，依 SRS 自動生成開發設計文檔（技能實測驗證中）"],
+          next:["結合 Vibe Coding Skill，開展程式碼生成測試"],
+          hl:[{i:0, s:"InvestGo", t:"用 Codio 依 SRS 自動產出開發設計文檔"}]}},
     {proj:"Nomi 使用與活化", name:"AAS 系統重構", type:"deliver", dri:"Tylee",
      steps:["系統分析","需求梳理","原型確認","技術規劃","AI 開發測試","內部試用驗收","用戶單位確認","Xylon 架構重構"],
      desc:"架構演進：原本建在 xTrack 系統管理架構 → Nomi 重構後為純 JSP（無系統管理架構）→ 下一階段改為 Xylon 系統管理架構。重構範圍止於驗收，不含正式部署與切換。用 Nomi 經 6 輪迭代（10/21–11/13），驗收 4 次退回後通過。",
@@ -251,13 +266,13 @@ const seg = (n, t) => `<div class="seg"><b class="num">${n}</b><span>${t}</span>
 $("head").innerHTML = `<h1>本週進度</h1><span class="wk num">｜ ${md(WEEK.from)}–${md(WEEK.to)}</span>` +
   seg(projCount, "項目") + seg(REQS.length, "需求") + seg(progressed, "本週有進度") + seg(helps.length, "待協調");
 
-/* 第二行：本週成果「主題｜成果」。回報的 hl 可寫 {i:完成事項索引, s:主題, t:短句}；只寫索引時，主題用需求名、內容用完成事項原文。最多 3 則 */
+/* 第二行：本週成果「主題｜成果」。回報的 hl 可寫 {i:完成事項索引, s:主題, t:短句}；只寫索引時，主題用需求名、內容用完成事項原文。最多 4 則 */
 let wins = reported.flatMap(r => (r.rep.hl || []).map(h => typeof h === "number"
   ? {s:r.name, t:r.rep.done[h]} : {s:h.s || r.name, t:h.t || r.rep.done[h.i]}));
 if (!wins.length) wins = reported.filter(hasDone).map(r => ({s:r.name, t:r.rep.done[0]}));
-wins = wins.slice(0, 3);
+wins = wins.slice(0, 4);
 $("wins").innerHTML = wins.length
-  ? `<ul style="--n:${wins.length}">${wins.map(w => `<li><b>${esc(w.s)}</b><span>${esc(w.t)}</span></li>`).join("")}</ul>`
+  ? `<ul class="${wins.length === 4 ? "g2" : ""}" style="--n:${wins.length === 4 ? 2 : wins.length}">${wins.map(w => `<li><b>${esc(w.s)}</b><span>${esc(w.t)}</span></li>`).join("")}</ul>`
   : `<div class="empty">本週回報彙整中；負責人回覆後，這裡會列出本週最重要的成果。</div>`;
 
 /* 第三行：請副總協助（有事項才出現） */

@@ -95,6 +95,16 @@ GitHub 上專門做「主管週報版面」的 repo 很少且品質不佳（多�
 
 ## 過程紀錄（由新到舊）
 
+### 2026-11-18（Development Skill 與 InvestGo 本週進度）
+- 新輸入（使用者口述）：InvestGo 部門 IDL 資訊更新看板需求，本週用 Codio 搭配「開發設計文檔生成」Skill，實現依 SRS 自動生成開發設計文檔，處於技能實測驗證階段；下週結合 Vibe Coding Skill 開展程式碼生成測試。使用者表示 Codio 大型系統開發可以直接寫 InvestGo。
+- 寫入總覽頁：
+  - Development Skill：狀態「實測驗證」；本週「以 InvestGo 實測：依 SRS 自動生成開發設計文檔」；下週「結合 Vibe Coding Skill，測試程式碼生成」。
+  - Codio 需求改名「InvestGo」；本週、下週照原話；本週成果新增「InvestGo｜用 Codio 依 SRS 自動產出開發設計文檔」。
+- 本週成果變 4 則：一排 4 則每則被折成 4–5 行，改成兩欄兩列；壓力測試 1440 溢出 2px，在全部緊湊模式收緊本週成果留白後 0px。
+- 頂部「本週有進度」變為 5、已回報 7／14。
+- 驗證：三種桌機單屏、三欄底部切齊、平板手機無橫向溢出、console 無錯誤。
+- 待確認：Development Skill 狀態寫「實測驗證」（使用者原話是「技能實測驗證階段」，對應五步的第 4 步）；本週成果兩則都和 InvestGo 有關，是否合併。
+
 ### 2026-11-18（AI Hiring Agent、Presentation Skill 本週進度）
 - 新輸入（使用者口述）：AI Hiring Agent 本週 PCC 與 Non Phone OPM 派人了解，已提供操作影片與部署準備簡報；待需求單位確認有無導入需求，並準備部署的硬體與模型。
 - 新輸入（連結）：Presentation Skill 進度在 claude-base-skills repo 的 presentation-skill-generation 分支；讀取後摘要於 `inputs/SUMMARY_PresentationSkill-進度.md`。
