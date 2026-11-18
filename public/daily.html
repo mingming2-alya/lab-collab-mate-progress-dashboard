@@ -338,12 +338,12 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
   <section aria-labelledby="s2">
     <details class="gbox" id="gbox">
       <summary class="donehd"><h2 id="s2">完整時程 <span class="count" id="c2"></span></h2><span class="chev" aria-hidden="true">›</span><span class="hint">點擊展開甘特圖</span></summary>
-      <div class="gwrap"><div class="glegend"><span><i style="background:var(--accent)"></i>工具開發與工作流串連・設計</span><span><i style="background:var(--ok)"></i>用戶 Try Run</span><span><i style="background:var(--idle-soft);border:1px solid var(--idle)"></i>已過</span><span><i style="border:1px dashed var(--idle)"></i>時程待定</span><span><i class="k" style="border-radius:50%;box-shadow:inset 0 0 0 2px var(--fg)"></i>正式數據首次跑通全流程</span><span><i class="k" style="border-radius:50%;background:var(--fg)"></i>正式數據連續 5 次穩定跑通全流程</span><span><i class="k" style="background:var(--warn);transform:rotate(45deg) scale(.85)"></i>判斷點／定案</span><span><i class="k" style="background:var(--ok);transform:rotate(45deg) scale(.85)"></i>正式上線（用戶驗收）</span><span style="color:var(--bad)">｜今天</span></div><div class="gantt" id="gantt"></div></div>
+      <div class="gwrap"><div class="glegend"><span><i style="background:var(--accent)"></i>工具開發與工作流串連・設計</span><span><i style="background:var(--ok)"></i>用戶 Try Run</span><span><i style="background:var(--idle-soft);border:1px solid var(--idle)"></i>已過</span><span><i style="border:1px dashed var(--idle)"></i>時程待定</span><span><i class="k" style="border-radius:50%;box-shadow:inset 0 0 0 2px var(--fg)"></i>正式數據首次跑通全流程</span><span><i class="k" style="border-radius:50%;background:var(--fg)"></i>正式數據連續 5 次穩定跑通全流程</span><span><i class="k" style="background:var(--warn);transform:rotate(45deg) scale(.85)"></i>判斷點／定案</span><span><i class="k" style="background:var(--ok);transform:rotate(45deg) scale(.85)"></i>正式上線（用戶驗收）</span><span style="color:var(--bad)">｜資料日（所選日報的日期）</span></div><div class="gantt" id="gantt"></div></div>
     </details>
   </section>
 
   <footer>
-    <span>資料來源：工程師當日回報訊息，由 PM 彙整。「排程」依 PM 規劃的時程版本，剩餘天數依瀏覽當天計算；其餘內容依所選日期的日報。</span>
+    <span>資料來源：工程師當日回報訊息，由 PM 彙整。「排程」依 PM 規劃的時程版本，進行中與剩餘天數皆以所選日報的日期為基準，不隨瀏覽當天變動。</span>
     <span>燈號：● 正常＝依計畫推進；▲ 注意＝有延誤可能，團隊可自行處理；■ 受阻＝需要外部協助；○ 未啟動＝尚未開工，非異常。</span>
     <span>「今日更新」＝與前一份日報相比有變動。</span>
   </footer>
@@ -543,8 +543,9 @@ function lastChange(idx, M){
 const dn = s => Date.UTC(+s.slice(0,4), +s.slice(5,7)-1, +s.slice(8,10)) / 864e5;
 const mdd = s => `${+s.slice(5,7)}/${+s.slice(8,10)}`;
 const rng = x => x.s ? (x.e ? `${mdd(x.s)}–${mdd(x.e)}` : `${mdd(x.s)} 起・結束待定`) : "時程待定";
-const t0 = new Date(), TODAY = Date.UTC(t0.getFullYear(), t0.getMonth(), t0.getDate()) / 864e5;
-const left = d => d === TODAY ? "今天" : d > TODAY ? `剩 ${d - TODAY} 天` : `已過 ${TODAY - d} 天`;
+/* 基準日＝所選日報的日期，不用瀏覽器當天：PM 提供新進度前，時程狀態與倒數不會自己變動。render() 會依所選日報更新。 */
+let TODAY = dn(REPORTS[0].date);
+const left = d => d === TODAY ? "當天" : d > TODAY ? `剩 ${d - TODAY} 天` : `已過 ${TODAY - d} 天`;
 const TRACK = name => PLAN.tracks.find(tr => tr.name === name);
 function trackInfo(tr){
   const st = tr.steps;
@@ -577,7 +578,7 @@ function rowSteps(tr){
   let cur = -1; items.forEach((x,i) => { if (x.d <= TODAY) cur = i; });
   return `<ol class="stepper">${items.map((x,i) => {
     const st = i < cur ? "past" : i === cur ? (i === items.length-1 && x.end < TODAY ? "past" : "now") : i === cur+1 ? "next" : "";
-    const tag = st === "now" ? (x.end > TODAY ? `進行中・${left(x.end)}` : "進行中") : st === "next" ? (x.d === TODAY ? "今天" : `${x.d - TODAY} 天後`) : "";
+    const tag = st === "now" ? (x.end > TODAY ? `進行中・${left(x.end)}` : "進行中") : st === "next" ? (x.d === TODAY ? "當天" : `${x.d - TODAY} 天後`) : "";
     return `<li class="${st}${x.k === "live" ? " live" : ""}"><span class="sd mono">${x.date}</span><span class="sn">${esc(x.n)}</span>${tag ? `<span class="sg">${tag}</span>` : ""}</li>`;
   }).join("")}</ol>`;
 }
@@ -585,6 +586,8 @@ function rowSteps(tr){
 function render(){
   const idx = Math.max(0, REPORTS.findIndex(x => key(x.date) === location.hash.slice(1)));
   const r = REPORTS[idx], prev = REPORTS[idx+1];
+  TODAY = dn(r.date);
+  renderGantt();
   const [, m, d] = r.date.split("-");
   $("h1").textContent = `${+m} 月 ${+d} 日進度`;
   $("date").innerHTML = REPORTS.map((x,i) => `<option value="${key(x.date)}"${i===idx?" selected":""}>${x.date}（${wk(x.date)}）${i===0?"・最新":""}</option>`).join("");
@@ -660,7 +663,7 @@ function renderGantt(){
   for (let w = 0; w < PLAN.weeks; w++) { const x = new Date((A + w*7) * 864e5); ticks += `<span class="wk" style="left:${pct(A+w*7)}">${x.getUTCMonth()+1}/${x.getUTCDate()}</span>`; }
   for (let d = A; d < A + span; d++) { const x = new Date(d * 864e5);
     if (x.getUTCDate() === 1 || d === A) ticks += `<span class="mo" style="left:${pct(d)}">${x.getUTCFullYear()!==2026?x.getUTCFullYear()+" 年 ":""}${x.getUTCMonth()+1} 月</span>`; }
-  if (inAxis) ticks += `<span class="todayl" style="left:${pct(TODAY)}">今天 ${t0.getMonth()+1}/${t0.getDate()}</span>${todayEl}`;
+  if (inAxis) ticks += `<span class="todayl" style="left:${pct(TODAY)}">資料日 ${mdd(new Date(TODAY * 864e5).toISOString().slice(0,10))}</span>${todayEl}`;
   const bar = x => {
     if (!x.s) return `<span class="bar tbdbar" title="${esc(x.n)}">時程待定</span>`;
     const st = dn(x.e) < TODAY ? "past" : (dn(x.s) <= TODAY ? "now" : "");
@@ -682,7 +685,6 @@ try { if (localStorage.getItem("ganttOpen") === "1") $("gbox").open = true; } ca
 $("gbox").addEventListener("toggle", () => { try { localStorage.setItem("ganttOpen", $("gbox").open ? "1" : "0"); } catch(e) {} });
 addEventListener("hashchange", render);
 $("date").addEventListener("change", e => { location.hash = e.target.value; });
-renderGantt();
 render();
 </script>
 </body>
