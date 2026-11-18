@@ -524,7 +524,7 @@ const RANK = {red:4, yellow:3, green:2, done:1, idle:0};
 /* 從某天的日報算出模塊內容 */
 function modOf(r, M){
   const P = no => r.projects.find(p => p.no === no);
-  const lines = (M.src||[]).map(s => { const p = P(s.ws); return {label:s.label, text:p.update, status:p.status, owners:p.owners||"", next:p.next, eta:p.eta}; });
+  const lines = (M.src||[]).map(s => { const p = P(s.ws); return {label:s.label, text:p.update ?? "", status:p.status, owners:p.owners||"", next:p.next, eta:p.eta}; });
   const rows = (M.rows||[]).map(s => { const p = s.ws ? P(s.ws) : {status:"idle"}; const it = (p.items||[]).find(i => i[0] === s.item) || [s.item, s.owner || "—"];
     return {...s, owner:it[1], lab:it[2] || "未開始", k:it[3] || "todo", status: it[3] && it[3] !== "todo" ? p.status : "idle"}; });
   const issues = r.projects.flatMap(p => (p.issues||[]).filter(x => (x.mod || HOME[p.no]) === M.name));
@@ -616,20 +616,20 @@ function render(){
       srow = `<div class="row"><span class="k">尚未開始</span><b>${esc(I.nxt.n)}</b><span class="k">預計</span><b class="mono">${I.nxt.s ? mdd(I.nxt.s) + " 開始" : "時程待定"}</b></div>`;
     }
     const sched = srow ? `<div class="ssum"><span class="lbl">時程</span>${srow}</div>` : "";
-    return `<article class="card" data-s="${x.status}" role="button" tabindex="0" aria-expanded="false">
+    return `<article class="card" data-s="${x.status}" role="button" tabindex="0" aria-expanded="true">
       <div class="hd"><h3>${esc(M.name)}</h3>
         ${lives.length ? `<span class="livepill">◆ 上線 ${lives.map(mdd).join("、")}</span>` : ""}
         ${x.changed ? `<span class="badge new">今日更新</span>` : `<span class="badge same">今日無變動</span>`}
         <span class="pill">${LABEL[x.status]}</span></div>
       <div class="sum">
         ${sched}
-        ${!I && x.lines.length ? `<div class="prog">${x.lines.map(l => `<div>${x.lines.length > 1 ? `<b>${esc(l.label)}</b>` : ""}${esc(l.text)}</div>`).join("")}</div>` : ""}
+        ${!I && x.lines.length ? `<div class="prog">${x.lines.filter(l => l.text).map(l => `<div>${x.lines.length > 1 ? `<b>${esc(l.label)}</b>` : ""}${esc(l.text)}</div>`).join("")}</div>` : ""}
         ${x.issues.map(issueHTML).join("")}
       </div>
       <span class="chev" aria-hidden="true">›</span>
       <div class="cbody">
       ${M.track ? schedHTML(TRACK(M.track)) : ""}
-      ${I && x.lines.length ? `<div class="prog">${x.lines.map(l => `<div>${x.lines.length > 1 ? `<b>${esc(l.label)}</b>` : ""}${esc(l.text)}</div>`).join("")}</div>` : ""}
+      ${I && x.lines.length ? `<div class="prog">${x.lines.filter(l => l.text).map(l => `<div>${x.lines.length > 1 ? `<b>${esc(l.label)}</b>` : ""}${esc(l.text)}</div>`).join("")}</div>` : ""}
       ${x.lines.filter(l => l.next).map(l => `<dl class="kv"><dt>下一步</dt><dd>${esc(l.next)}</dd></dl>`).join("")}
       ${M.note ? `<div class="sched"><span class="dim">${esc(M.note)}</span></div>` : ""}
       ${x.rows.length ? `<div class="mrows">${x.rows.map(s => `<div class="mrow${s.track ? "" : " two"}">
