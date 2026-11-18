@@ -234,7 +234,9 @@ const MODULES = [
      ms:[["2026-12-14","開始調研"],["2027-01-08","給出時程"]], rep:null, last:{date:"2026-11-11", now:-1}},
     {proj:"Lab Collab Mate", name:"LabMind 接入", type:"deliver", dri:null, steps:["架構研究","適配設計","資源評估與準備","正式串連測試","用戶 Try Run"],
      ms:[["2026-11-16","開始架構研究"],["2026-12-07","適配設計、資源評估與準備同時開始"],["2026-12-11","和 LabMind 團隊定案方案 A／B"],["2027-01-08","部署方案提案會"]],
-     rep:null}
+     rep:{now:0,
+          done:["取得 LabMind 技術架構文件與相關程式碼"],
+          next:["研讀 LabMind 架構與程式碼，評估 Lab Collab Mate 的接入方式"]}}
   ]},
   {no:"③", name:"導入試用", col:2, reqs:[
     {proj:"Codio 使用與活化", name:"InvestGo IDL 資訊更新看板", type:"promo", dri:"Lucas", rel:"與 Development Skill 共用 InvestGo 驗證",
@@ -259,8 +261,7 @@ const MODULES = [
      rep:{nums:{"尋求":2, "申請":0, "已上線":0},
           done:["PCC、Non Phone OPM 派人了解，已提供操作影片與部署準備簡報"],
           next:["待需求單位確認導入需求，並準備部署的硬體與模型"],
-          hl:[{i:0, o:2, s:"AI Hiring Agent", t:"PCC、Non Phone OPM 來了解，已提供操作影片與部署準備簡報"}]}},
-    {proj:"Codio 使用與活化", name:"工具腳本類開發", type:"promo", dri:null, rep:null}
+          hl:[{i:0, o:2, s:"AI Hiring Agent", t:"PCC、Non Phone OPM 來了解，已提供操作影片與部署準備簡報"}]}}
   ]}
 ];
 
