@@ -6,7 +6,8 @@
 <meta name="robots" content="noindex,nofollow">
 <title>SW AI 推動全貌</title>
 <style>
-/* 總覽（給副總）：一頁不滾動，看清楚單位本週動作。
+/* 總覽（給副總）：一頁不滾動，一眼看清單位本週動作。
+   閱讀順序：本週進度（數字＋一句話）→ 本週亮點（大字）→ 6 張項目卡（每張列出各需求的進度）。
    結構：項目 → 需求。進度、本週完成、下週要完成都算在需求上；項目只負責分組。
    沿用每日進度頁的設計 token（同配色、字體、狀態語意）。 */
 :root{
@@ -34,8 +35,8 @@
 [hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5}
-.wrap{max-width:1600px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 14px;display:flex;flex-direction:column;gap:10px}
-h1,h2{margin:0;text-wrap:balance}
+.wrap{max-width:1600px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 14px;display:flex;flex-direction:column;gap:12px}
+h1,h2,h3{margin:0;text-wrap:balance}
 .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 .dim{color:var(--muted)}
 
@@ -46,62 +47,71 @@ h1,h2{margin:0;text-wrap:balance}
 .tabs a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--accent)}
 .tabs a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 
-/* 頁首：標題＋週次（左）、三個數字（右） */
-header.page{display:flex;justify-content:space-between;align-items:flex-end;gap:12px 20px;flex-wrap:wrap}
+/* 頁首：標題＋一句話（左）、三個數字（右） */
+header.page{display:flex;justify-content:space-between;align-items:flex-end;gap:12px 24px;flex-wrap:wrap}
 .eyebrow{font-size:11.5px;letter-spacing:.12em;color:var(--muted);font-weight:500}
-h1{font-family:var(--f-display);font-size:24px;line-height:1.25;font-weight:700}
-.week{font-size:13px;color:var(--muted);margin-top:2px}
-.week b{color:var(--fg)}
-.stats{display:flex;gap:8px;flex-wrap:wrap}
-.stat{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:8px;padding:5px 14px 6px;min-width:128px}
-.stat b{display:block;font-family:var(--f-mono);font-size:24px;line-height:1.15;color:var(--c)}
-.stat span{font-size:12px;color:var(--muted);font-weight:700}
-.headline{font-size:13.5px;margin:3px 0 0}
-.headline b{color:var(--fg)}
+h1{font-family:var(--f-display);font-size:26px;line-height:1.2;font-weight:700}
+h1 .mono{font-family:var(--f-mono);font-size:.62em;color:var(--muted);font-weight:400;margin-left:10px}
+.headline{font-size:15px;margin:4px 0 0}
+.headline b{color:var(--accent)}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{display:flex;align-items:baseline;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 16px}
+.stat b{font-family:var(--f-mono);font-size:28px;line-height:1;color:var(--c)}
+.stat b small{font-size:.55em;color:var(--muted);font-weight:400}
+.stat span{font-size:12.5px;color:var(--muted);font-weight:700;line-height:1.3}
+
+/* 本週亮點：頁面的視覺焦點 */
+.hl{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--ok);border-radius:10px;padding:10px 16px 12px}
+.hl h2{font-size:13px;letter-spacing:.08em;color:var(--ok);font-weight:700;margin-bottom:6px}
+.hl ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 28px}
+.hl li{font-size:16px;font-weight:700;line-height:1.45;padding-left:24px;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hl li::before{content:"✓";position:absolute;left:0;color:var(--ok)}
+.hl li small{font-size:12px;font-weight:400;color:var(--muted);margin-left:10px}
+.hl .empty{font-size:14px;color:var(--muted)}
 
 /* 需要副總支援：有事項時才出現 */
-.help{display:flex;gap:8px 14px;flex-wrap:wrap;align-items:baseline;padding:7px 12px;background:var(--bad-soft);border:1px solid var(--bad);border-radius:8px;font-size:13.5px}
+.help{display:flex;gap:8px 16px;flex-wrap:wrap;align-items:baseline;padding:8px 16px;background:var(--bad-soft);border:1px solid var(--bad);border-radius:10px;font-size:14px}
 .help .k{font-weight:700;color:var(--bad)}
 
-/* 主表：項目欄＋需求列 */
-.board{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
-.cols{display:grid;grid-template-columns:200px minmax(0,1.25fr) minmax(0,1fr) minmax(0,.9fr);gap:0 16px;align-items:start}
-.thead{display:grid;grid-template-columns:132px minmax(0,1fr);font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;background:var(--bg);border-bottom:1px solid var(--line)}
-.thead > span,.thead .cols > span{padding:6px 0}
-.thead > span:first-child{padding-left:14px}
-.proj{display:grid;grid-template-columns:132px minmax(0,1fr);border-top:1px solid var(--line)}
-.proj:first-of-type{border-top:0}
-.pname{padding:8px 10px 8px 14px;font-weight:700;font-size:14px;line-height:1.35;border-right:1px solid var(--line);background:var(--bg)}
-.pname small{display:block;font-weight:400;font-size:12px;color:var(--muted);margin-top:2px}
-.req{padding:7px 16px 7px 0;border-top:1px solid var(--line);margin-left:14px}
-.req:first-child{border-top:0}
-.rn{font-weight:700;line-height:1.35}
-.rn small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
-.rn small .rel{margin-left:6px}
-.rel{display:inline-block;font-size:11.5px;color:var(--new);background:var(--new-soft);padding:0 6px;border-radius:4px;font-weight:700}
-
-/* 進度欄 */
-.pgl{display:flex;align-items:center;gap:10px;min-width:0}
-.track{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:3px;width:150px;flex:none}
-.track i{height:7px;border-radius:2px;background:var(--seg)}
-.track i.done{background:var(--accent);opacity:.45}
-.track i.now{background:var(--accent)}
-.pg{font-size:13px;line-height:1.45;min-width:0}
-.pg b{color:var(--fg)}
-.subs{font-size:12px;color:var(--muted);margin-top:1px}
-.subs b{color:var(--fg);font-weight:600}
-.ms{font-size:12px;color:var(--muted);margin-top:1px}
+/* 6 張項目卡，分三欄 */
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
+.col{display:flex;flex-direction:column;gap:12px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:10px;overflow:hidden}
+.card > header{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:9px 14px 7px}
+.card h3{font-size:16px;font-weight:700}
+.card > header span{font-size:12px;color:var(--muted);white-space:nowrap}
+.req{padding:7px 14px 8px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:3px;min-width:0}
+.rh{display:flex;align-items:baseline;gap:8px;min-width:0}
+.rn{font-weight:700;font-size:14px;white-space:nowrap}
+.dri{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.rel{font-size:11.5px;color:var(--new);background:var(--new-soft);padding:0 6px;border-radius:4px;font-weight:700;white-space:nowrap}
+.chip{margin-left:auto;font-size:11.5px;font-weight:700;padding:0 7px;border-radius:4px;white-space:nowrap;flex:none}
+.chip.wait{color:var(--idle);background:var(--idle-soft)}
+.chip.ok{color:var(--ok);background:var(--ok-soft)}
+.line{font-size:13px;line-height:1.45;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.line b{color:var(--fg)}
+.ms{font-size:12px;color:var(--muted)}
 .ms b{color:var(--fg)}
-.wait{font-size:12px;font-weight:700;color:var(--idle);background:var(--idle-soft);padding:0 7px;border-radius:4px;display:inline-block}
-.nums{display:flex;gap:14px;font-size:13px;margin-top:2px}
+
+/* 步驟條（交付型）；建置等階段可再分子階段 */
+.pgl{display:flex;align-items:center;gap:10px;min-width:0}
+.track{display:flex;gap:3px;width:132px;flex:none}
+.track > i{flex:1;height:8px;border-radius:2px;background:var(--seg);display:flex;gap:1px;overflow:hidden}
+.track > i.done{background:var(--accent);opacity:.45}
+.track > i.now{background:var(--accent)}
+.track > i.subs{background:none}
+.track > i.subs > u{flex:1;background:var(--seg)}
+.track > i.subs > u.f{background:var(--accent)}
+.track > i.subs.done > u{background:var(--accent)}
+.nums{display:flex;gap:14px;font-size:13px}
 .nums b{font-family:var(--f-mono);font-size:15px}
 
 /* 本週完成／下週 */
-.list{margin:0;padding:0;list-style:none;font-size:13px;line-height:1.45}
-.list li{position:relative;padding-left:16px}
-.list.done li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
-.list.next li::before{content:"→";position:absolute;left:0;color:var(--accent);font-weight:700}
-.last{font-size:12px;color:var(--muted);line-height:1.4}
+.wk{font-size:13px;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wk .k{font-weight:700;margin-right:4px}
+.wk.done .k{color:var(--ok)}
+.wk.next .k{color:var(--accent)}
+.wk small{color:var(--muted);margin-left:4px}
 
 footer{font-size:11.5px;color:var(--muted);display:flex;gap:4px 18px;flex-wrap:wrap;align-items:center}
 .lg{display:inline-flex;align-items:center;gap:5px}
@@ -112,23 +122,25 @@ footer a{color:var(--accent)}
 
 /* 矮螢幕（如筆電 1440×900）再壓縮，維持單屏 */
 @media (min-width:901px) and (max-height:960px){
-  .wrap{gap:8px;padding-block:8px 10px}
-  h1{font-size:21px}
-  .stat{padding:3px 12px 4px}
-  .stat b{font-size:20px}
-  .req{padding-block:4px}
-  .pg,.list{font-size:12.5px}
-  .rn{font-size:13.5px}
-  .pname{padding-block:6px}
+  .wrap{gap:9px;padding-block:8px 10px}
+  h1{font-size:22px}
+  .stat{padding:6px 14px}
+  .stat b{font-size:24px}
+  .hl{padding:8px 16px 10px}
+  .hl li{font-size:15px}
+  .card > header{padding:7px 14px 5px}
+  .req{padding:4px 14px 5px;gap:1px}
+  .board,.col{gap:10px}
+  .wrap{gap:8px}
 }
 
-/* 手機與平板：每個需求一張卡片 */
-@media (max-width:900px){
-  .thead{display:none}
-  .proj{grid-template-columns:1fr}
-  .pname{border-right:0;border-bottom:1px solid var(--line)}
-  .req{margin-left:0;padding:9px 14px}
-  .cols{grid-template-columns:1fr;gap:6px}
+/* 平板：兩欄；手機：一欄 */
+@media (max-width:1100px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:700px){
+  .board{grid-template-columns:1fr}
+  .hl ul{grid-template-columns:1fr}
+  .line,.wk,.hl li{white-space:normal}
+  .hl li small{display:block;margin-left:0}
 }
 </style>
 </head>
@@ -138,34 +150,36 @@ footer a{color:var(--accent)}
   <header class="page">
     <div>
       <div class="eyebrow">SW ・ AI 推動全貌</div>
-      <h1>本週進度</h1>
-      <div class="week" id="week"></div>
+      <h1 id="h1">本週進度</h1>
       <p class="headline" id="headline"></p>
     </div>
     <div class="stats" id="stats"></div>
   </header>
+  <section class="hl" aria-labelledby="hlh"><h2 id="hlh">本週亮點</h2><div id="hl"></div></section>
   <div class="help" id="help" hidden></div>
   <main class="board" id="board" aria-label="各項目與需求"></main>
   <footer>
     <span class="lg"><i class="done"></i>已完成的步驟</span>
     <span class="lg"><i class="now"></i>目前步驟</span>
     <span class="lg"><i></i>未開始</span>
-    <span>進度以負責人最近一次回報為準；里程碑日期為 PM 規劃的時程。</span>
-    <span>Lab Collab Mate 的工作流細節見 <a href="daily.html">每日進度</a>。</span>
+    <span id="asof"></span>
+    <span>進度以負責人最近一次回報為準；里程碑為 PM 規劃的時程。Lab Collab Mate 的工作流細節見 <a href="daily.html">每日進度</a>。</span>
   </footer>
 </div>
 <script>
 /* ===== 資料（每週由 PM 依負責人訊息回覆更新） =====
    WEEK：本週週次；ASOF：資料截至（手動設定，頁面所有時間計算以它為準，不隨瀏覽當天變動）。
+   PROJECTS[].col：在第幾欄（0–2）。
    需求欄位：
      type   deliver＝交付型（照步驟做出東西）／research＝研究型（回答問題）／promo＝推廣型（讓更多人用）
      steps  交付型的時程步驟（短名稱）；null＝步驟待定
-     subs   子項（例如工作流），各自目前步驟
+     sub    某個步驟底下的子階段 {at:步驟索引, items:[...]}（例：Skill 的「建置」含技能本身的各階段）
      ms     PM 規劃的里程碑 [日期, 名稱]
-     rel    與其他需求的關聯
+     rel    與其他需求的關聯（relLong＝完整說明）
      nums   推廣型要問的數字名稱
-     rep    本週回報：{now:步驟索引或索引陣列（-1＝尚未開始）, done:[...], next:[...], help:"", conclusion:"", nums:{...}, subs:[...]}；null＝待回報
-     last   最近一次的已知狀態（本週尚未回報時顯示）：{date, now, text, subs} */
+     rep    本週回報：{now:步驟索引或索引陣列（-1＝尚未開始）, subDone:子階段完成數, subs:[[子項,步驟索引]],
+                       done:[...], next:[...], hl:[done 裡要放進「本週亮點」的索引], help:"", conclusion:"", nums:{...}}；null＝待回報
+     last   最近一次的已知狀態（本週尚未回報時顯示）：{date, now, subs, text} */
 const WEEK = {from:"2026-11-17", to:"2026-11-23"};
 const ASOF = "2026-11-18";
 
@@ -173,7 +187,7 @@ const WF = ["設計規劃","節點開發","首次跑通","五次跑通","用戶�
 const SKILL = ["現況調研","技能設計","建置","實測驗證","推廣接入"];
 
 const PROJECTS = [
-  {name:"Lab Collab Mate", note:"4 個核心業務＋LabMind 接入", reqs:[
+  {name:"Lab Collab Mate", col:0, reqs:[
     {name:"客戶軟體驗證", type:"deliver", dri:"Simon、Gary、景棠、熙宁", steps:WF,
      ms:[["2026-11-18","Bundle 首次跑通"],["2026-11-20","proxima 首次跑通"],["2026-11-25","Bundle 五次跑通"],["2026-11-27","proxima 五次跑通、EFI 首次跑通"],["2026-12-02","EFI 五次跑通"],["2026-12-11","正式上線"]],
      rep:null,
@@ -190,24 +204,26 @@ const PROJECTS = [
      ms:[["2026-11-16","開始架構研究"],["2026-12-07","適配設計、資源評估與準備同時開始"],["2026-12-11","和 LabMind 團隊定案方案 A／B"],["2027-01-08","部署方案提案會"]],
      rep:null}
   ]},
-  {name:"AI Hiring Agent", note:"已結案", reqs:[
-    {name:"開放複用", type:"promo", dri:null, nums:["尋求單位","申請單位","已上線單位"], rep:null}
-  ]},
-  {name:"Mac Mini 部署試驗", reqs:[
-    {name:"驗證兩台", type:"research", dri:null, q:"可穩定運行的模型上限", rep:null},
-    {name:"驗證四台", type:"research", dri:null, q:"模型上限與 Hiring Agent 端到端結果", rel:"Hiring Agent", relLong:"以完整 AI Hiring Agent 驗證端到端", rep:null}
-  ]},
-  {name:"Codio 使用與活化", reqs:[
+  {name:"Codio 使用與活化", col:1, reqs:[
     {name:"工具腳本類開發", type:"promo", dri:null, rep:null},
     {name:"大型系統類開發", type:"promo", dri:null, rel:"Development Skill", relLong:"與 Development Skill 共用 InvestGo 需求驗證", rep:null},
     {name:"IDE 串接研究", type:"research", dri:null, q:"從 IDE 使用 Codio 與直接使用的差異", rep:null}
   ]},
-  {name:"Nomi 使用與活化", reqs:[
+  {name:"Nomi 使用與活化", col:1, reqs:[
     {name:"AAS 系統重構", type:"deliver", dri:null, steps:null, desc:"xTrack 重構為 Xylon", rep:null}
   ]},
-  {name:"新 Skill 研究與建置", reqs:[
-    {name:"Presentation Skill", type:"deliver", dri:null, steps:SKILL, scope:3, rel:"Nomi", relLong:"之後研究接上 Nomi", rep:null},
-    {name:"Development Skill", type:"deliver", dri:null, steps:SKILL, scope:7, rel:"Codio", relLong:"由 Codio 執行，與大型系統類開發共用 InvestGo 需求驗證", rep:null}
+  {name:"AI Hiring Agent", col:1, note:"已結案", reqs:[
+    {name:"開放複用", type:"promo", dri:null, nums:["尋求單位","申請單位","已上線單位"], rep:null}
+  ]},
+  {name:"新 Skill 研究與建置", col:2, reqs:[
+    {name:"Presentation Skill", type:"deliver", dri:null, steps:SKILL, rel:"Nomi", relLong:"之後研究接上 Nomi",
+     sub:{at:2, items:["目標／對象／架構／內容梳理","風格與排版","品管與檢查驗證"]}, rep:null},
+    {name:"Development Skill", type:"deliver", dri:null, steps:SKILL, rel:"Codio", relLong:"由 Codio 執行，與大型系統類開發共用 InvestGo 需求驗證",
+     sub:{at:2, items:["需求梳理","SRS","原型設計","開發設計文檔","程式碼生成校正","上線運維","測試用例生成"]}, rep:null}
+  ]},
+  {name:"Mac Mini 部署試驗", col:2, reqs:[
+    {name:"驗證兩台", type:"research", dri:null, q:"可穩定運行的模型上限", rep:null},
+    {name:"驗證四台", type:"research", dri:null, q:"模型上限與 Hiring Agent 端到端結果", rel:"Hiring Agent", relLong:"以完整 AI Hiring Agent 驗證端到端", rep:null}
   ]}
 ];
 
@@ -217,67 +233,85 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;
 const dn = s => Date.UTC(+s.slice(0,4), +s.slice(5,7)-1, +s.slice(8,10)) / 864e5;
 const md = s => `${+s.slice(5,7)}/${+s.slice(8,10)}`;
 const BASE = dn(ASOF);
-const REQS = PROJECTS.flatMap(p => p.reqs);
+const REQS = PROJECTS.flatMap(p => p.reqs.map(r => ({...r, proj:p.name})));
 const reported = REQS.filter(r => r.rep);
 const doneCount = reported.reduce((n, r) => n + (r.rep.done || []).length, 0);
 const helps = reported.filter(r => r.rep.help).map(r => [r.name, r.rep.help]);
 
-$("week").innerHTML = `本週 <b class="mono">${md(WEEK.from)}–${md(WEEK.to)}</b>　資料截至 <b class="mono">${md(ASOF)}</b>　${PROJECTS.length} 個項目・${REQS.length} 個需求`;
-const stat = (c, n, label) => `<div class="stat" style="--c:var(${c})"><b>${n}</b><span>${label}</span></div>`;
-$("stats").innerHTML = stat("--ok", doneCount, "本週完成事項") + stat(helps.length ? "--bad" : "--idle", helps.length, "需要副總支援") +
-  stat("--accent", `${reported.length}<small style="font-size:.6em;color:var(--muted)">／${REQS.length}</small>`, "需求已回報");
+/* 頁首 */
+$("h1").innerHTML = `本週進度<span class="mono">${md(WEEK.from)}–${md(WEEK.to)}</span>`;
 $("headline").innerHTML = reported.length
-  ? `本週 <b>${reported.length}</b> 個需求已回報，共完成 <b>${doneCount}</b> 件事${helps.length ? `，<b>${helps.length}</b> 件需要副總支援` : "，無需副總支援事項"}。`
-  : `本週回報彙整中（<b>0／${REQS.length}</b> 個需求已回報）。下方先列出各需求最近一次的已知狀態與規劃里程碑。`;
+  ? `${PROJECTS.length} 個項目、${REQS.length} 個需求中，<b>${reported.length}</b> 個本週有回報，共完成 <b>${doneCount}</b> 件事${helps.length ? `，<b>${helps.length}</b> 件需要副總支援` : ""}。`
+  : `${PROJECTS.length} 個項目、${REQS.length} 個需求，本週回報彙整中；下方先列各需求最近一次的已知狀態。`;
+const stat = (c, n, label) => `<div class="stat" style="--c:var(${c})"><b>${n}</b><span>${label}</span></div>`;
+$("stats").innerHTML = stat("--ok", doneCount, "本週<br>完成事項") + stat(helps.length ? "--bad" : "--idle", helps.length, "需要<br>副總支援") +
+  stat("--accent", `${reported.length}<small>／${REQS.length}</small>`, "需求<br>已回報");
+$("asof").textContent = `資料截至 ${md(ASOF)}`;
+
+/* 本週亮點：回報中標記 hl 的完成事項；沒標記時取各需求第一件，最多 6 件 */
+let hls = reported.flatMap(r => (r.rep.hl || []).map(i => [r.rep.done[i], r]));
+if (!hls.length) hls = reported.filter(r => (r.rep.done || []).length).map(r => [r.rep.done[0], r]);
+hls = hls.slice(0, 6);
+$("hl").innerHTML = hls.length
+  ? `<ul>${hls.map(([t, r]) => `<li title="${esc(t)}">${esc(t)}<small>${esc(r.proj)}・${esc(r.name)}</small></li>`).join("")}</ul>`
+  : `<div class="empty">本週回報彙整中；負責人回覆後，這裡會列出本週最重要的完成事項。</div>`;
 if (helps.length) { $("help").hidden = false; $("help").innerHTML = `<span class="k">需要副總支援</span>` + helps.map(([n, t]) => `<span><b>${esc(n)}</b>：${esc(t)}</span>`).join(""); }
 
+/* 需求列 */
 const nowSet = v => new Set([].concat(v ?? []));
-function trackHTML(steps, now){
+function trackHTML(r, now, subDone){
   const set = nowSet(now), max = Math.max(-1, ...set);
-  return `<div class="track" aria-hidden="true">${steps.map((s, i) => `<i class="${set.has(i) ? "now" : i < max ? "done" : ""}" title="${esc(s)}"></i>`).join("")}</div>`;
+  return `<div class="track" aria-hidden="true">${r.steps.map((s, i) => {
+    const st = set.has(i) ? "now" : i < max ? "done" : "";
+    if (r.sub && r.sub.at === i) {
+      const f = st === "done" ? r.sub.items.length : st === "now" ? (subDone || 0) : 0;
+      return `<i class="subs ${st}" title="${esc(s)}：${esc(r.sub.items.join("、"))}">${r.sub.items.map((_, k) => `<u class="${k < f ? "f" : ""}"></u>`).join("")}</i>`;
+    }
+    return `<i class="${st}" title="${esc(s)}"></i>`;
+  }).join("")}</div>`;
 }
 const stepName = (steps, now) => [...nowSet(now)].filter(i => i >= 0).map(i => steps[i]).join("、");
 const nextMs = ms => (ms || []).find(m => dn(m[0]) >= BASE);
-const msHTML = ms => { const m = nextMs(ms); if (!m) return ""; const d = dn(m[0]) - BASE;
-  return `<div class="ms">下一里程碑 <b class="mono">${md(m[0])}</b> ${esc(m[1])}<span class="dim">（${d === 0 ? "當天" : d + " 天後"}）</span></div>`; };
-
+function msHTML(ms){
+  const m = nextMs(ms); if (!m) return "";
+  const d = dn(m[0]) - BASE;
+  return `<div class="ms line">下一里程碑 <b class="mono">${md(m[0])}</b> ${esc(m[1])}（${d === 0 ? "當天" : d + " 天後"}）</div>`;
+}
 function progressHTML(r){
   const src = r.rep || r.last;
   if (r.type === "deliver") {
-    if (!r.steps) return `<div class="pg"><span class="wait">待回報</span> <span class="dim">步驟待定</span></div>`;
+    if (!r.steps) return `<div class="line dim">步驟待定${r.desc ? "・" + esc(r.desc) : ""}</div>`;
     const now = src ? src.now : null;
     const started = now != null && [...nowSet(now)].some(i => i >= 0);
-    const label = now == null ? `<span class="wait">待回報</span>`
-      : started ? `目前 <b>${esc(stepName(r.steps, now))}</b>${r.rep ? "" : `<span class="dim">（${md(src.date)} 回報）</span>`}`
-      : `<b>尚未開始</b>`;
-    const when = src && !r.rep && now != null ? `<span class="dim">（${md(src.date)} 回報）</span>` : "";
-    const text = src && src.subs ? src.subs.map(([n, i]) => `${esc(n)} <b>${i >= 0 ? esc(r.steps[i]) : "未開始"}</b>`).join("・") + when : label;
-    const scope = r.scope ? `<span class="dim">　涵蓋 ${r.scope} 個階段</span>` : "";
-    return `<div class="pgl">${trackHTML(r.steps, now ?? -1)}<div class="pg">${text}${scope}</div></div>` + msHTML(r.ms);
+    const when = src && !r.rep && now != null ? `<span class="dim">（${md(src.date)}）</span>` : "";
+    let text;
+    if (src && src.subs) text = src.subs.map(([n, i]) => `${esc(n)} <b>${i >= 0 ? esc(r.steps[i]) : "未開始"}</b>`).join("・") + when;
+    else if (now == null) text = `<span class="dim">${r.sub ? `建置含 ${r.sub.items.length} 個子階段` : "尚無回報"}</span>`;
+    else if (!started) text = `<b>尚未開始</b>`;
+    else if (r.sub && nowSet(now).has(r.sub.at)) text = `<b>${esc(r.steps[r.sub.at])}</b>：完成 ${src.subDone || 0} 個子階段、共 ${r.sub.items.length} 個${when}`;
+    else text = `<b>${esc(stepName(r.steps, now))}</b>${when}`;
+    return `<div class="pgl">${trackHTML(r, now ?? -1, src && src.subDone)}<div class="line">${text}</div></div>` + msHTML(r.ms);
   }
   if (r.type === "research") {
     const c = r.rep && r.rep.conclusion;
-    return `<div class="pg">結論：${c ? `<b>${esc(c)}</b>` : `<span class="wait">待回報</span>`}</div><div class="ms">要回答：${esc(r.q)}</div>`;
+    return `<div class="line">結論：${c ? `<b>${esc(c)}</b>` : `<span class="dim">尚無</span>`}</div>` + (c ? "" : `<div class="ms line">要回答：${esc(r.q)}</div>`);
   }
   if (r.nums) return `<div class="nums">${r.nums.map(n => `<span>${esc(n)} <b>${r.rep && r.rep.nums && r.rep.nums[n] != null ? r.rep.nums[n] : "–"}</b></span>`).join("")}</div>`;
-  return `<div class="pg dim">使用回饋由推廣平台統計系統提供</div>`;
+  return "";
 }
-const listHTML = (arr, cls) => arr && arr.length ? `<ul class="list ${cls}">${arr.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : "";
 function weekHTML(r){
-  if (r.rep) return listHTML(r.rep.done, "done") || `<span class="dim">本週無完成事項</span>`;
-  return `<span class="wait">待回報</span>${r.last && r.last.text ? `<span class="last"> 上次 ${md(r.last.date)}：${esc(r.last.text)}</span>` : ""}`;
+  if (!r.rep) return r.last && r.last.text ? `<div class="wk dim" title="${esc(r.last.text)}">上次 ${md(r.last.date)}：${esc(r.last.text)}</div>` : "";
+  const d = r.rep.done || [], n = r.rep.next || [];
+  const one = (arr, cls, k) => arr.length ? `<div class="wk ${cls}" title="${esc(arr.join("\n"))}"><span class="k">${k}</span>${esc(arr[0])}${arr.length > 1 ? `<small>等 ${arr.length} 件</small>` : ""}</div>` : "";
+  return one(d, "done", "✓ 本週") + one(n, "next", "→ 下週");
 }
-const nextHTML = r => r.rep ? (listHTML(r.rep.next, "next") || `<span class="dim">—</span>`) : `<span class="dim">—</span>`;
-
-$("board").innerHTML =
-  `<div class="thead"><span>項目</span><div class="cols"><span>需求・DRI</span><span>進度</span><span>本週完成</span><span>下週要完成</span></div></div>` +
-  PROJECTS.map(p => `<section class="proj"><div class="pname">${esc(p.name)}<small>${p.reqs.length} 個需求${p.note ? "・" + esc(p.note) : ""}</small></div><div>` +
-    p.reqs.map(r => `<div class="req cols"${r.desc ? ` title="${esc(r.desc)}"` : ""}>
-      <div class="rn">${esc(r.name)}<small>DRI：${esc(r.dri || "待補")}${r.rel ? `<span class="rel" title="${esc(r.relLong || r.rel)}">↔ ${esc(r.rel)}</span>` : ""}</small></div>
-      <div>${progressHTML(r)}</div>
-      <div>${weekHTML(r)}</div>
-      <div>${nextHTML(r)}</div>
-    </div>`).join("") + `</div></section>`).join("");
+const reqHTML = r => `<div class="req"${r.desc ? ` title="${esc(r.desc)}"` : ""}>
+  <div class="rh"><span class="rn">${esc(r.name)}</span><span class="dri">${esc(r.dri || "DRI 待補")}</span>${r.rel ? `<span class="rel" title="${esc(r.relLong || r.rel)}">↔ ${esc(r.rel)}</span>` : ""}
+    ${r.rep ? `<span class="chip ok">${(r.rep.done || []).length ? "✓ " + r.rep.done.length : "已回報"}</span>` : `<span class="chip wait">待回報</span>`}</div>
+  ${progressHTML(r)}${weekHTML(r)}</div>`;
+const cardHTML = p => { const n = p.reqs.filter(r => r.rep).length;
+  return `<section class="card"><header><h3>${esc(p.name)}</h3><span>${p.reqs.length} 個需求${p.note ? "・" + esc(p.note) : ""}・已回報 ${n}</span></header>${p.reqs.map(r => reqHTML({...r, proj:p.name})).join("")}</section>`; };
+$("board").innerHTML = [0, 1, 2].map(c => `<div class="col">${PROJECTS.filter(p => p.col === c).map(cardHTML).join("")}</div>`).join("");
 </script>
 </body>
 </html>
