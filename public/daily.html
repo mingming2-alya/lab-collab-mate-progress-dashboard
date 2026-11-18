@@ -372,19 +372,19 @@ const PLAN = {
      steps:[{n:"工具開發與工作流串連", short:"", s:"2026-11-12", e:"2026-12-02", kind:"build"},
             {n:"用戶 Try Run", short:"Try Run", s:"2026-12-03", e:"2026-12-11", kind:"try"}],
      ms:[["2026-11-27","正式數據首次跑通全流程","first"],["2026-12-02","正式數據連續 5 次穩定跑通全流程","stable"],["2026-12-11","正式上線","live"]]},
-    {name:"Panic", label:"Panic", sub:"Simon、Gary", group:1, row:"one",
+    {name:"產品 Panic 處理", label:"產品 Panic 處理", sub:"Simon、Gary", group:1, row:"one",
      steps:[{n:"工具開發與工作流串連", short:"", s:"2026-12-01", e:"2026-12-18", kind:"build"},
             {n:"用戶 Try Run（含元旦）", short:"Try Run", s:"2026-12-21", e:"2027-01-08", kind:"try"}],
      ms:[["2026-11-27","串口方案定案（Agent 操作，或只讀取結果）","gate"],["2026-12-11","正式數據首次跑通全流程","first"],["2026-12-18","正式數據連續 5 次穩定跑通全流程","stable"],["2027-01-08","正式上線","live"]]},
-    {name:"開發、FA", label:"開發、FA", sub:"可能涉及跨系統", group:1, row:"one",
-     steps:[{n:"技術調研（跨哪些系統、連哪種工站）", short:"技術調研", s:"2026-12-14", e:"2026-12-25", kind:"build"}],
-     ms:[["2027-01-08","給出開發與 FA 的時程","gate"]]},
+    {name:"產品測試軟體開發、產品失效分析", label:"產品測試軟體開發、產品失效分析", sub:"Codio、AI FA 融入工作流", group:1, row:"one",
+     steps:[{n:"技術調研（Codio、AI FA 融入工作流）", short:"技術調研", s:"2026-12-14", e:"2026-12-25", kind:"build"}],
+     ms:[["2027-01-08","給出產品測試軟體開發與產品失效分析的時程","gate"]]},
     {name:"LabMind 串連", group:2, row:"each", steps:[
-      {n:"1 研究 LabMind 設計", s:"2026-11-16", e:"2026-12-11", kind:"build", ms:[["2026-12-11","和 LabMind 團隊定案方案 A／B","gate"]]},
+      {n:"1 LabMind 架構研究", s:"2026-11-16", e:"2026-12-11", kind:"build", ms:[["2026-12-11","和 LabMind 團隊定案方案 A／B","gate"]]},
       {n:"資源評估（模型、硬體）", sub:"用驗證 Try Run 的實測數據", s:"2026-12-07", e:"2026-12-18", kind:"build"},
-      {n:"2 設計用戶界面與管理介面", sub:"含開發與 FA 工作流設計", s:"2026-12-14", e:"2026-12-25", kind:"build"},
-      {n:"3 部署方案提案", sub:"含模型與硬體需求", s:"2026-12-28", e:"2027-01-08", kind:"build", ms:[["2027-01-08","部署方案提案會","gate"]]},
-      {n:"4 正式串連與測試", sub:"硬體到位後約 3–4 週", s:null},
+      {n:"2 Lab Collab Mate 適配設計", sub:"含產品測試軟體開發與產品失效分析工作流設計", s:"2026-12-14", e:"2026-12-25", kind:"build"},
+      {n:"3 硬體資源部署準備", sub:"含模型與硬體需求", s:"2026-12-28", e:"2027-01-08", kind:"build", ms:[["2027-01-08","部署方案提案會","gate"]]},
+      {n:"4 正式串連測試", sub:"硬體到位後約 3–4 週", s:null},
       {n:"5 用戶 Try Run", sub:"串連完成後約 2 週", s:null}]}
   ]
 };
@@ -399,7 +399,7 @@ const base = () => ([
   {no:3, name:"共性自動化工具", status:"idle", state:"未啟動", prereq:IDLE_PRE,
    stages:["開發測試","用戶驗收","打包成 MCP 格式"],
    items:[["郵箱","万峰"],["雷達","熙宁"],["刷機","Simon、Gary"],["Panic","Simon、Gary"],["Insight","景棠"],["收集 log","景棠"]],
-   issues:[{type:"handled", mod:"開發、FA", title:"Insight 沒有可用的 API", ask:"景棠研究以爬蟲取得 API。屬 FA 工作流，優先級調低，先做驗證與 Panic"}]},
+   issues:[{type:"handled", mod:"產品測試軟體開發、產品失效分析", title:"Insight 沒有可用的 API", ask:"景棠研究以爬蟲取得 API。屬 FA 工作流，優先級調低，先做驗證與 Panic"}]},
   {no:4, name:"自動化工具", status:"idle", state:"未啟動", prereq:IDLE_PRE,
    stages:["開發測試","用戶驗收","打包成 MCP 格式"],
    items:[["Bundle 驗證","Simon、Gary"],["EFI 驗證","熙宁"],["proxima 驗證","景棠"]],
@@ -507,15 +507,15 @@ const issueHTML = x => `<div class="issue ${x.type}"><span class="k">${TAG[x.typ
    工作線 06 Try Run、05 工作流建置已由時程裡的里程碑取代，不再單獨顯示。 */
 const MODULES = [
   {name:"環境與框架", track:"環境與框架", src:[{ws:1, label:"本地模型"}, {ws:2, label:"ADK 框架"}]},
-  {name:"驗證", rows:[{ws:4, item:"Bundle 驗證", track:"Bundle 驗證"}, {ws:4, item:"proxima 驗證", track:"proxima 驗證"}, {ws:4, item:"EFI 驗證", track:"EFI 驗證"}]},
+  {name:"客戶軟體驗證", rows:[{ws:4, item:"Bundle 驗證", track:"Bundle 驗證"}, {ws:4, item:"proxima 驗證", track:"proxima 驗證"}, {ws:4, item:"EFI 驗證", track:"EFI 驗證"}]},
   {name:"共性工具", note:"各工作流共用；刷機需在 Bundle 首次跑通前（11/18）可用", rows:[{ws:3, item:"郵箱"}, {ws:3, item:"雷達"}, {ws:3, item:"刷機"}, {ws:3, item:"收集 log"}]},
-  {name:"Panic", track:"Panic", rows:[{ws:3, item:"Panic", label:"Panic 工具（兩條共用）"},
+  {name:"產品 Panic 處理", track:"產品 Panic 處理", rows:[{ws:3, item:"Panic", label:"Panic 工具（兩條共用）"},
     {item:"CoreOS Panic 工作流", owner:"Simon、Gary"}, {item:"Diags Panic 工作流", owner:"熙宁"}]},
-  {name:"開發、FA", track:"開發、FA", rows:[{ws:3, item:"Insight", label:"Insight 工具（FA 用）"},
-    {item:"開發技術調研", owner:"熙宁"}, {item:"FA 技術調研", owner:"万峰、景棠"}]},
+  {name:"產品測試軟體開發、產品失效分析", track:"產品測試軟體開發、產品失效分析", rows:[{ws:3, item:"Insight", label:"Insight 工具（FA 用）"},
+    {item:"Codio 融入工作流調研", owner:"熙宁"}, {item:"AI FA 融入工作流調研", owner:"万峰、景棠"}]},
   {name:"LabMind 串連", track:"LabMind 串連", src:[{ws:7}]}
 ];
-const HOME = {1:"環境與框架", 2:"環境與框架", 3:"共性工具", 4:"驗證", 5:"驗證", 6:"驗證", 7:"LabMind 串連"};
+const HOME = {1:"環境與框架", 2:"環境與框架", 3:"共性工具", 4:"客戶軟體驗證", 5:"客戶軟體驗證", 6:"客戶軟體驗證", 7:"LabMind 串連"};
 const RANK = {red:4, yellow:3, green:2, done:1, idle:0};
 
 /* 從某天的日報算出模塊內容 */
