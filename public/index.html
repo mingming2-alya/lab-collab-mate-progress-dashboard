@@ -220,9 +220,10 @@ const MODULES = [
   {no:"②", name:"案例開發", col:1, reqs:[
     {proj:"Lab Collab Mate", name:"客戶軟體驗證", type:"deliver", dri:"Simon、Gary、景棠、熙宁", steps:WF,
      ms:[["2026-11-18","Bundle 首次跑通"],["2026-11-20","proxima 首次跑通"],["2026-11-25","Bundle 五次跑通"],["2026-11-27","proxima 五次跑通、EFI 首次跑通"],["2026-12-02","EFI 五次跑通"],["2026-12-11","正式上線"]],
-     rep:null,
-     last:{date:"2026-11-11", now:1, subs:[["Bundle",1],["proxima",1],["EFI",-1]],
-           text:"Bundle 4 個節點完成、串接 2 個並投入實際業務；proxima 2 個節點完成"}},
+     rep:{now:1, subs:[["Bundle",1],["proxima",1],["EFI",1]],
+          done:["Bundle 串聯 4 個節點，可跑通查看、下載新 bundle 與刷機", "proxima 開發 6 個、EFI 開發 1 個自動化節點"],
+          issue:"proxima、EFI 首次跑通時間 TBD（EFI 因支援客戶 STFL 轉 burn-in 延緩）",
+          next:["Bundle 本週串接完成，下週二（11/24）首次跑通全流程"]}},
     {proj:"Lab Collab Mate", name:"產品 Panic 處理", type:"deliver", dri:"Simon、Gary、熙宁", steps:WF, start:"2026-12-01",
      ms:[["2026-11-27","串口方案定案"],["2026-12-01","開始工具開發與串連"],["2026-12-11","首次跑通"],["2026-12-18","五次跑通"],["2027-01-08","正式上線"]],
      rep:null, last:{date:"2026-11-11", now:-1}},
