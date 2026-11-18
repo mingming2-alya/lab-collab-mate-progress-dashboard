@@ -300,6 +300,19 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
 @media (max-width:900px){.card .sum .ssum{display:none}}
 /* 工具／項目列壓成一行：名稱・負責人・狀態 */
 .mrow.two{padding:6px 12px}
+/* 頁首：標題與統計同列；區段標題與 Try Run 標準同列 */
+.ttl{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap}
+.shd{display:flex;align-items:baseline;gap:6px 16px;flex-wrap:wrap}
+/* 卡片內容合成一個區塊：時程／回報原話／下一步／說明／項目列，以分隔線區分 */
+.blk{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.blk > *{border-radius:0;margin:0}
+.blk > * + *{border-top:1px solid var(--line)}
+.blk > .prog{padding:8px 12px;max-width:none;font-size:14px}
+.blk > .kv{padding:6px 12px}
+.blk > .note{padding:6px 12px;font-size:13px;color:var(--muted);background:var(--bg)}
+.blk > .mrows{border:0}
+/* 展開時不再需要「摘要／明細」分界虛線 */
+.card[aria-expanded="true"] .cbody{border-top:0;padding-top:0;margin-top:0}
 /* 展開時風險／對策說明不截斷（完整版） */
 .card[aria-expanded="true"] .sum .issue .ask{display:block;-webkit-line-clamp:unset;overflow:visible}
 .mrow.two .nm small{display:inline;margin-left:8px}
@@ -346,15 +359,14 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
     <nav class="tabs" aria-label="頁面"><a href="./">總覽</a><a href="daily.html" aria-current="page">每日進度</a><a href="arch.html">架構全貌</a></nav>
     <div class="eyebrow">LAB COLLAB MATE ・ 專案進度日報</div>
     <div class="top">
-      <h1 id="h1">每日進度</h1>
+      <div class="ttl"><h1 id="h1">每日進度</h1><div class="tally" id="tally"></div></div>
       <label class="pick"><span>查看日期</span><select id="date"></select></label>
     </div>
-    <div class="tally" id="tally"></div>
   </header>
 
   <section aria-labelledby="s1">
-    <h2 id="s1">各模塊進展 <span class="count" id="c1"></span></h2>
-    <p class="rule" id="rule"></p>
+    <div class="shd"><h2 id="s1">各模塊進展 <span class="count" id="c1"></span></h2>
+    <p class="rule" id="rule"></p></div>
     <div class="mods" id="mods"></div>
   </section>
 
@@ -654,14 +666,14 @@ function render(){
         ${x.issues.map(issueHTML).join("")}
       </div>
       <span class="chev" aria-hidden="true">›</span>
-      <div class="cbody">
+      <div class="cbody">${(b => b.trim() ? `<div class="blk">${b}</div>` : "")(`
       ${M.track ? schedHTML(TRACK(M.track)) : ""}
-      ${I && x.lines.length ? `<div class="prog">${x.lines.filter(l => l.text).map(l => `<div>${x.lines.length > 1 ? `<b>${esc(l.label)}</b>` : ""}${esc(l.text)}</div>`).join("")}</div>` : ""}
+      ${I && x.lines.some(l => l.text) ? `<div class="prog">${x.lines.filter(l => l.text).map(l => `<div>${x.lines.length > 1 ? `<b>${esc(l.label)}</b>` : ""}${esc(l.text)}</div>`).join("")}</div>` : ""}
       ${x.lines.filter(l => l.next).map(l => `<dl class="kv"><dt>下一步</dt><dd>${esc(l.next)}</dd></dl>`).join("")}
-      ${M.note ? `<div class="sched"><span class="dim">${esc(M.note)}</span></div>` : ""}
+      ${M.note ? `<div class="note">${esc(M.note)}</div>` : ""}
       ${x.rows.length ? `<div class="mrows">${x.rows.map(s => `<div class="mrow${s.track ? "" : " two"}">
           <span class="nm">${esc(s.label || s.item)}${rowChanged(s) ? `<i>更新</i>` : ""}<small>${esc(s.owner)}</small></span>
-          <span class="st ${s.k}">${esc(s.lab)}</span>${s.track ? rowSteps(TRACK(s.track)) : ""}</div>`).join("")}</div>` : ""}
+          <span class="st ${s.k}">${esc(s.lab)}</span>${s.track ? rowSteps(TRACK(s.track)) : ""}</div>`).join("")}</div>` : ""}`)}
       </div>
       <div class="meta"><span>DRI：${esc(x.owners || "—")}</span><span>最後更新：<span class="mono">${md(x.last)}</span></span></div>
     </article>`;
