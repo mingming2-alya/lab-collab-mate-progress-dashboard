@@ -102,7 +102,7 @@ GitHub 上專門做「主管週報版面」的 repo 很少且品質不佳（多�
   - Development Skill：本週補「以 PCC 實測：依需求自動生成看板 UI 設計」；下週「InvestGo 測程式碼生成；PCC 依定稿 UI 生成 SRS」；關聯改為「由 Codio 執行，InvestGo、PCC 驗證」。
   - 縮短兩句以免截斷或孤字斷行（Development Skill 下週、InvestGo 成果）。
 - 驗證：三種桌機單屏（1440 自動收到第二級）、三欄底部切齊、無截斷、壓力測試 1440 0px、手機無橫向溢出、console 無錯誤。
-- 待確認：歸類、DRI、是否放本週成果。
+- 使用者確認：歸類正確（03 導入試用、與 InvestGo 並列）；DRI＝**Lucas**；放進本週成果（共 6 則）。
 
 ### 2026-11-18（IDE 串接研究結案、週次更正）
 - 新輸入：Codio IDE 插件 vs 原生 TUI 簡報（內部文件，5 頁，只存文字摘要 `inputs/SUMMARY_Codio-IDE插件vsTUI簡報.md`）；使用者口述：11/16 已結案，沒有規劃下一步。
