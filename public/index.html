@@ -34,7 +34,7 @@
 [hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5}
-.page{max-width:1600px;margin:0 auto;padding-block:10px 12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:12px}
+.page{max-width:1600px;margin:0 auto;padding-block:12px 16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
 h1,h2,h3,h4{margin:0;text-wrap:balance}
 .num{font-variant-numeric:tabular-nums}
 
@@ -47,26 +47,26 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}
 
 /* 第一行：標題＋週次＋四個數字 */
 .head{display:flex;align-items:center;flex-wrap:wrap;gap:6px 0}
-.head h1{font-size:32px;font-weight:900;line-height:1.15;letter-spacing:.04em;padding-left:14px;border-left:5px solid var(--brand)}
-.head .wk{font-size:19px;color:var(--muted);font-weight:500}
+.head h1{font-size:34px;font-weight:900;line-height:1.15;letter-spacing:.04em;padding-left:14px;border-left:5px solid var(--brand)}
+.head .wk{font-size:20px;color:var(--muted);font-weight:500}
 .head > .seg{display:flex;align-items:baseline;gap:8px;padding:0 22px;border-left:1px solid var(--line)}
 .head > .seg:first-of-type{margin-left:18px}
-.head .seg b{font-size:34px;font-weight:900;line-height:1;color:var(--brand)}
-.head .seg span{font-size:15px;font-weight:700}
+.head .seg b{font-size:38px;font-weight:900;line-height:1;color:var(--brand)}
+.head .seg span{font-size:16px;font-weight:700}
 
 /* 第二行：本週成果 */
-.wins{display:grid;grid-template-columns:auto minmax(0,1fr);background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;min-height:44px}
-.wins .lab{background:var(--brand);color:var(--on-brand);font-size:17px;font-weight:900;letter-spacing:.06em;display:flex;align-items:center;padding:0 30px 0 18px;clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%)}
-.wins ul{list-style:none;margin:0;padding:6px 8px;display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));align-items:center}
-.wins li{display:flex;align-items:baseline;gap:10px;padding:2px 18px;min-width:0;font-size:15px}
+.wins{display:grid;grid-template-columns:auto minmax(0,1fr);background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;min-height:58px}
+.wins .lab{background:var(--brand);color:var(--on-brand);font-size:18px;font-weight:900;letter-spacing:.06em;display:flex;align-items:center;padding:0 30px 0 18px;clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%)}
+.wins ul{list-style:none;margin:0;padding:10px 8px;display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));align-items:center}
+.wins li{display:flex;align-items:baseline;gap:12px;padding:3px 20px;min-width:0;font-size:16px}
 .wins li + li{border-left:1px solid var(--line)}
-.wins li b{color:var(--brand);font-size:16.5px;font-weight:900;white-space:nowrap;padding-right:10px;border-right:1px solid var(--line)}
+.wins li b{color:var(--brand);font-size:17.5px;font-weight:900;white-space:nowrap;padding-right:10px;border-right:1px solid var(--line)}
 .wins li span{min-width:0}
 .wins .empty{padding:0 18px;color:var(--muted);align-self:center}
 
 /* 第三行：請副總協助 */
-.ask{display:flex;align-items:baseline;gap:14px;background:var(--brand-soft);border-radius:10px;padding:9px 20px;font-size:15.5px}
-.ask b{color:var(--brand-ink);font-size:17px;font-weight:900;letter-spacing:.04em;white-space:nowrap;padding-right:14px;border-right:1px solid var(--line)}
+.ask{display:flex;align-items:baseline;gap:14px;background:var(--brand-soft);border-radius:10px;padding:13px 22px;font-size:16px}
+.ask b{color:var(--brand-ink);font-size:18px;font-weight:900;letter-spacing:.04em;white-space:nowrap;padding-right:14px;border-right:1px solid var(--line)}
 .ask div + div{margin-top:2px}
 
 /* 模塊卡：三欄，第三欄上下疊放 03、04 */
@@ -98,26 +98,34 @@ footer{font-size:11.5px;color:var(--muted)}
 footer a{color:var(--brand-ink)}
 
 /* 矮螢幕（如筆電 1440×900）再壓縮，維持單屏 */
-@media (min-width:901px) and (max-height:960px){
-  .page{gap:9px;padding-block:6px 8px}
-  .head h1{font-size:27px}
-  .head .seg b{font-size:28px}
-  .head .wk{font-size:17px}
-  .wins{min-height:38px}
-  .wins .lab{font-size:15.5px}
-  .wins li{font-size:14px}
-  .wins li b{font-size:15px}
-  .ask{padding:6px 18px;font-size:14.5px}
-  .ask b{font-size:15.5px}
-  .board,.col{gap:10px}
-  .mod > header{padding:5px 14px}
-  .mod h3{font-size:17px}
-  .mbody{padding:0 14px 4px}
-  .proj{font-size:14px;padding:4px 0 3px}
-  .req{padding:4px 0 5px}
-  .req h4{font-size:15px}
-  .ln{font-size:13px;line-height:1.42}
-}
+/* 一頁不滾動的自動調整（由下方程式依實際高度決定）：
+   預設＝寬鬆；超出一屏時 fit1＝模塊區緊湊、上方仍寬鬆；仍超出時 fit2＝全部緊湊 */
+html.fit1 .board,html.fit1 .col{gap:10px}
+html.fit1 .mod > header{padding:5px 14px}
+html.fit1 .mod h3{font-size:17px}
+html.fit1 .mbody{padding:0 14px 4px}
+html.fit1 .proj{font-size:14px;padding:4px 0 3px}
+html.fit1 .req{padding:4px 0 5px}
+html.fit1 .req h4{font-size:15px}
+html.fit1 .ln{font-size:13px;line-height:1.42}
+html.fit2 .board,html.fit2 .col{gap:10px}
+html.fit2 .mod > header{padding:5px 14px}
+html.fit2 .mod h3{font-size:17px}
+html.fit2 .mbody{padding:0 14px 4px}
+html.fit2 .proj{font-size:14px;padding:4px 0 3px}
+html.fit2 .req{padding:4px 0 5px}
+html.fit2 .req h4{font-size:15px}
+html.fit2 .ln{font-size:13px;line-height:1.42}
+html.fit2 .page{gap:9px;padding-block:6px 8px}
+html.fit2 .head h1{font-size:27px}
+html.fit2 .head .seg b{font-size:28px}
+html.fit2 .head .wk{font-size:17px}
+html.fit2 .wins{min-height:38px}
+html.fit2 .wins .lab{font-size:15.5px}
+html.fit2 .wins li{font-size:14px}
+html.fit2 .wins li b{font-size:15px}
+html.fit2 .ask{padding:6px 18px;font-size:14.5px}
+html.fit2 .ask b{font-size:15.5px}
 
 /* 平板：兩欄；手機：一欄 */
 @media (max-width:1100px){
@@ -284,6 +292,17 @@ function modHTML(m, k){
 }
 $("board").innerHTML = [0, 1, 2].map(c => `<div class="col">${MODULES.map((m, k) => m.col === c ? modHTML(m, k) : "").join("")}</div>`).join("");
 $("foot").innerHTML = `資料截至 ${md(ASOF)}・已回報 ${reported.length}／${REQS.length}。進度以負責人最近一次回報為準；日期為 PM 規劃的時程。滑鼠移到需求上可看 DRI、步驟、下一里程碑等細節；Lab Collab Mate 的工作流細節見 <a href="daily.html">每日進度</a>。`;
+
+/* 一頁不滾動：桌機依實際高度逐級收緊（寬鬆 → fit1 → fit2）；字型載入完成與視窗大小改變時重算 */
+function fit(){
+  const el = document.documentElement;
+  el.classList.remove("fit1", "fit2");
+  if (innerWidth <= 900) return;
+  for (const c of ["fit1", "fit2"]) { if (el.scrollHeight <= innerHeight) break; el.classList.remove("fit1", "fit2"); el.classList.add(c); }
+}
+fit();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+let fitT; addEventListener("resize", () => { clearTimeout(fitT); fitT = setTimeout(fit, 100); });
 </script>
 </body>
 </html>
