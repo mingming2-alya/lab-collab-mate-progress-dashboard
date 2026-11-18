@@ -311,6 +311,35 @@ footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);paddin
 .blk > .kv{padding:6px 12px}
 .blk > .note{padding:6px 12px;font-size:13px;color:var(--muted);background:var(--bg)}
 .blk > .mrows{border:0}
+/* 直向時間軸 */
+.tl{padding:8px 12px 4px;display:flex;flex-direction:column;gap:6px}
+.tl .lbl{font-size:11.5px;color:var(--muted);font-weight:700;letter-spacing:.06em}
+.vsteps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.vsteps li{position:relative;display:grid;grid-template-columns:6.6em minmax(0,1fr);gap:0 10px;padding:0 0 10px 18px;font-size:13.5px;line-height:1.45}
+.vsteps li::before{content:"";position:absolute;left:0;top:5px;width:9px;height:9px;border-radius:50%;background:var(--surface);border:2px solid var(--line);box-sizing:content-box;z-index:1}
+.vsteps li::after{content:"";position:absolute;left:5px;top:12px;bottom:-4px;width:2px;background:var(--line)}
+.vsteps li:last-child::after{display:none}
+.vsteps li:last-child{padding-bottom:4px}
+.vsteps .sd{font-size:12px;color:var(--muted);padding-top:1px;white-space:nowrap}
+.vsteps .sn{font-weight:700}
+.vsteps .sg{margin-left:8px;font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap}
+.vsteps small{display:block;color:var(--muted);font-size:12px;line-height:1.4}
+.vsteps li.past{color:var(--muted)}
+.vsteps li.past .sn{font-weight:500}
+.vsteps li.past::before{background:var(--idle);border-color:var(--idle)}
+.vsteps li.past::after,.vsteps li.now::after{background:var(--accent)}
+.vsteps li.now::before{background:var(--accent);border-color:var(--accent)}
+.vsteps li.now{}
+.vsteps li.now .sn{color:var(--accent)}
+.vsteps li.next::before{border-color:var(--accent);background:var(--accent-soft)}
+.vsteps li.ms::before{border-radius:2px;transform:rotate(45deg);width:8px;height:8px}
+.vsteps li.ms.gate::before{border-color:var(--warn)}
+.vsteps li.ms.gate.past::before,.vsteps li.ms.gate.now::before{background:var(--warn)}
+.vsteps li.ms.live::before{border-color:var(--ok)}
+.vsteps li.ms.live .sn{color:var(--ok)}
+.vsteps li.tbd{color:var(--muted)}
+.vsteps li.tbd::before{border-style:dashed}
+.vsteps li.tbd .sn{font-weight:500}
 /* 展開時不再需要「摘要／明細」分界虛線 */
 .card[aria-expanded="true"] .cbody{border-top:0;padding-top:0;margin-top:0}
 /* 展開時風險／對策說明不截斷（完整版） */
@@ -602,6 +631,25 @@ function schedHTML(tr){
   if (I.nx) out.push(`<div class="dim">下一階段：${esc(I.nx.n)}（${rng(I.nx)}）</div>`);
   return `<div class="sched"><span class="lbl">時程</span>${out.join("")}</div>`;
 }
+/* 單一時程線的直向時間軸（窄卡片用）：階段（含起訖）與里程碑依日期排序，標出已過／進行中／下一步；時程待定排最後 */
+function vSteps(tr){
+  const MSK = {gate:"gate", live:"live"};
+  const items = [
+    ...tr.steps.map(x => x.s
+      ? {d:dn(x.s), end:dn(x.e), date:rng(x), n:x.n, sub:x.sub, t:"step"}
+      : {d:Infinity, end:Infinity, date:"時程待定", n:x.n, sub:x.sub, t:"tbd"}),
+    ...[...(tr.ms||[]), ...tr.steps.flatMap(x => x.ms||[])].map(m => ({d:dn(m[0]), end:dn(m[0]), date:mdd(m[0]), n:m[1], sub:m[3], t:"ms", k:MSK[m[2]] || "ms"}))
+  ].sort((a,b) => a.d - b.d || (a.t === "ms") - (b.t === "ms"));
+  let nextSet = false;
+  return `<div class="tl"><span class="lbl">時程</span><ol class="vsteps">${items.map(x => {
+    let st = "", tag = "";
+    if (x.t === "tbd") st = "tbd";
+    else if (x.end < TODAY) st = "past";
+    else if (x.d <= TODAY) { st = "now"; tag = x.t === "ms" ? "當天" : `進行中・${left(x.end)}`; }
+    else if (!nextSet) { st = "next"; nextSet = true; tag = `${x.d - TODAY} 天後`; }
+    return `<li class="${st} ${x.t}${x.k ? " " + x.k : ""}"><span class="sd mono">${x.date}</span><div><span class="sn">${esc(x.n)}</span>${tag ? `<span class="sg">${tag}</span>` : ""}${x.sub ? `<small>${esc(x.sub)}</small>` : ""}</div></li>`;
+  }).join("")}</ol></div>`;
+}
 /* 工作流的關鍵步驟：工具開發與工作流串連 → 首次跑通 → 連續 5 次穩定跑通 → Try Run → 上線，依日期排序；標出已過／進行中／下一步 */
 function rowSteps(tr){
   /* 工具開發與工作流串連只標開始日（它和兩個跑通里程碑重疊）；Try Run 保留區間。now＝目前所在階段（最後一個已開始的節點），next＝下一個節點 */
@@ -667,7 +715,7 @@ function render(){
       </div>
       <span class="chev" aria-hidden="true">›</span>
       <div class="cbody">${(b => b.trim() ? `<div class="blk">${b}</div>` : "")(`
-      ${M.track ? schedHTML(TRACK(M.track)) : ""}
+      ${M.track ? vSteps(TRACK(M.track)) : ""}
       ${I && x.lines.some(l => l.text) ? `<div class="prog">${x.lines.filter(l => l.text).map(l => `<div>${x.lines.length > 1 ? `<b>${esc(l.label)}</b>` : ""}${esc(l.text)}</div>`).join("")}</div>` : ""}
       ${x.lines.filter(l => l.next).map(l => `<dl class="kv"><dt>下一步</dt><dd>${esc(l.next)}</dd></dl>`).join("")}
       ${M.note ? `<div class="note">${esc(M.note)}</div>` : ""}
