@@ -157,6 +157,27 @@ html.fit2 .ask b{font-size:15.5px}
   .ask{flex-direction:column;gap:4px}
   .ask b{border-right:0;padding-right:0}
 }
+
+/* ===== 手機版（11-19）：只在 760px 以下生效，桌機版不受影響 ===== */
+@media (max-width:760px){
+  .tabs a{padding:10px 14px}
+  /* 標題列：標題與週次一行，四個數字排成 2×2 方格 */
+  .head{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .head h1{grid-column:1;font-size:28px;white-space:nowrap}
+  .head .wk{grid-column:2;align-self:center;padding-left:0;font-size:16px;white-space:nowrap}  /* 週次與標題同一行 */
+  .head > .seg,.head > .seg:first-of-type{margin:0;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+  .head .seg b{font-size:28px}
+  /* 本週成果：一則一段，主題在上、內容在下 */
+  .wins ul,.wcols{grid-template-columns:1fr;padding:0}
+  .wcols ul{padding:0}
+  .wcols ul + ul{border-left:0;border-top:1px solid var(--line)}
+  .wins li,.wcols li{flex-direction:column;align-items:flex-start;gap:2px;padding:10px 16px!important;border-left:0!important;font-size:15px}
+  .wins li + li{border-top:1px solid var(--line)}
+  .wins li b{border-right:0;padding-right:0;white-space:normal;font-size:16px}
+  /* 需求卡：下週完整顯示，不截斷 */
+  .ln.next{white-space:normal;overflow:visible}
+  footer{font-size:12.5px;line-height:1.6}
+}
 </style>
 </head>
 <body>

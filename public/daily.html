@@ -427,6 +427,32 @@ h2{color:var(--brand-ink);font-weight:900}
 /* 甘特圖：Try Run 改石板藍 */
 .bar.try{--bc:var(--try);--bs:var(--try-soft)}
 .glegend i[data-k="try"]{background:var(--try)!important}
+
+/* ===== 手機版（11-19）：只在手機與平板寬度生效，桌機版不受影響 ===== */
+@media (max-width:900px){
+  /* 手機卡片一律展開，收合用的「›」不需要。只設透明色：改 display 或字級會讓 Chromium 在桌機重繪箭頭，產生反鋸齒差異 */
+  .card .chev{color:transparent}
+  .card .chev + .cbody{margin-top:-34.75px}  /* 補回透明箭頭佔的一行（24.75px＋間距 10px） */
+}
+@media (max-width:760px){
+  .tabs a{padding:10px 14px}
+  /* 標題列：日期標題一行，四個數字排成 2×2 方格 */
+  .ttl{flex-direction:column;align-items:stretch;gap:10px;width:100%}
+  .tally{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-left:0;width:100%}
+  .tally span{border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:8px 12px;justify-content:flex-end}
+  .tally b{font-size:26px}
+  .mrow .nm i,.badge{font-size:12px}
+  /* 「完整時程」按鈕加大點擊範圍 */
+  .gbox > summary.donehd{padding:10px 0;flex-wrap:wrap}
+  .gbox[open] > summary.donehd::after{content:"甘特圖可左右滑動看完整時程";flex-basis:100%;font-size:12.5px;color:var(--muted);font-weight:400}
+  footer{font-size:12.5px}
+}
+@media (max-width:520px){
+  /* 工作流時程列：日期一欄、名稱與狀態一欄，名稱再長也不會掉到日期下面 */
+  .stepper li{display:grid;grid-template-columns:6.4em minmax(0,1fr);column-gap:8px;align-items:baseline}
+  .stepper .sd{grid-column:1;min-width:0}
+  .stepper .sn,.stepper .sg{grid-column:2}
+}
 </style>
 </head>
 <body>
