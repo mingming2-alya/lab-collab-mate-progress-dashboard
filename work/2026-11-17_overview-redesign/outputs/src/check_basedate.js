@@ -18,7 +18,7 @@ const url = 'file://' + path.resolve(root, 'public', 'daily.html');
       await p.goto(url + hash);
       await p.waitForTimeout(400);
       const r = await p.evaluate(() => {
-        const row = [...document.querySelectorAll('.mrow')].find(x => x.textContent.includes('Bundle 驗證'));
+        const row = [...document.querySelectorAll('.line')].find(x => x.textContent.includes('Bundle 驗證'));  /* 11-19 改版後時程列為 .line */
         const steps = row ? [...row.querySelectorAll('li')].map(li => li.innerText.replace(/\s+/g, ' ').trim()) : [];
         const line = document.querySelector('.todayl');
         return { h1: document.getElementById('h1').textContent, steps, line: line ? line.textContent : '(不在軸內)' };
