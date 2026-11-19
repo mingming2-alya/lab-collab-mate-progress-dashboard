@@ -9,54 +9,69 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
 <style>
-/* Layout: one column. Tabs → tally → one card per module (schedule + today's progress merged) → collapsible full gantt. Older rules kept below where reused: active workstreams as full cards (changed first) → not-started list with its issues shown → completed list (collapsed) → workflow scope. */
+/* 版面（11-19 依老闆回饋改版）：承接首頁「02 案例開發・Lab Collab Mate」的 5 個需求。
+   頁首 → ① 整體里程碑甘特圖（5 個模塊＋共用基礎，一眼看完整體時程）→ ② 各模塊執行細節（每個模塊同一個版面）。
+   模塊卡固定格式：標題列（編號、名稱、上線日、今日更新、燈號）→「時程」（每條工作線一列：左側名稱／負責人／現況，右側同一種時程條）
+   →「最新進展」→「下一步」→「風險與對策」→「相關項目」→ DRI／最後更新。沒有內容的列省略，順序不變。
+   時程條的圖示和甘特圖一致：長條＝階段、空心圓＝首次跑通、實心圓＝連續 5 次穩定跑通、橘菱形＝判斷點／定案、綠菱形＝正式上線。 */
 :root{
-  --bg:#F3F5F7; --surface:#FFFFFF; --fg:#18212B; --muted:#5D6B7A; --line:#DCE2E8; --seg:#D3DAE1;
-  --accent:#1E5A86; --accent-soft:#E3EDF5;
+  --bg:#F3F6F5; --surface:#FFFFFF; --fg:#1B2724; --muted:#5E6B68; --line:#DCE4E1;
+  --accent:#2E6B62; --accent-soft:#E3F0EC; --brand:#2E6B62; --brand-ink:#245850; --brand-soft:#E3F0EC; --on-brand:#FFFFFF;
   --ok:#1F7A4D; --ok-soft:#E2F2E9; --warn:#A86200; --warn-soft:#FBEFD9; --bad:#B3261E; --bad-soft:#FBE4E2;
-  --idle:#66727F; --idle-soft:#E8ECF0; --new:#6A3FB5; --new-soft:#EEE6FA;
-  --f-display:"Noto Serif TC","Noto Serif CJK TC","Songti TC","Songti SC","STSong","PMingLiU","SimSun",serif;
-  --f-body:"PingFang TC","PingFang SC","Microsoft JhengHei","Microsoft YaHei","Noto Sans TC","Noto Sans CJK TC",system-ui,sans-serif;
+  --idle:#66727F; --idle-soft:#E8ECF0; --new:#245850; --new-soft:#E3F0EC; --try:#4A6FA5; --try-soft:#E5ECF6;
+  --f-body:"Microsoft YaHei","微软雅黑","PingFang TC","PingFang SC","Noto Sans TC",system-ui,sans-serif;  /* 使用者指定微軟雅黑 */
   --f-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#11161C; --surface:#19212A; --fg:#E6ECF1; --muted:#97A5B3; --line:#2B3642; --seg:#33404D;
-  --accent:#7FB6E0; --accent-soft:#1D3243;
+  --bg:#0F1614; --surface:#17211E; --fg:#E4ECE9; --muted:#9AA9A5; --line:#2A3834;
+  --accent:#5FBFAE; --accent-soft:#183531; --brand:#5FBFAE; --brand-ink:#7FD2C2; --brand-soft:#183531; --on-brand:#0F1614;
   --ok:#5CC48C; --ok-soft:#173527; --warn:#F0B055; --warn-soft:#3A2A12; --bad:#F2857C; --bad-soft:#3E1D1B;
-  --idle:#A3B0BD; --idle-soft:#26303A; --new:#C3A6F2; --new-soft:#2E2442;
+  --idle:#A3B0BD; --idle-soft:#26303A; --new:#7FD2C2; --new-soft:#183531; --try:#8AAEE0; --try-soft:#1C2A3D;
   color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#11161C; --surface:#19212A; --fg:#E6ECF1; --muted:#97A5B3; --line:#2B3642; --seg:#33404D;
-  --accent:#7FB6E0; --accent-soft:#1D3243;
+  --bg:#0F1614; --surface:#17211E; --fg:#E4ECE9; --muted:#9AA9A5; --line:#2A3834;
+  --accent:#5FBFAE; --accent-soft:#183531; --brand:#5FBFAE; --brand-ink:#7FD2C2; --brand-soft:#183531; --on-brand:#0F1614;
   --ok:#5CC48C; --ok-soft:#173527; --warn:#F0B055; --warn-soft:#3A2A12; --bad:#F2857C; --bad-soft:#3E1D1B;
-  --idle:#A3B0BD; --idle-soft:#26303A; --new:#C3A6F2; --new-soft:#2E2442;
+  --idle:#A3B0BD; --idle-soft:#26303A; --new:#7FD2C2; --new-soft:#183531; --try:#8AAEE0; --try-soft:#1C2A3D;
   color-scheme:dark}
 *{box-sizing:border-box}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0}
 [hidden]{display:none!important}
-body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.65}
-.wrap{max-width:860px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:28px}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{max-width:1360px;margin:0 auto;padding-block:14px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:20px}
 h1,h2,h3{margin:0;text-wrap:balance}
-.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--muted);font-weight:500}
 .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-size:12px;letter-spacing:.1em;color:var(--muted);font-weight:500}
 
-header.page{display:flex;flex-direction:column;gap:12px}
+/* 頁首：分頁 → 麵包屑 → 標題＋統計＋日期 */
+header.page{display:flex;flex-direction:column;gap:8px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.tabs a{font-size:14px;font-weight:700;color:var(--muted);text-decoration:none;padding:8px 14px;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs a:hover{color:var(--fg)}
+.tabs a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--brand)}
+.tabs a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.tabs a.back{border-bottom-color:transparent;margin-right:10px;padding-left:0;padding-right:14px;position:relative;font-weight:500}
+.tabs a.back::after{content:"";position:absolute;right:0;top:25%;bottom:25%;border-right:1px solid var(--line)}
 .top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
-h1{font-family:var(--f-display);font-size:30px;line-height:1.25;font-weight:700}
+.ttl{display:flex;align-items:center;gap:6px 0;flex-wrap:wrap}
+h1{font-size:24px;font-weight:900;letter-spacing:.04em;line-height:1.15;padding-left:12px;border-left:5px solid var(--brand)}
+.tally{display:flex;flex-wrap:wrap;margin-left:10px}
+.tally span{display:inline-flex;flex-direction:row-reverse;align-items:baseline;gap:7px;border-left:1px solid var(--line);padding:0 18px;font-size:15px;font-weight:700}
+.tally b{font-size:28px;font-weight:900;line-height:1;color:var(--brand)}
+.tally .hot,.tally .hot b{color:var(--bad)}
 .pick{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
 .pick select{font-family:var(--f-mono);font-size:14px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 8px;cursor:pointer;max-width:100%}
 .pick select:hover,.pick select:focus-visible{border-color:var(--accent);outline:none}
-.tally{display:flex;flex-wrap:wrap;gap:8px}
-.tally span{font-size:13px;padding:3px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--muted)}
-.tally b{font-family:var(--f-mono);color:var(--fg);margin-left:4px}
-.tally .hot{border-color:var(--new);color:var(--new)}
-.tally .hot b{color:var(--new)}
 
-section{display:flex;flex-direction:column;gap:12px}
-h2{font-size:18px;font-weight:700;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-h2 .count{font-family:var(--f-mono);font-size:13px;color:var(--muted);font-weight:400}
+/* 區段標題 */
+section{display:flex;flex-direction:column;gap:10px}
+.shd{display:flex;align-items:baseline;gap:6px 14px;flex-wrap:wrap}
+h2{font-size:19px;font-weight:900;color:var(--brand-ink);display:flex;align-items:baseline;gap:10px}
+h2 .no{font-family:var(--f-mono);font-size:14px;color:var(--muted);font-weight:700}
+.shd .count{font-size:13px;color:var(--muted)}
+.notes{display:flex;flex-direction:column;gap:3px;margin:0;font-size:13px;color:var(--muted);border-left:3px solid var(--brand);padding-left:10px}
 
+/* 燈號與標籤 */
 [data-s="green"]{--c:var(--ok);--cs:var(--ok-soft)}
 [data-s="yellow"]{--c:var(--warn);--cs:var(--warn-soft)}
 [data-s="red"]{--c:var(--bad);--cs:var(--bad-soft)}
@@ -66,23 +81,108 @@ h2 .count{font-family:var(--f-mono);font-size:13px;color:var(--muted);font-weigh
 .badge{font-size:12px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap}
 .badge.new{background:var(--new-soft);color:var(--new)}
 .badge.same{background:var(--idle-soft);color:var(--idle);font-weight:500}
+.livepill{font-size:12px;font-weight:700;color:var(--ok);background:var(--ok-soft);padding:2px 8px;border-radius:4px;white-space:nowrap}
 
-/* active workstream card */
-.card{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
-/* 灰階可辨識：不同狀態用不同左緣樣式，不只靠色相 */
-.card[data-s="yellow"]{border-left-style:solid;border-left-width:8px}
-.card[data-s="red"]{border-left-width:8px}
-.card[data-s="idle"]{border-left-style:dotted;border-left-width:6px}
-.card[data-s="done"]{border-left-width:8px}
-.card .hd{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.card .no{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
-.card h3{font-size:18px;line-height:1.35;margin-right:auto}
-.diff{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px}
-.diff s{color:var(--muted)}
-.diff .arrow{color:var(--muted)}
-.diff strong{color:var(--c)}
-.update{margin:0;font-size:15px;max-width:68ch}
-.issue{border-radius:8px;padding:10px 12px;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:14px}
+/* ① 整體里程碑甘特圖：左欄＝模塊（編號、名稱、燈號），中欄＝工作線，右側＝時間軸 */
+.gwrap{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.glegend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--muted);padding:10px 14px 0}
+.glegend i{display:inline-block;width:18px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle;font-style:normal}
+.glegend .k{display:inline-block;width:11px;height:11px;margin-right:6px;vertical-align:-1px}
+.gantt{min-width:960px;padding:4px 14px 10px;--M:176px;--L:200px}
+.gax{display:grid;grid-template-columns:calc(var(--M) + var(--L)) minmax(0,1fr);font-size:12px;color:var(--muted);height:36px}
+.gax .ticks{position:relative}
+.gax .mo{position:absolute;top:0;font-weight:700;color:var(--fg);padding-left:4px;border-left:1px solid var(--muted);line-height:16px}
+.gax .wk{position:absolute;bottom:0;transform:translateX(-50%);font-family:var(--f-mono);font-size:11px}
+.gax .today{top:auto;height:12px}
+.gax .todayl{position:absolute;top:0;transform:translateX(-50%);font-size:11px;font-weight:700;color:var(--bad);background:var(--surface);padding:0 4px;z-index:3;white-space:nowrap}
+.gmod{display:grid;grid-template-columns:var(--M) minmax(0,1fr);border-top:1px solid var(--line)}
+.gmod.base{border-top:1px dashed var(--line)}
+.gm{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:9px 12px 9px 0;min-width:0}
+.gm a{font-size:15px;font-weight:900;color:var(--fg);text-decoration:none;line-height:1.35}
+.gm a .no{font-family:var(--f-mono);font-size:13px;color:var(--muted);margin-right:6px}
+.gm a:hover{color:var(--brand);text-decoration:underline}
+.gm a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.gm .pill{font-size:11.5px;padding:0 8px}
+.gmod.base .gm a{font-weight:700;color:var(--muted)}
+.grow{display:grid;grid-template-columns:var(--L) minmax(0,1fr);align-items:center;min-height:40px}
+.grow .lb{font-size:13.5px;font-weight:700;padding-right:10px;line-height:1.3;min-width:0}
+.grow .lb small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.trk{position:relative;height:40px;background:repeating-linear-gradient(to right,var(--line) 0 1px,transparent 1px calc(100% / var(--wks)))}
+.today{position:absolute;top:0;bottom:0;width:0;border-left:2px solid var(--bad);z-index:0}
+.bar{position:absolute;z-index:1;top:9px;height:22px;border-radius:5px;font-size:12px;font-weight:700;line-height:20px;padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid var(--bc);background:var(--bs);color:var(--bc)}
+.bar.build{--bc:var(--accent);--bs:var(--accent-soft)}
+.bar.try{--bc:var(--try);--bs:var(--try-soft)}
+.bar.now{background:var(--bc);color:var(--surface)}
+.bar.past{--bc:var(--idle);--bs:var(--idle-soft);font-weight:500}
+.bar.open{border-right:0;border-radius:5px 0 0 5px;background:linear-gradient(to right,var(--bs) 60%,transparent);border-style:solid dashed}
+.bar.tbdbar{left:0;right:0;border:1px dashed var(--idle);background:transparent;color:var(--muted);font-weight:500}
+.mk{position:absolute;top:13px;width:14px;height:14px;transform:translateX(-50%);z-index:2;border:2px solid var(--surface);box-sizing:content-box;margin-top:-2px}
+.mk.first{border-radius:50%;background:var(--surface);box-shadow:inset 0 0 0 2.5px var(--fg)}
+.mk.stable{border-radius:50%;background:var(--fg)}
+.mk.gate{transform:translateX(-50%) rotate(45deg);background:var(--warn);width:11px;height:11px;margin-top:0}
+.mk.live{transform:translateX(-50%) rotate(45deg);background:var(--ok);width:12px;height:12px;margin-top:-1px}
+.msl{position:absolute;z-index:2;top:10px;font-size:12px;font-weight:700;color:var(--ok);padding-left:12px;white-space:nowrap}
+.ghint{display:none}
+
+/* ② 模塊卡：每個模塊同一個版面 */
+.mods{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--brand);border-radius:10px;scroll-margin-top:12px;min-width:0}
+.card.base{border-top-color:var(--idle)}
+.card .hd{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;padding:9px 16px 8px}
+.card .hd .no{font-family:var(--f-mono);font-size:14px;font-weight:700;color:var(--muted)}
+.card h3{font-size:18px;font-weight:900;color:var(--brand-ink);letter-spacing:.04em;line-height:1.35;margin-right:auto}
+.card h3 small{font-size:13px;font-weight:500;color:var(--muted);margin-left:10px;letter-spacing:0}
+.rows{margin:0;display:grid;grid-template-columns:104px minmax(0,1fr)}
+.rows > dt{padding:11px 0 11px 16px;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.04em;border-top:1px solid var(--line)}
+.rows > dd{margin:0;padding:10px 16px 10px 0;border-top:1px solid var(--line);min-width:0;font-size:14.5px}
+.meta{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 16px;border-top:1px dashed var(--line);padding:7px 16px}
+/* 時程：每條工作線一列（左：名稱／負責人／現況；右：時程條） */
+.line{display:grid;grid-template-columns:200px minmax(0,1fr);gap:6px 18px;padding:2px 0 4px}
+.line + .line{border-top:1px dashed var(--line);margin-top:8px;padding-top:10px}
+.line .nm{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0}
+.line .nm b{font-size:15px;line-height:1.35}
+.line .nm small{font-size:12.5px;color:var(--muted)}
+.upd{font-style:normal;font-size:11px;font-weight:700;color:var(--new);background:var(--new-soft);padding:0 6px;border-radius:4px;margin-left:6px;vertical-align:1px;white-space:nowrap}
+.st{font-size:12px;padding:1px 8px;border-radius:4px;background:var(--idle-soft);color:var(--idle)}
+.st.doing{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.st.done{background:var(--ok-soft);color:var(--ok);font-weight:700}
+/* 時程條（所有模塊同一種畫法；圖示同甘特圖） */
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(var(--n,5),minmax(0,1fr))}
+.steps li{position:relative;padding:24px 12px 0 0;min-width:0;display:flex;flex-direction:column;gap:1px;font-size:13px;line-height:1.4}
+.steps li::before{content:"";position:absolute;left:8px;right:0;top:8px;height:2px;background:var(--line)}
+.steps li:last-child::before{display:none}
+.steps li.past::before,.steps li.now::before{background:var(--accent)}
+.steps .m{position:absolute;left:0;top:3px;width:12px;height:12px;box-sizing:border-box;z-index:1}
+.steps .m.step{top:4px;width:20px;height:10px;border-radius:3px;border:1.5px solid var(--accent);background:var(--accent-soft)}
+.steps .m.step.try{border-color:var(--try);background:var(--try-soft)}
+.steps li.now .m.step{background:var(--accent)}
+.steps li.now .m.step.try{background:var(--try)}
+.steps .m.first{border-radius:50%;background:var(--surface);box-shadow:inset 0 0 0 2.5px var(--fg)}
+.steps .m.stable{border-radius:50%;background:var(--fg)}
+.steps .m.gate{width:10px;height:10px;top:4px;left:1px;transform:rotate(45deg);background:var(--warn)}
+.steps .m.live{width:11px;height:11px;top:3px;left:1px;transform:rotate(45deg);background:var(--ok)}
+.steps li.past .m{opacity:.45}
+.steps li.past .m.step{border-color:var(--idle);background:var(--idle-soft);opacity:1}
+.steps li.tbd .m{opacity:.5}
+.steps li.tbd .m.step{background:transparent;border-style:dashed;border-color:var(--idle);opacity:1}
+.steps .sd{font-family:var(--f-mono);font-size:12px;color:var(--muted);white-space:nowrap}
+.steps .sn{font-weight:700}
+.steps .sg{font-size:12px;font-weight:700;color:var(--accent)}
+.steps small{font-size:12px;color:var(--muted);line-height:1.35}
+.steps li.past{color:var(--muted)}
+.steps li.past .sn{font-weight:500}
+.steps li.now .sn{color:var(--accent)}
+.steps li.live .sn{color:var(--ok)}
+.steps li.tbd .sn{font-weight:500}
+/* 進展、下一步：多個來源時左側標來源 */
+.prog{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px}
+.prog.single{grid-template-columns:minmax(0,1fr)}
+.prog > b{font-size:13.5px;white-space:nowrap}
+.prog > div > div + div{margin-top:1px}
+.dim{color:var(--muted)}
+/* 風險與對策 */
+.issues{display:flex;flex-direction:column;gap:6px}
+.issue{border-radius:8px;padding:7px 11px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;font-size:13.5px}
 .issue.risk{background:var(--warn-soft)}
 .issue.decide{background:var(--accent-soft)}
 .issue.handled{background:var(--ok-soft)}
@@ -91,349 +191,34 @@ h2 .count{font-family:var(--f-mono);font-size:13px;color:var(--muted);font-weigh
 .issue .v{min-width:0}
 .issue .t{font-weight:700}
 .issue .ask{white-space:pre-line}
-.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0;font-size:14px}
-.kv dt{color:var(--muted);white-space:nowrap}
-.kv dd{margin:0;min-width:0}
-.tbd{color:var(--muted);font-style:normal}
-.tbd::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--warn);margin-right:6px;vertical-align:middle}
-.foot{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--muted);border-top:1px dashed var(--line);padding-top:8px}
+/* 相關項目：工具與子項目 */
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:6px}
+.it{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:2px 10px;border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:13.5px;min-width:0}
+.it small{color:var(--muted);font-size:12.5px;margin-left:8px}
+.it .st{white-space:nowrap}
+.inote{margin:6px 0 0;font-size:12.5px;color:var(--muted)}
 
-/* not-started panel */
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
-.panel .note{margin:0;padding:10px 16px;font-size:13px;color:var(--accent);background:var(--accent-soft)}
-details{border-top:1px solid var(--line)}
-details:first-of-type{border-top:0}
-summary{list-style:none;cursor:pointer;padding:10px 16px;display:grid;grid-template-columns:2.2em minmax(0,1fr) auto 1em;gap:10px;align-items:center;font-size:14px}
-summary::-webkit-details-marker{display:none}
-summary:hover{background:var(--bg)}
-summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
-summary .no{font-family:var(--f-mono);color:var(--muted);font-size:13px}
-summary .nm{font-weight:700}
-summary .sub{color:var(--muted);font-size:13px;white-space:nowrap}
-summary .chev{color:var(--muted);transition:transform .15s}
-details[open] summary .chev{transform:rotate(90deg)}
-.items{padding:0 16px 12px calc(16px + 2.2em + 10px);display:flex;flex-direction:column;gap:8px}
-.sumissues{grid-column:2 / -1;display:flex;flex-direction:column;gap:6px;font-weight:400}
-.row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px 12px;padding:5px 0;border-top:1px solid var(--line);font-size:14px;align-items:center}
-.row:first-child{border-top:0}
-.row .who{color:var(--muted);font-size:13px}
-.st{font-size:12px;padding:1px 8px;border-radius:4px;background:var(--idle-soft);color:var(--idle);white-space:nowrap}
-.stages{font-size:12px;color:var(--muted);padding-bottom:4px}
-.st.doing{background:var(--accent-soft);color:var(--accent);font-weight:700}
-.st.done{background:var(--ok-soft);color:var(--ok);font-weight:700}
-.cardrows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px;padding:6px 12px}
-
-/* completed (collapsed by default) */
-.donebox{border:0}
-.donebox > summary.donehd{display:flex;align-items:baseline;gap:10px;padding:0;grid-template-columns:none}
-.donebox > summary.donehd:hover{background:none}
-.donehd .chev{font-size:18px}
-.donehd .hint{font-size:12px;color:var(--muted)}
-.donebox[open] .hint{display:none}
-.donebox[open] > summary .chev{transform:rotate(90deg)}
-.donebox .panel{margin-top:12px}
-.empty{margin:0;padding:12px 16px;font-size:14px;color:var(--muted)}
-/* other issues */
-.list{display:flex;flex-direction:column;gap:8px}
-.list .issue{background:var(--surface);border:1px solid var(--line)}
-.list .ws{font-size:12px;color:var(--muted)}
-
-/* scope */
-.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px}
-.tier{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
-.tier.now{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
-.tier .when{font-size:12px;color:var(--muted);font-weight:500}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font-size:13px;padding:1px 10px;border-radius:999px;background:var(--idle-soft)}
-.tier.now .chip{background:var(--accent-soft);color:var(--accent);font-weight:700}
-/* tabs */
-.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
-.tabs a{font-size:14px;font-weight:700;color:var(--muted);text-decoration:none;padding:8px 14px;border-bottom:3px solid transparent;margin-bottom:-1px}
-.tabs a:hover{color:var(--fg)}
-.tabs a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--accent)}
-.tabs a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
-
-/* overall schedule */
-.tracks{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px}
-.trkcard{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--tc,var(--accent));border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
-.trkcard .grp{font-size:12px;color:var(--muted)}
-.trkcard h3{font-size:16px}
-.trkcard .cur{font-size:14px}
-.trkcard .cur b{color:var(--tc,var(--accent))}
-.eta{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
-.eta .big{font-family:var(--f-mono);font-size:22px;font-weight:700;line-height:1.2}
-.eta .left{font-size:13px;color:var(--muted)}
-.nx{font-size:13px;border-top:1px dashed var(--line);padding-top:6px;color:var(--muted)}
-.nx b{color:var(--fg);font-weight:700}
-.tbdline{margin:0;font-size:13px;color:var(--muted)}
-.gwrap{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.gantt{min-width:780px;padding:10px 14px 12px;--L:200px}
-.gax,.grow,.ghd{display:grid;grid-template-columns:var(--L) minmax(0,1fr);align-items:center}
-.gax{font-size:12px;color:var(--muted);height:34px;align-items:stretch}
-.gax .ticks{position:relative}
-.gax .mo{position:absolute;top:0;font-weight:700;color:var(--fg);padding-left:4px;border-left:1px solid var(--muted);line-height:16px}
-.gax .wk{position:absolute;bottom:0;transform:translateX(-50%);font-family:var(--f-mono);font-size:11px}
-.ghd{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--muted);padding-top:10px;border-top:1px solid var(--line);margin-top:4px}
-.ghd .gn{font-weight:400;letter-spacing:0;font-size:12px}
-.grow{min-height:42px}
-.grow .lb{font-size:14px;font-weight:700;padding-right:10px;line-height:1.3;min-width:0}
-.grow .lb small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
-.trk{position:relative;height:42px;background:repeating-linear-gradient(to right,var(--line) 0 1px,transparent 1px calc(100% / var(--wks)))}
-.today{position:absolute;top:0;bottom:0;width:0;border-left:2px solid var(--bad);z-index:0}
-.gax .today{top:auto;height:12px}
-.gax .todayl{position:absolute;top:0;transform:translateX(-50%);font-size:11px;font-weight:700;color:var(--bad);background:var(--surface);padding:0 4px;z-index:3;white-space:nowrap}
-.bar{position:absolute;z-index:1;top:10px;height:22px;border-radius:5px;font-size:12px;font-weight:700;line-height:20px;padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid var(--bc);background:var(--bs);color:var(--bc)}
-.bar.build{--bc:var(--accent);--bs:var(--accent-soft)}
-.bar.try{--bc:var(--ok);--bs:var(--ok-soft)}
-.bar.now{background:var(--bc);color:var(--surface)}
-.bar.past{--bc:var(--idle);--bs:var(--idle-soft);font-weight:500}
-.bar.open{border-right:0;border-radius:5px 0 0 5px;background:linear-gradient(to right,var(--bs) 60%,transparent);border-style:solid dashed}
-.bar.tbdbar{left:0;right:0;border:1px dashed var(--idle);background:transparent;color:var(--muted);font-weight:500}
-.mk{position:absolute;top:14px;width:14px;height:14px;transform:translateX(-50%);z-index:2;border:2px solid var(--surface);box-sizing:content-box;margin-top:-2px}
-.mk.first{border-radius:50%;background:var(--surface);box-shadow:inset 0 0 0 2.5px var(--fg)}
-.mk.stable{border-radius:50%;background:var(--fg)}
-.mk.gate{transform:translateX(-50%) rotate(45deg);background:var(--warn);width:11px;height:11px;margin-top:0}
-.mk.live{transform:translateX(-50%) rotate(45deg);background:var(--ok);width:12px;height:12px;margin-top:-1px}
-.glegend .k{display:inline-block;width:11px;height:11px;margin-right:6px;vertical-align:-1px}
-.tbdline{border-left:3px solid var(--accent);padding-left:10px}
-.msl{position:absolute;z-index:2;top:11px;font-size:12px;font-weight:700;color:var(--ok);padding-left:12px;white-space:nowrap}
-.glegend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--muted);padding:8px 14px 0}
-.glegend i{display:inline-block;width:18px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle;font-style:normal}
 footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:4px}
-@media (max-width:520px){
-  h1{font-size:24px}
-  .gantt{--L:120px;min-width:700px}
-  summary{grid-template-columns:2.2em minmax(0,1fr) 1em}
-  summary .sub{grid-column:2;grid-row:2;white-space:normal}
-  summary .chev{grid-column:3;grid-row:1}
-  .sumissues{grid-column:1 / -1}
-  .items{padding-left:16px}
-}
-@media (prefers-reduced-motion:reduce){summary .chev{transition:none}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 
-/* module cards (schedule + progress merged) */
-.mods{display:flex;flex-direction:column;gap:12px}
-.rule{margin:0;font-size:13px;color:var(--muted);border-left:3px solid var(--accent);padding-left:10px}
-.sched{display:flex;flex-direction:column;gap:2px;font-size:14px;background:var(--bg);border-radius:8px;padding:8px 12px}
-.sched .lbl{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.06em}
-.sched b.mono{font-size:15px}
-.sched .dim{color:var(--muted);font-size:13px}
-.prog{display:flex;flex-direction:column;gap:4px;margin:0;font-size:15px;max-width:72ch}
-.prog b{margin-right:6px}
-.mrows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px}
-.mrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;padding:8px 12px;border-top:1px solid var(--line);align-items:center;font-size:14px}
-.mrow.two{grid-template-columns:minmax(0,1fr) auto}
-.mrow:first-child{border-top:0}
-.mrow .nm{font-weight:700;min-width:0}
-.mrow .nm small{display:block;font-weight:400;color:var(--muted);font-size:12px}
-.mrow .nm i{white-space:nowrap;font-style:normal;font-size:11px;font-weight:700;color:var(--new);background:var(--new-soft);padding:0 6px;border-radius:4px;margin-left:6px;vertical-align:1px}
-.mrow .nx{font-size:13px;color:var(--muted);min-width:0;border-top:0;padding-top:0}
-.mrow .st{white-space:normal;text-align:right}
-.stepper{grid-column:1 / -1;list-style:none;margin:6px 0 2px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:0}
-.stepper li{position:relative;border-top:3px solid var(--line);padding:8px 10px 0 0;display:flex;flex-direction:column;gap:1px;min-width:0;font-size:13px}
-.stepper li::before{content:"";position:absolute;top:-8px;left:0;width:9px;height:9px;border-radius:50%;background:var(--surface);border:2px solid var(--line)}
-.stepper .sd{font-size:12px;color:var(--muted)}
-.stepper .sn{font-weight:700;line-height:1.35}
-.stepper .sg{font-size:12px;font-weight:700;color:var(--accent)}
-.stepper li.past{color:var(--muted)}
-.stepper li.past .sn{font-weight:500}
-.stepper li.past::before{background:var(--idle);border-color:var(--idle)}
-.stepper li.now{border-top-color:var(--accent)}
-.stepper li.now::before{background:var(--accent);border-color:var(--accent)}
-.stepper li.next::before{border-color:var(--accent);background:var(--accent-soft)}
-.stepper li.live .sn{color:var(--ok)}
-.mrow .nx b{color:var(--fg)}
-.livepill{font-size:12px;font-weight:700;color:var(--ok);background:var(--ok-soft);padding:2px 8px;border-radius:4px;white-space:nowrap}
-.card[data-s="idle"] .prog{color:var(--muted)}
-.gbox > summary.donehd{display:flex;align-items:baseline;gap:10px;padding:0}
-.gbox[open] > summary .chev{transform:rotate(90deg)}
-.gbox[open] .hint{display:none}
-.gbox .gwrap{margin-top:12px}
-@media (max-width:520px){
-  .mrow{grid-template-columns:minmax(0,1fr) auto}
-  .mrow .nx{grid-column:1 / -1}
-  .stepper{grid-template-columns:1fr;margin-left:5px}
-  .stepper li{border-top:0;border-left:3px solid var(--line);padding:0 0 10px 14px;flex-direction:row;flex-wrap:wrap;gap:0 8px;align-items:baseline}
-  .stepper li:last-child{padding-bottom:0}
-  .stepper li::before{top:3px;left:-8px}
-  .stepper li.now{border-left-color:var(--accent)}
-  .stepper .sd{min-width:7.5em}
+/* 中等寬度：工作線名稱移到時程條上方，時程條用滿寬 */
+@media (max-width:1200px){
+  .line{grid-template-columns:minmax(0,1fr)}
+  .line .nm{flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
 }
-
-/* 卡片可見摘要：時程現況（階段／現象／ETA／下一階段）＋風險與決策＋DRI；
-   收合（FYI）：逐工具明細列、step 步驟條、完整排程細節。 */
-.card .cbody{display:flex;flex-direction:column;gap:10px}
-.card .sum{display:flex;flex-direction:column;gap:5px;margin:0}
-.card .sum .issue{padding:7px 10px;font-size:13px;gap:2px 9px}
-.card .sum .issue .t{font-weight:700}
-.card .sum .issue .ask{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card .sum .prog{font-size:13.5px}
-.card .sum .prog{font-size:14px;color:var(--fg)}
-.card .sum .prog b{color:var(--fg)}
-.card .meta{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 14px;border-top:1px dashed var(--line);padding-top:6px;margin-top:auto}
-.ssum{font-size:14px;background:var(--bg);border-radius:8px;padding:7px 11px;display:flex;flex-direction:column;gap:2px}
-.ssum .lbl{font-size:11.5px;color:var(--muted);font-weight:700;letter-spacing:.06em}
-.ssum .row{display:flex;flex-wrap:wrap;gap:3px 14px}
-.ssum .row .k{color:var(--muted)}
-.ssum b.mono{font-size:14px}
-.ssum .dim{color:var(--muted);font-size:13px}
-/* 收合摘要裡的「現象」只留一行（完整原話在展開區），讓等高卡片不被單張撐高 */
-@media (min-width:901px){.ssum .row .dim{flex-basis:100%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
-.card[data-s="idle"] .sum .prog{color:var(--muted)}
-@media (min-width:901px){
-  .wrap{max-width:1360px;gap:14px;padding-block:14px 20px}
-  .mods{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:10px;align-items:stretch}
-  /* 收合時所有卡片等高（取最高者）；有卡片展開時不套用，避免其他列被撐高 */
-  .mods:not(:has(.card[aria-expanded="true"])){grid-auto-rows:1fr}
-  .card{padding:11px 13px;gap:6px}
-  .card h3{font-size:15.5px}
-  .ssum{padding:6px 10px}
-  h1{font-size:22px}
-  header.page{gap:8px}
-  .card[role="button"]{cursor:pointer;position:relative;padding-bottom:14px}
-  .card[role="button"]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  .card .chev{position:absolute;bottom:9px;right:13px;color:var(--muted);font-size:16px;transition:transform .15s;line-height:1}
-  .card .cbody{display:none;border-top:1px dashed var(--line);margin-top:2px;padding-top:10px}
-  .card[aria-expanded="true"] .cbody{display:flex;flex-direction:column;gap:10px}
-  .card[aria-expanded="true"] .chev{transform:rotate(90deg)}
-}
-/* ---- 展開閱讀版面（課長用：完整但精簡） ---- */
-/* 時程只寫一次：展開時隱藏摘要裡的時程，保留展開區較完整的時程（含里程碑、備案、下一階段）；手機一律展開，同樣處理 */
-.card[aria-expanded="true"] .sum .ssum{display:none}
-@media (max-width:900px){.card .sum .ssum{display:none}}
-/* 工具／項目列壓成一行：名稱・負責人・狀態 */
-.mrow.two{padding:6px 12px}
-/* 頁首：標題與統計同列；區段標題與 Try Run 標準同列 */
-.ttl{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap}
-.shd{display:flex;align-items:baseline;gap:6px 16px;flex-wrap:wrap}
-/* 卡片內容合成一個區塊：時程／回報原話／下一步／說明／項目列，以分隔線區分 */
-.blk{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
-.blk > *{border-radius:0;margin:0}
-.blk > * + *{border-top:1px solid var(--line)}
-.blk > .prog{padding:8px 12px;max-width:none;font-size:14px}
-.blk > .kv{padding:6px 12px}
-.blk > .note{padding:6px 12px;font-size:13px;color:var(--muted);background:var(--bg)}
-.blk > .mrows{border:0}
-/* 直向時間軸 */
-.tl{padding:8px 12px 4px;display:flex;flex-direction:column;gap:6px}
-.tl .lbl{font-size:11.5px;color:var(--muted);font-weight:700;letter-spacing:.06em}
-.vsteps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
-.vsteps li{position:relative;display:grid;grid-template-columns:6.6em minmax(0,1fr);gap:0 10px;padding:0 0 10px 18px;font-size:13.5px;line-height:1.45}
-.vsteps li::before{content:"";position:absolute;left:0;top:5px;width:9px;height:9px;border-radius:50%;background:var(--surface);border:2px solid var(--line);box-sizing:content-box;z-index:1}
-.vsteps li::after{content:"";position:absolute;left:5px;top:12px;bottom:-4px;width:2px;background:var(--line)}
-.vsteps li:last-child::after{display:none}
-.vsteps li:last-child{padding-bottom:4px}
-.vsteps .sd{font-size:12px;color:var(--muted);padding-top:1px;white-space:nowrap}
-.vsteps .sn{font-weight:700}
-.vsteps .sg{margin-left:8px;font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap}
-.vsteps small{display:block;color:var(--muted);font-size:12px;line-height:1.4}
-.vsteps li.past{color:var(--muted)}
-.vsteps li.past .sn{font-weight:500}
-.vsteps li.past::before{background:var(--idle);border-color:var(--idle)}
-.vsteps li.past::after,.vsteps li.now::after{background:var(--accent)}
-.vsteps li.now::before{background:var(--accent);border-color:var(--accent)}
-.vsteps li.now{}
-.vsteps li.now .sn{color:var(--accent)}
-.vsteps li.next::before{border-color:var(--accent);background:var(--accent-soft)}
-.vsteps li.ms::before{border-radius:2px;transform:rotate(45deg);width:8px;height:8px}
-.vsteps li.ms.gate::before{border-color:var(--warn)}
-.vsteps li.ms.gate.past::before,.vsteps li.ms.gate.now::before{background:var(--warn)}
-.vsteps li.ms.live::before{border-color:var(--ok)}
-.vsteps li.ms.live .sn{color:var(--ok)}
-.vsteps li.tbd{color:var(--muted)}
-.vsteps li.tbd::before{border-style:dashed}
-.vsteps li.tbd .sn{font-weight:500}
-/* 展開時不再需要「摘要／明細」分界虛線 */
-.card[aria-expanded="true"] .cbody{border-top:0;padding-top:0;margin-top:0}
-/* 展開時風險／對策說明不截斷（完整版） */
-.card[aria-expanded="true"] .sum .issue .ask{display:block;-webkit-line-clamp:unset;overflow:visible}
-.mrow.two .nm small{display:inline;margin-left:8px}
-@media (min-width:901px){
-  /* 6 欄格線：主業務整排、支援三張並排、排隊業務兩張並排；同排等高 */
-  .mods{grid-template-columns:repeat(6,minmax(0,1fr))}
-  .card[data-w]{grid-column:span 6}
-  .card[data-w="2"]{grid-column:span 2}
-  .card[data-w="3"]{grid-column:span 3}
-  /* 工作流列：左欄名稱／負責人／節點數，右欄時程步驟條 */
-  .mrow:not(.two){grid-template-columns:190px minmax(0,1fr);grid-template-rows:auto 1fr;gap:4px 18px;padding:10px 12px}
-  .mrow:not(.two) .nm{grid-column:1;grid-row:1}
-  .mrow:not(.two) .st{grid-column:1;grid-row:2;justify-self:start;align-self:start;text-align:left}
-  .mrow:not(.two) .stepper{grid-column:2;grid-row:1 / span 2;margin:8px 0 0}
-}
-@media (min-width:901px) and (max-width:1199px){
-  .card[data-w="2"]{grid-column:span 3}
-}
-@media (min-width:901px) and (prefers-reduced-motion:reduce){.card .chev{transition:none}}
-/* 矮螢幕（≤960px，如筆電 1440×900）再壓縮，維持單屏 */
-@media (min-width:901px) and (max-height:960px){
-  .wrap{gap:10px;padding-block:10px 14px}
-  h1{font-size:20px}
-  .tabs a{padding:5px 12px;font-size:13px}
-  header.page{gap:6px}
-  .card{padding:9px 12px;gap:5px}
-  .card h3{font-size:15px}
-  .card .sum{gap:4px}
-  .card .sum .issue{padding:6px 9px;font-size:12.5px}
-  .card .sum .issue .ask{-webkit-line-clamp:1}
-  .ssum{padding:5px 9px;font-size:13px}
-  .ssum .lbl{font-size:11px}
-  .mods{gap:9px}
-  footer{padding-top:5px;font-size:10.5px;gap:2px}
-  footer span:nth-child(2){display:none}
-  footer span:last-child{display:none}
-}
-
-/* ===== 統一風格（11-18，與總覽頁一致）：深青綠主色、微軟雅黑；版面與內容不動 =====
-   狀態燈號顏色（正常綠／注意橘／受阻紅／未啟動灰）保留，只在卡片標題列的狀態標籤上表示。
-   甘特圖「用戶 Try Run」改用石板藍，避免與主色深青綠混淆。 */
-:root{
-  --bg:#F3F6F5; --surface:#FFFFFF; --fg:#1B2724; --muted:#5E6B68; --line:#DCE4E1; --seg:#D2DCD8;
-  --accent:#2E6B62; --accent-soft:#E3F0EC; --brand:#2E6B62; --brand-ink:#245850; --brand-soft:#E3F0EC; --on-brand:#FFFFFF;
-  --new:#245850; --new-soft:#E3F0EC; --try:#4A6FA5; --try-soft:#E5ECF6;
-  --f-body:"Microsoft YaHei","微软雅黑","PingFang TC","PingFang SC","Noto Sans TC",system-ui,sans-serif;
-  --f-display:var(--f-body);
-}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0F1614; --surface:#17211E; --fg:#E4ECE9; --muted:#9AA9A5; --line:#2A3834; --seg:#2E3D39;
-  --accent:#5FBFAE; --accent-soft:#183531; --brand:#5FBFAE; --brand-ink:#7FD2C2; --brand-soft:#183531; --on-brand:#0F1614;
-  --new:#7FD2C2; --new-soft:#183531; --try:#8AAEE0; --try-soft:#1C2A3D;
-  color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0F1614; --surface:#17211E; --fg:#E4ECE9; --muted:#9AA9A5; --line:#2A3834; --seg:#2E3D39;
-  --accent:#5FBFAE; --accent-soft:#183531; --brand:#5FBFAE; --brand-ink:#7FD2C2; --brand-soft:#183531; --on-brand:#0F1614;
-  --new:#7FD2C2; --new-soft:#183531; --try:#8AAEE0; --try-soft:#1C2A3D;
-  color-scheme:dark}
-.tabs a[aria-current="page"]{border-bottom-color:var(--brand)}
-/* 標題列：左側直條＋粗黑體，統計數字併在同一行（數字在前、細直線分隔） */
-h1{font-family:var(--f-body);font-weight:900;letter-spacing:.04em;padding-left:14px;border-left:5px solid var(--brand);line-height:1.15}
-.ttl{gap:6px 0}
-.tally{gap:0;margin-left:10px}
-.tally span{display:inline-flex;flex-direction:row-reverse;align-items:baseline;gap:7px;background:none;border:0;border-left:1px solid var(--line);border-radius:0;padding:0 18px;font-size:15px;font-weight:700;color:var(--fg)}
-.tally b{font-family:var(--f-body);font-size:30px;font-weight:900;line-height:1;color:var(--brand);margin:0}
-.tally .hot{color:var(--bad)}
-.tally .hot b{color:var(--bad)}
-h2{color:var(--brand-ink);font-weight:900}
-.rule{border-left-color:var(--brand)}
-/* 模塊卡：深青綠標題列（同總覽頁），狀態改由標題列上的燈號標籤表示 */
-.card,.card[data-s]{border:1px solid var(--line);border-radius:10px;padding:0 0 10px;overflow:hidden}
-.card > :not(.hd):not(.chev){margin-inline:14px}
-.card .hd{background:var(--brand);color:var(--on-brand);padding:7px 14px}
-.card h3{color:var(--on-brand);font-weight:900;letter-spacing:.04em}
-.card .hd .pill{background:var(--surface);color:var(--c);box-shadow:inset 0 0 0 1px var(--cs)}
-.card .hd .badge.new{background:var(--on-brand);color:var(--brand-ink)}
-.card .hd .badge.same{background:color-mix(in srgb,var(--on-brand) 22%,transparent);color:var(--on-brand)}
-.card .hd .livepill{background:var(--on-brand);color:var(--ok)}
-.mrows,.blk{border-color:var(--line)}
-/* 甘特圖：Try Run 改石板藍 */
-.bar.try{--bc:var(--try);--bs:var(--try-soft)}
-.glegend i[data-k="try"]{background:var(--try)!important}
-
-/* ===== 手機版（11-19）：只在手機與平板寬度生效，桌機版不受影響 ===== */
+/* 平板、手機：時程條改直向 */
 @media (max-width:900px){
-  /* 手機卡片一律展開，收合用的「›」不需要。只設透明色：改 display 或字級會讓 Chromium 在桌機重繪箭頭，產生反鋸齒差異 */
-  .card .chev{color:transparent}
-  .card .chev + .cbody{margin-top:-34.75px}  /* 補回透明箭頭佔的一行（24.75px＋間距 10px） */
+  .steps{grid-template-columns:minmax(0,1fr)!important;margin-left:2px}
+  .steps li{padding:0 0 12px 30px;display:grid;grid-template-columns:7.4em minmax(0,1fr);column-gap:8px;align-items:baseline}
+  .steps li:last-child{padding-bottom:2px}
+  .steps li::before{left:9px;right:auto;top:12px;bottom:0;width:2px;height:auto}
+  .steps .m{top:4px}
+  .steps .m.step{left:0;width:20px;top:5px}
+  .steps .sd{grid-column:1;grid-row:1 / span 3}
+  .steps .sn,.steps .sg,.steps small{grid-column:2}
 }
+
+/* ===== 手機版：只在 760px 以下生效 ===== */
 @media (max-width:760px){
   .tabs a{padding:10px 14px}
   /* 標題列：日期標題一行，四個數字排成 2×2 方格 */
@@ -441,21 +226,30 @@ h2{color:var(--brand-ink);font-weight:900}
   .tally{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-left:0;width:100%}
   .tally span{border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:8px 12px;justify-content:flex-end}
   .tally b{font-size:26px}
-  .mrow .nm i,.badge{font-size:12px}
-  /* 「完整時程」按鈕加大點擊範圍 */
-  .gbox > summary.donehd{padding:10px 0;flex-wrap:wrap}
-  .gbox[open] > summary.donehd::after{content:"甘特圖可左右滑動看完整時程";flex-basis:100%;font-size:12.5px;color:var(--muted);font-weight:400}
+  .pick select{min-height:36px}
+  /* 甘特圖：模塊名稱改為各組的標題列，左側只留窄的工作線欄並固定不動，時間軸可左右滑動 */
+  .gantt{--L:112px;min-width:700px}
+  .gax{grid-template-columns:var(--L) minmax(0,1fr)}
+  .gax .wk{font-size:12px}
+  .grow .lb{position:sticky;left:0;z-index:4;background:var(--surface)}
+  .gmod{grid-template-columns:minmax(0,1fr)}
+  .gm{position:sticky;left:0;justify-self:start;flex-direction:row;align-items:center;gap:8px;padding:6px 0 0}
+  .gm a{font-size:14px;min-height:34px;display:inline-flex;align-items:center}
+  .gm .pill,.gax .todayl,.upd{font-size:12px}
+  .grow .lb{font-size:12.5px;padding-right:8px}
+  .grow .lb small{font-size:12px}
+  .ghint{display:block;margin:0;font-size:12.5px;color:var(--muted)}
+  /* 模塊卡：欄名在上、內容在下 */
+  .rows{grid-template-columns:minmax(0,1fr)}
+  .rows > dt{padding:10px 14px 0}
+  .rows > dd{padding:4px 14px 12px;border-top:0}
+  .card .hd{padding:9px 14px 8px}
+  .meta{padding:7px 14px}
+  .prog{grid-template-columns:minmax(0,1fr);gap:2px}
+  .prog > b{margin-top:4px}
+  .items{grid-template-columns:minmax(0,1fr)}
   footer{font-size:12.5px}
 }
-@media (max-width:520px){
-  /* 工作流時程列：日期一欄、名稱與狀態一欄，名稱再長也不會掉到日期下面 */
-  .stepper li{display:grid;grid-template-columns:6.4em minmax(0,1fr);column-gap:8px;align-items:baseline}
-  .stepper .sd{grid-column:1;min-width:0}
-  .stepper .sn,.stepper .sg{grid-column:2}
-}
-/* 返回總覽：和分頁區隔開，不是分頁 */
-.tabs a.back{border-bottom-color:transparent;margin-right:10px;padding-left:0;padding-right:14px;position:relative;font-weight:500}
-.tabs a.back::after{content:"";position:absolute;right:0;top:25%;bottom:25%;border-right:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -463,7 +257,7 @@ h2{color:var(--brand-ink);font-weight:900}
 <div class="wrap">
   <header class="page">
     <nav class="tabs" aria-label="頁面"><a class="back" href="./">← 總覽</a><a href="daily.html" aria-current="page">每日進度</a><a href="arch.html">架構全貌</a></nav>
-    <div class="eyebrow">LAB COLLAB MATE ・ 專案進度日報</div>
+    <div class="eyebrow">02 案例開發 ・ LAB COLLAB MATE ・ 每日日報</div>
     <div class="top">
       <div class="ttl"><h1 id="h1">每日進度</h1><div class="tally" id="tally"></div></div>
       <label class="pick"><span>查看日期</span><select id="date"></select></label>
@@ -471,16 +265,15 @@ h2{color:var(--brand-ink);font-weight:900}
   </header>
 
   <section aria-labelledby="s1">
-    <div class="shd"><h2 id="s1">各模塊進展 <span class="count" id="c1"></span></h2>
-    <p class="rule" id="rule"></p></div>
-    <div class="mods" id="mods"></div>
+    <div class="shd"><h2 id="s1"><span class="no">①</span>整體里程碑</h2><span class="count" id="c1"></span></div>
+    <div class="gwrap"><div class="glegend"><span><i style="background:var(--accent)"></i>工具開發與工作流串連・設計・調研</span><span><i style="background:var(--try)"></i>用戶 Try Run</span><span><i style="background:var(--idle-soft);border:1px solid var(--idle)"></i>已過</span><span><i style="border:1px dashed var(--idle)"></i>TBD</span><span><i class="k" style="border-radius:50%;box-shadow:inset 0 0 0 2px var(--fg)"></i>正式數據首次跑通全流程</span><span><i class="k" style="border-radius:50%;background:var(--fg)"></i>正式數據連續 5 次穩定跑通全流程</span><span><i class="k" style="background:var(--warn);transform:rotate(45deg) scale(.85)"></i>判斷點／定案</span><span><i class="k" style="background:var(--ok);transform:rotate(45deg) scale(.85)"></i>正式上線（用戶驗收）</span><span style="color:var(--bad)">｜資料日（所選日報的日期）</span></div><div class="gantt" id="gantt"></div></div>
+    <p class="ghint">甘特圖可左右滑動看完整時程</p>
+    <div class="notes" id="notes"></div>
   </section>
 
   <section aria-labelledby="s2">
-    <details class="gbox" id="gbox">
-      <summary class="donehd"><h2 id="s2">完整時程 <span class="count" id="c2"></span></h2><span class="chev" aria-hidden="true">›</span><span class="hint">點擊展開甘特圖</span></summary>
-      <div class="gwrap"><div class="glegend"><span><i style="background:var(--accent)"></i>工具開發與工作流串連・設計</span><span><i data-k="try" style="background:var(--try)"></i>用戶 Try Run</span><span><i style="background:var(--idle-soft);border:1px solid var(--idle)"></i>已過</span><span><i style="border:1px dashed var(--idle)"></i>TBD</span><span><i class="k" style="border-radius:50%;box-shadow:inset 0 0 0 2px var(--fg)"></i>正式數據首次跑通全流程</span><span><i class="k" style="border-radius:50%;background:var(--fg)"></i>正式數據連續 5 次穩定跑通全流程</span><span><i class="k" style="background:var(--warn);transform:rotate(45deg) scale(.85)"></i>判斷點／定案</span><span><i class="k" style="background:var(--ok);transform:rotate(45deg) scale(.85)"></i>正式上線（用戶驗收）</span><span style="color:var(--bad)">｜資料日（所選日報的日期）</span></div><div class="gantt" id="gantt"></div></div>
-    </details>
+    <div class="shd"><h2 id="s2"><span class="no">②</span>各模塊執行細節</h2><span class="count">順序同上方甘特圖；點甘特圖的模塊名稱可直接跳到該模塊</span></div>
+    <div class="mods" id="mods"></div>
   </section>
 
   <footer>
@@ -491,46 +284,55 @@ h2{color:var(--brand-ink);font-weight:900}
 </div>
 
 <script>
-/* 整體時程。s／e＝開始／結束日；s:null＝整段待定。row:"one"＝所有步驟畫在同一列，"each"＝每步一列。
-   kind：build＝工具開發與工作流串連・設計，try＝用戶 Try Run。ms＝里程碑 [日期, 說明, 類型]：first＝正式數據首次跑通全流程，stable＝正式數據連續 5 次穩定跑通全流程，gate＝判斷點／定案，live＝正式上線 */
+/* 整體時程（甘特圖與各模塊時程條共用）。groups＝甘特圖的模塊分組，順序同首頁「Lab Collab Mate」的 5 個需求，最後是共用基礎。
+   tracks：name＝時程線名稱（模塊卡用它對應）；group＝屬於哪個模塊；label／sub＝甘特圖左側文字；row:"one"＝所有步驟畫在同一列，"each"＝每步一列。
+   steps：s／e＝開始／結束日（s:null＝整段待定，e:null＝結束 TBD）；kind：build＝工具開發與工作流串連・設計・調研，try＝用戶 Try Run；sub＝補充說明。
+   ms＝里程碑 [日期, 說明, 類型, 補充]：first＝正式數據首次跑通全流程，stable＝正式數據連續 5 次穩定跑通全流程，gate＝判斷點／定案，live＝正式上線。日期未定寫 null（顯示 TBD）。 */
 const PLAN = {
   updated:"2026-11-18", from:"2026-10-26", weeks:12,
   rule:"進 Try Run 的標準：正式數據連續 5 次穩定跑通全流程、失敗時有看得懂的錯誤訊息、最後的 AI 分析結果經工程師確認可用。",
+  flow:"工作流的推進方式：邊開發工具邊串連 → 正式數據連續 5 次穩定跑通全流程 → 用戶 Try Run → 驗收後正式上線。",
   groups:[
-    {name:"環境與框架", note:"部署完成後，邊實作工作流邊調整模型問題"},
-    {name:"工作流建置", note:"邊開發工具邊串連 → 正式數據連續 5 次穩定跑通全流程 → 用戶 Try Run → 驗收後正式上線"},
-    {name:"LabMind 串連"}
+    {no:"01", name:"客戶軟體驗證"},
+    {no:"02", name:"產品 Panic 處理"},
+    {no:"03", name:"產品測試軟體開發"},
+    {no:"04", name:"產品失效分析"},
+    {no:"05", name:"LabMind 接入"},
+    {no:"", name:"共用基礎", base:true}
   ],
   tracks:[
-    {name:"環境與框架", label:"本地模型與 ADK 框架", group:0, row:"one",
-     steps:[{n:"部署與實時調整", short:"部署・實時調整", s:"2026-10-26", e:"2026-11-27", kind:"build"}],
-     ms:[["2026-11-25","判斷點：本地模型能否跑完 Bundle 工作流","gate","不行就啟動備案：改接雲端模型、恢復兜底規則，或先拿掉 AI 分析"]]},
-    {name:"Bundle 驗證", label:"Bundle 驗證", sub:"Simon、Gary", group:1, row:"one",
+    {name:"Bundle 驗證", label:"Bundle 驗證", sub:"Simon、Gary", group:0, row:"one",
      steps:[{n:"工具開發與工作流串連、開發自測", short:"", s:"2026-11-09", e:"2026-12-01", kind:"build"},
-            {n:"課長與 DRI 試用驗收", short:"Try Run", s:"2026-12-02", e:"2026-12-11", kind:"try"}],
+            {n:"用戶 Try Run", sub:"課長與 DRI 試用驗收", short:"Try Run", s:"2026-12-02", e:"2026-12-11", kind:"try"}],
      ms:[["2026-11-24","正式數據首次跑通全流程","first"],["2026-12-01","正式數據連續 5 次穩定跑通全流程","stable"],["2026-12-11","正式上線","live"]]},
-    {name:"proxima 驗證", label:"proxima 驗證", sub:"景棠", group:1, row:"one",
+    {name:"proxima 驗證", label:"proxima 驗證", sub:"景棠", group:0, row:"one",
      steps:[{n:"自動化節點開發", short:"", s:"2026-11-09", e:"2026-11-25", kind:"build"},
             {n:"工作流串連", short:"串連", s:"2026-11-26", e:null, kind:"build"},
             {n:"用戶 Try Run", short:"Try Run", s:null, kind:"try"}],
      ms:[["2026-11-25","完成所有自動化節點開發","gate"],[null,"正式數據首次跑通全流程","first"],[null,"正式數據連續 5 次穩定跑通全流程","stable"],["2026-12-11","正式上線","live"]]},
-    {name:"EFI 驗證", label:"EFI 驗證", sub:"熙宁", group:1, row:"one",
+    {name:"EFI 驗證", label:"EFI 驗證", sub:"熙宁", group:0, row:"one",
      steps:[{n:"工具開發與工作流串連", short:"", s:"2026-11-12", e:null, kind:"build"},
             {n:"用戶 Try Run", short:"Try Run", s:null, kind:"try"}],
      ms:[[null,"正式數據首次跑通全流程","first"],[null,"正式數據連續 5 次穩定跑通全流程","stable"],["2026-12-11","正式上線","live"]]},
-    {name:"產品 Panic 處理", label:"產品 Panic 處理", sub:"Simon、Gary", group:1, row:"one",
+    {name:"產品 Panic 處理", label:"CoreOS、Diags Panic 工作流", sub:"Simon、Gary、熙宁", group:1, row:"one",
      steps:[{n:"工具開發與工作流串連", short:"", s:"2026-12-01", e:"2026-12-18", kind:"build"},
-            {n:"用戶 Try Run（含元旦）", short:"Try Run", s:"2026-12-21", e:"2027-01-08", kind:"try"}],
-     ms:[["2026-11-27","串口方案定案（Agent 操作，或只讀取結果）","gate"],["2026-12-11","正式數據首次跑通全流程","first"],["2026-12-18","正式數據連續 5 次穩定跑通全流程","stable"],["2027-01-08","正式上線","live"]]},
-    {name:"產品測試軟體開發、產品失效分析", label:"產品測試軟體開發、產品失效分析", sub:"Codio、AI FA 融入工作流", group:1, row:"one",
-     steps:[{n:"技術調研（Codio、AI FA 融入工作流）", short:"技術調研", s:"2026-12-14", e:"2026-12-25", kind:"build"}],
-     ms:[["2027-01-08","給出產品測試軟體開發與產品失效分析的時程","gate"]]},
-    {name:"LabMind 串連", group:2, row:"each", steps:[
+            {n:"用戶 Try Run", sub:"含元旦", short:"Try Run", s:"2026-12-21", e:"2027-01-08", kind:"try"}],
+     ms:[["2026-11-27","串口方案定案","gate","Agent 操作，或只讀取結果"],["2026-12-11","正式數據首次跑通全流程","first"],["2026-12-18","正式數據連續 5 次穩定跑通全流程","stable"],["2027-01-08","正式上線","live"]]},
+    {name:"產品測試軟體開發", label:"Codio 融入工作流調研", sub:"熙宁", group:2, row:"one",
+     steps:[{n:"技術調研", sub:"Codio 融入工作流", short:"技術調研", s:"2026-12-14", e:"2026-12-25", kind:"build"}],
+     ms:[["2027-01-08","給出產品測試軟體開發的時程","gate"]]},
+    {name:"產品失效分析", label:"AI FA 融入工作流調研", sub:"萬鋒、景棠", group:3, row:"one",
+     steps:[{n:"技術調研", sub:"AI FA 融入工作流", short:"技術調研", s:"2026-12-14", e:"2026-12-25", kind:"build"}],
+     ms:[["2027-01-08","給出產品失效分析的時程","gate"]]},
+    {name:"LabMind 接入", group:4, row:"each", steps:[
       {n:"1 LabMind 架構研究", s:"2026-11-16", e:"2026-12-11", kind:"build", ms:[["2026-12-11","和 LabMind 團隊定案方案 A／B","gate"]]},
       {n:"2 Lab Collab Mate 適配設計", sub:"含產品測試軟體開發與產品失效分析工作流設計", s:"2026-12-07", e:"2026-12-25", kind:"build"},
       {n:"3 資源評估與準備", sub:"模型與硬體需求評估（用驗證 Try Run 的實測數據）、部署方案提案", s:"2026-12-07", e:"2027-01-08", kind:"build", ms:[["2027-01-08","部署方案提案會","gate"]]},
       {n:"4 正式串連測試", sub:"硬體到位後約 3–4 週", s:null},
-      {n:"5 用戶 Try Run", sub:"串連完成後約 2 週", s:null}]}
+      {n:"5 用戶 Try Run", sub:"串連完成後約 2 週", s:null}]},
+    {name:"環境與框架", label:"本地模型與 ADK 框架", sub:"Gary、萬鋒、Simon", group:5, row:"one",
+     steps:[{n:"部署與實時調整", sub:"部署完成後，邊實作工作流邊調整模型問題", short:"部署・實時調整", s:"2026-10-26", e:"2026-11-27", kind:"build"}],
+     ms:[["2026-11-25","判斷點：本地模型能否跑完 Bundle 工作流","gate","不行就啟動備案：改接雲端模型、恢復兜底規則，或先拿掉 AI 分析"]]}
   ]
 };
 
@@ -544,7 +346,7 @@ const base = () => ([
   {no:3, name:"共性自動化工具", status:"idle", state:"未啟動", prereq:IDLE_PRE,
    stages:["開發測試","用戶驗收","打包成 MCP 格式"],
    items:[["郵箱","萬鋒"],["雷達","熙宁"],["刷機","Simon、Gary"],["Panic","Simon、Gary"],["Insight","景棠"],["收集 log","景棠"]],
-   issues:[{type:"handled", mod:"產品測試軟體開發、產品失效分析", title:"Insight 沒有可用的 API", ask:"景棠研究以爬蟲取得 API。屬 FA 工作流，優先級調低，先做驗證與 Panic"}]},
+   issues:[{type:"handled", mod:"產品失效分析", title:"Insight 沒有可用的 API", ask:"景棠研究以爬蟲取得 API。屬 FA 工作流，優先級調低，先做驗證與 Panic"}]},
   {no:4, name:"自動化工具", status:"idle", state:"未啟動", prereq:IDLE_PRE,
    stages:["開發測試","用戶驗收","打包成 MCP 格式"],
    items:[["Bundle 驗證","Simon、Gary"],["EFI 驗證","熙宁"],["proxima 驗證","景棠"]],
@@ -671,36 +473,55 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;
 const key = d => "d" + d.replaceAll("-","");
 const wk = d => "日一二三四五六"[new Date(d+"T00:00:00").getDay()];
 const md = d => d.slice(5).replace("-","/");
+const who = o => !o || o === "—" ? "負責人待定" : o;
+const ISSUE_ORDER = {decide:0, risk:1, handled:2};  /* 需決策 → 待追蹤 → 已有對策 */
 const issueHTML = x => `<div class="issue ${x.type}"><span class="k">${TAG[x.type]}</span><div class="v"><div class="t">${esc(x.title)}</div><div class="ask">${esc(x.ask)}</div></div></div>`;
 
-/* 模塊＝日報的呈現單位，對應整體時程。src＝整條工作線的進展原話；rows＝工作線裡的單項（工具），track＝對應 PLAN 的時程線。
-   工作線 06 Try Run、05 工作流建置已由時程裡的里程碑取代，不再單獨顯示。 */
-/* 排列：主業務（整排）→ 支援與平台（三張並排）→ 排隊中的業務（兩張並排）。w＝桌機 6 欄格線中佔幾欄 */
+/* 模塊＝日報的呈現單位，名稱與順序同首頁「02 案例開發・Lab Collab Mate」的 5 個需求，最後是共用基礎。
+   lines＝時程列（每條工作線一列，track＝對應 PLAN 的時程線；ws＋item＝現況取自哪條工作線的哪個單項）
+   src＝「最新進展」「下一步」取自哪幾條工作線（label＝來源名稱）；items＝相關項目（工具、子項目）；note＝補充說明。
+   工作線 05 工作流建置、06 Try Run 的原話併入「客戶軟體驗證」的最新進展。 */
 const MODULES = [
-  {name:"客戶軟體驗證", w:6, rows:[{ws:4, item:"Bundle 驗證", track:"Bundle 驗證"}, {ws:4, item:"proxima 驗證", track:"proxima 驗證"}, {ws:4, item:"EFI 驗證", track:"EFI 驗證"}]},
-  {name:"環境與框架", w:2, track:"環境與框架", src:[{ws:1, label:"本地模型"}, {ws:2, label:"ADK 框架"}]},
-  {name:"共性工具", w:2, note:"各工作流共用；刷機需在 Bundle 首次跑通前（11/24）可用", rows:[{ws:3, item:"郵箱"}, {ws:3, item:"雷達"}, {ws:3, item:"刷機"}, {ws:3, item:"收集 log"}]},
-  {name:"LabMind 串連", w:2, track:"LabMind 串連", src:[{ws:7}]},
-  {name:"產品 Panic 處理", w:3, track:"產品 Panic 處理", rows:[{ws:3, item:"Panic", label:"Panic 工具（兩條共用）"},
-    {item:"CoreOS Panic 工作流", owner:"Simon、Gary"}, {item:"Diags Panic 工作流", owner:"熙宁"}]},
-  {name:"產品測試軟體開發、產品失效分析", w:3, track:"產品測試軟體開發、產品失效分析", rows:[{ws:3, item:"Insight", label:"Insight 工具（FA 用）"},
-    {item:"Codio 融入工作流調研", owner:"熙宁"}, {item:"AI FA 融入工作流調研", owner:"萬鋒、景棠"}]}
+  {no:"01", name:"客戶軟體驗證",
+   lines:[{ws:4, item:"Bundle 驗證", track:"Bundle 驗證"}, {ws:4, item:"proxima 驗證", track:"proxima 驗證"}, {ws:4, item:"EFI 驗證", track:"EFI 驗證"}],
+   src:[{ws:4, label:"節點開發"}, {ws:5, label:"工作流串連"}, {ws:6, label:"實際使用"}]},
+  {no:"02", name:"產品 Panic 處理",
+   lines:[{label:"CoreOS、Diags Panic 工作流", owner:"Simon、Gary、熙宁", track:"產品 Panic 處理"}],
+   items:[{ws:3, item:"Panic", label:"Panic 工具（兩條共用）"}, {item:"CoreOS Panic 工作流", owner:"Simon、Gary"}, {item:"Diags Panic 工作流", owner:"熙宁"}]},
+  {no:"03", name:"產品測試軟體開發",
+   lines:[{label:"Codio 融入工作流調研", owner:"熙宁", track:"產品測試軟體開發"}]},
+  {no:"04", name:"產品失效分析",
+   lines:[{label:"AI FA 融入工作流調研", owner:"萬鋒、景棠", track:"產品失效分析"}],
+   items:[{ws:3, item:"Insight", label:"Insight 工具（FA 用）"}]},
+  {no:"05", name:"LabMind 接入",
+   lines:[{ws:7, item:"LabMind 架構研究", track:"LabMind 接入"}], src:[{ws:7}]},
+  {no:"", name:"共用基礎", sub:"環境與框架、共性工具", base:true,
+   lines:[{ws:1, label:"本地模型與 ADK 框架", owner:"Gary、萬鋒、Simon", track:"環境與框架"}],
+   src:[{ws:1, label:"本地模型"}, {ws:2, label:"ADK 框架"}],
+   items:[{ws:3, item:"郵箱"}, {ws:3, item:"雷達"}, {ws:3, item:"刷機"}, {ws:3, item:"收集 log"}],
+   note:"共性工具由各工作流共用；刷機需在 Bundle 首次跑通前（11/24）可用"}
 ];
-const HOME = {1:"環境與框架", 2:"環境與框架", 3:"共性工具", 4:"客戶軟體驗證", 5:"客戶軟體驗證", 6:"客戶軟體驗證", 7:"LabMind 串連"};
+const HOME = {1:"共用基礎", 2:"共用基礎", 3:"共用基礎", 4:"客戶軟體驗證", 5:"客戶軟體驗證", 6:"客戶軟體驗證", 7:"LabMind 接入"};
 const RANK = {red:4, yellow:3, green:2, done:1, idle:0};
 
 /* 從某天的日報算出模塊內容 */
 function modOf(r, M){
   const P = no => r.projects.find(p => p.no === no);
-  const lines = (M.src||[]).map(s => { const p = P(s.ws); return {label:s.label, text:p.update ?? "", status:p.status, owners:p.owners||"", next:p.next, eta:p.eta}; });
-  const rows = (M.rows||[]).map(s => { const p = s.ws ? P(s.ws) : {status:"idle"}; const it = (p.items||[]).find(i => i[0] === s.item) || [s.item, s.owner || "—"];
-    return {...s, owner:it[1], lab:it[2] || "未開始", k:it[3] || "todo", status: it[3] && it[3] !== "todo" ? p.status : "idle"}; });
-  const issues = r.projects.flatMap(p => (p.issues||[]).filter(x => (x.mod || HOME[p.no]) === M.name));
-  const sts = [...lines, ...rows].map(x => x.status);
-  const status = sts.every(s => s === "done") ? "done" : sts.reduce((a,b) => RANK[b] > RANK[a] ? b : a, "idle");
-  const owners = [...new Set([...lines.flatMap(l => l.owners.split("、")), ...rows.flatMap(x => x.owner.split("、"))].filter(o => o && o !== "—" && o !== "待指派"))].join("、");
-  const sig = JSON.stringify([lines.map(l => [l.text, l.status]), rows.map(x => [x.lab, x.k]), issues.map(x => x.title + x.ask)]);
-  return {lines, rows, issues, status, owners, sig};
+  const res = s => {
+    if (s.ws && s.item) { const p = P(s.ws), it = (p.items||[]).find(i => i[0] === s.item) || [s.item, s.owner || "—"];
+      return {...s, owner:s.owner || it[1], lab:it[2] || "未開始", k:it[3] || "todo", status: it[3] && it[3] !== "todo" ? p.status : "idle"}; }
+    if (s.ws) { const p = P(s.ws); return {...s, owner:s.owner || p.owners || "—", lab:p.state, k:p.status === "idle" ? "todo" : "doing", status:p.status}; }
+    return {...s, owner:s.owner || "—", lab:"未開始", k:"todo", status:"idle"};
+  };
+  const lines = (M.lines||[]).map(res), items = (M.items||[]).map(res);
+  const src = (M.src||[]).map(s => { const p = P(s.ws); return {label:s.label || "", text:p.update ?? "", status:p.status, owners:p.owners || "", next:p.next || ""}; });
+  const issues = r.projects.flatMap(p => (p.issues||[]).filter(x => (x.mod || HOME[p.no]) === M.name)).sort((a,b) => ISSUE_ORDER[a.type] - ISSUE_ORDER[b.type]);
+  const sts = [...src, ...lines, ...items].map(x => x.status);
+  const status = sts.length && sts.every(s => s === "done") ? "done" : sts.reduce((a,b) => RANK[b] > RANK[a] ? b : a, "idle");
+  const owners = [...new Set([...src.flatMap(l => l.owners.split("、")), ...lines.flatMap(x => x.owner.split("、")), ...items.flatMap(x => x.owner.split("、"))]
+    .filter(o => o && o !== "—" && o !== "待指派"))].join("、");
+  const sig = JSON.stringify([src.map(l => [l.text, l.status, l.next]), lines.map(x => [x.lab, x.k]), items.map(x => [x.lab, x.k]), issues.map(x => x.title + x.ask)]);
+  return {lines, items, src, issues, status, owners, sig};
 }
 function lastChange(idx, M){
   for (let i = idx; i < REPORTS.length-1; i++) if (modOf(REPORTS[i], M).sig !== modOf(REPORTS[i+1], M).sig) return REPORTS[i].date;
@@ -710,83 +531,65 @@ function lastChange(idx, M){
 /* ---- 時程計算 ---- */
 const dn = s => Date.UTC(+s.slice(0,4), +s.slice(5,7)-1, +s.slice(8,10)) / 864e5;
 const mdd = s => `${+s.slice(5,7)}/${+s.slice(8,10)}`;
-const rng = x => x.s ? (x.e ? `${mdd(x.s)}–${mdd(x.e)}` : `${mdd(x.s)} 起・結束 TBD`) : "TBD";
+const rng = x => x.s ? (x.e ? `${mdd(x.s)}–${mdd(x.e)}` : `${mdd(x.s)} 起`) : "TBD";
 /* 基準日＝所選日報的日期，不用瀏覽器當天：PM 提供新進度前，時程狀態與倒數不會自己變動。render() 會依所選日報更新。 */
 let TODAY = dn(REPORTS[0].date);
 const left = d => d === TODAY ? "當天" : d > TODAY ? `剩 ${d - TODAY} 天` : `已過 ${TODAY - d} 天`;
 const TRACK = name => PLAN.tracks.find(tr => tr.name === name);
+const msOf = tr => [...(tr.ms||[]), ...tr.steps.flatMap(x => x.ms||[])];
 function trackInfo(tr){
   const st = tr.steps;
   const cur = st.filter(x => x.s && dn(x.s) <= TODAY && (!x.e || TODAY <= dn(x.e)));
   const last = cur.length ? st.indexOf(cur[cur.length-1]) : -1;
   const nxt = st.find((x,i) => i > last && !(x.s && dn(x.s) <= TODAY));
-  const allPast = !cur.length && st.every(x => x.s && x.e && dn(x.e) < TODAY);
-  const nx = cur.length || allPast ? nxt : st[st.indexOf(nxt)+1];
-  const ms = [...(tr.ms||[]), ...st.flatMap(x => x.ms||[])].filter(m => m[0]).sort((a,b) => dn(a[0]) - dn(b[0]));
-  return {cur, nxt, nx, allPast, m: ms.find(m => m[0] && dn(m[0]) >= TODAY), live: ms.find(m => m[2] === "live")};
+  return {cur, nxt, live: msOf(tr).find(m => m[2] === "live")};
 }
-function schedHTML(tr){
-  const I = trackInfo(tr), out = [];
-  if (I.cur.length) I.cur.forEach(x => out.push(`<div>現在：<b>${esc(x.n)}</b>　ETA <b class="mono">${mdd(x.e)}</b> <span class="dim">（${left(dn(x.e))}）</span></div>`));
-  else if (I.allPast) out.push(`<div><b>依計畫已結束</b></div>`);
-  else if (I.nxt) out.push(`<div>${I.nxt.s ? `<b class="mono">${mdd(I.nxt.s)}</b> 開始` : "TBD"}：<b>${esc(I.nxt.n)}</b>${I.nxt.s ? ` <span class="dim">（${dn(I.nxt.s) - TODAY} 天後）</span>` : ""}</div>`);
-  if (I.m) out.push(`<div>下一個里程碑：<b>${esc(I.m[1])}</b>　<b class="mono">${mdd(I.m[0])}</b> <span class="dim">（${left(dn(I.m[0]))}）${I.m[3] ? "　" + esc(I.m[3]) : ""}</span></div>`);
-  if (I.nx) out.push(`<div class="dim">下一階段：${esc(I.nx.n)}（${rng(I.nx)}）</div>`);
-  return `<div class="sched"><span class="lbl">時程</span>${out.join("")}</div>`;
-}
-/* 單一時程線的直向時間軸（窄卡片用）：階段（含起訖）與里程碑依日期排序，標出已過／進行中／下一步；TBD排最後 */
-function vSteps(tr){
-  const MSK = {gate:"gate", live:"live"};
-  const items = [
+/* 時程條的項目：階段（起訖）與里程碑依日期排序；沒有日期（TBD）的項目排在其後第一個「正式上線」之前，沒有上線里程碑就排最後 */
+function stepItems(tr){
+  const list = [
     ...tr.steps.map(x => x.s
-      ? {d:dn(x.s), end:dn(x.e), date:rng(x), n:x.n, sub:x.sub, t:"step"}
-      : {d:Infinity, end:Infinity, date:"TBD", n:x.n, sub:x.sub, t:"tbd"}),
-    ...[...(tr.ms||[]), ...tr.steps.flatMap(x => x.ms||[])].map(m => m[0] ? ({d:dn(m[0]), end:dn(m[0]), date:mdd(m[0]), n:m[1], sub:m[3], t:"ms", k:MSK[m[2]] || "ms"}) : ({d:Infinity, end:Infinity, date:"TBD", n:m[1], sub:m[3], t:"tbd"}))
-  ].sort((a,b) => a.d - b.d || (a.t === "ms") - (b.t === "ms"));
-  let nextSet = false;
-  return `<div class="tl"><span class="lbl">時程</span><ol class="vsteps">${items.map(x => {
-    let st = "", tag = "";
-    if (x.t === "tbd") st = "tbd";
-    else if (x.end < TODAY) st = "past";
-    else if (x.d <= TODAY) { st = "now"; tag = x.t === "ms" ? "當天" : `進行中・${left(x.end)}`; }
-    else if (!nextSet) { st = "next"; nextSet = true; tag = `${x.d - TODAY} 天後`; }
-    return `<li class="${st} ${x.t}${x.k ? " " + x.k : ""}"><span class="sd mono">${x.date}</span><div><span class="sn">${esc(x.n)}</span>${tag ? `<span class="sg">${tag}</span>` : ""}${x.sub ? `<small>${esc(x.sub)}</small>` : ""}</div></li>`;
-  }).join("")}</ol></div>`;
-}
-/* 工作流的關鍵步驟：工具開發與工作流串連 → 首次跑通 → 連續 5 次穩定跑通 → Try Run → 上線，依日期排序；標出已過／進行中／下一步 */
-/* 沒有日期（TBD）的項目：依宣告順序，排在下一個有日期項目之前（例如排在 12/11 正式上線之前） */
-function tbdOrder(list){
-  const dated = list.filter(x => !x.tbd).sort((a,b) => a.d - b.d);
-  const last = dated.length ? dated[dated.length-1].d : TODAY + 60;
+      ? {d:dn(x.s), end:x.e ? dn(x.e) : Infinity, date:rng(x), n:x.n, sub:x.sub, t:"step", kind:x.kind}
+      : {tbd:true, date:"TBD", n:x.n, sub:x.sub, t:"step", kind:x.kind, k:x.kind === "try" ? "try" : ""}),
+    ...msOf(tr).map(m => m[0]
+      ? {d:dn(m[0]), end:dn(m[0]), date:mdd(m[0]), n:m[1], sub:m[3], t:"ms", k:m[2]}
+      : {tbd:true, date:"TBD", n:m[1], sub:m[3], t:"ms", k:m[2]})
+  ];
+  const dated = list.filter(x => !x.tbd), last = dated.length ? Math.max(...dated.map(x => x.d)) : TODAY;
   list.forEach((x, i) => { if (x.tbd) {
-    const nx = list.slice(i + 1).find(y => !y.tbd && y.k === "live") || list.slice(i + 1).find(y => !y.tbd);
+    const live = list.slice(i + 1).find(y => !y.tbd && y.k === "live");
     const rank = {first:1, stable:2, try:3}[x.k] || 0;  /* TBD 之間的固定順序：首次跑通 → 五次穩定 → Try Run */
-    x.d = x.end = (nx ? nx.d : last + 1) - 0.5 + rank * 0.01 + i * 0.0001; } });
-  return list.sort((a,b) => a.d - b.d);
+    x.d = x.end = (live ? live.d - 0.5 : last + 1) + rank * 0.01 + i * 0.0001; } });
+  return list.sort((a,b) => a.d - b.d || (a.t === "ms") - (b.t === "ms"));
 }
-function rowSteps(tr){
-  /* 工具開發與工作流串連只標開始日（它和兩個跑通里程碑重疊）；Try Run 保留區間。now＝目前所在階段（最後一個已開始的節點），next＝下一個節點 */
-  const items = tbdOrder([
-    ...tr.steps.map(x => !x.s ? {tbd:true, date:"TBD", n:x.kind === "try" ? "用戶 Try Run" : x.n, k:x.kind === "try" ? "try" : ""}
-      : x.kind === "try" ? {d:dn(x.s), end:x.e ? dn(x.e) : dn(x.s), date:rng(x), n:"用戶 Try Run"}
-      : {d:dn(x.s), end:dn(x.s), date:mdd(x.s), n:x.n}),
-    ...[...(tr.ms||[]), ...tr.steps.flatMap(x => x.ms||[])].map(m => m[0]
-      ? {d:dn(m[0]), end:dn(m[0]), date:mdd(m[0]), n:(m[2] === "live" ? "◆ " : "") + m[1], k:m[2]}
-      : {tbd:true, date:"TBD", n:m[1], k:m[2]})
-  ]);
-  let cur = -1; items.forEach((x,i) => { if (x.d <= TODAY) cur = i; });
-  return `<ol class="stepper">${items.map((x,i) => {
-    const st = i < cur ? "past" : i === cur ? (i === items.length-1 && x.end < TODAY ? "past" : "now") : i === cur+1 ? "next" : "";
-    const tag = st === "now" ? (x.end > TODAY && !x.tbd ? `進行中・${left(x.end)}` : "進行中") : st === "next" ? (x.tbd ? "" : x.d === TODAY ? "當天" : `${x.d - TODAY} 天後`) : "";
-    return `<li class="${st}${x.k === "live" ? " live" : ""}"><span class="sd mono">${x.date}</span><span class="sn">${esc(x.n)}</span>${tag ? `<span class="sg">${tag}</span>` : ""}</li>`;
+/* 時程條（所有模塊同一種畫法）：已過＝灰、進行中＝主色＋剩餘天數、下一個＝幾天後、TBD＝虛線 */
+function stepsHTML(tr){
+  const items = stepItems(tr);
+  let nextSet = false;
+  return `<ol class="steps" style="--n:${Math.max(items.length, 5)}">${items.map(x => {
+    let st = "", tag = "";
+    if (x.tbd) st = "tbd";
+    else if (x.end < TODAY) st = "past";
+    else if (x.d <= TODAY) { st = "now"; tag = x.t === "ms" ? "當天" : isFinite(x.end) ? `進行中・${left(x.end)}` : "進行中"; }
+    else if (!nextSet) { st = "next"; nextSet = true; tag = `${x.d - TODAY} 天後`; }
+    const mk = x.t === "step" ? `step ${x.kind === "try" ? "try" : ""}` : (["first","stable","live"].includes(x.k) ? x.k : "gate");
+    return `<li class="${st}${x.k === "live" ? " live" : ""}"><i class="m ${mk}"></i><span class="sd">${x.date}</span><span class="sn">${esc(x.n)}</span>${tag ? `<span class="sg">${tag}</span>` : ""}${x.sub ? `<small>${esc(x.sub)}</small>` : ""}</li>`;
   }).join("")}</ol>`;
+}
+/* 進展原話：一段裡有 2 個以上「名稱：」開頭的句子時，逐句分行 */
+const sentences = t => { const p = t.split(/(?<=。)/).map(s => s.trim()).filter(Boolean); return p.filter(s => /^[^，。：]{1,24}：/.test(s)).length >= 2 ? p : [t]; };
+const textBlock = list => `<div class="prog${list.some(l => l.label) && list.length > 1 ? "" : " single"}">${list.map(l =>
+  `${list.length > 1 && l.label ? `<b>${esc(l.label)}</b>` : ""}<div>${sentences(l.text).map(s => `<div>${esc(s)}</div>`).join("")}</div>`).join("")}</div>`;
+/* 沒有回報時的進展：依時程說明何時開始 */
+function notStarted(tr){
+  const I = trackInfo(tr), x = I.nxt;
+  if (!x) return "本次無回報";
+  return x.s ? `尚未開始；預計 ${mdd(x.s)} 開始「${esc(x.n)}」（${dn(x.s) - TODAY} 天後）` : `尚未開始；開始時間 TBD`;
 }
 
 function render(){
   const idx = Math.max(0, REPORTS.findIndex(x => key(x.date) === location.hash.slice(1)));
   const r = REPORTS[idx], prev = REPORTS[idx+1];
   TODAY = dn(r.date);
-  renderGantt();
   const [, m, d] = r.date.split("-");
   $("h1").textContent = `${+m} 月 ${+d} 日進度`;
   $("date").innerHTML = REPORTS.map((x,i) => `<option value="${key(x.date)}"${i===idx?" selected":""}>${x.date}（${wk(x.date)}）${i===0?"・最新":""}</option>`).join("");
@@ -798,65 +601,39 @@ function render(){
   const n = s => mods.filter(x => s.includes(x.status)).length;
   const nDecide = mods.flatMap(x => x.issues).filter(x => x.type === "decide").length;
   $("tally").innerHTML = `<span>進行中<b>${n(["green","yellow","red"])}</b></span><span>未啟動<b>${n(["idle"])}</b></span><span>已完成<b>${n(["done"])}</b></span><span class="${nDecide?"hot":""}">需老闆決策<b>${nDecide}</b></span>`;
-  $("c1").textContent = `${mods.length} 個模塊`;
-  $("rule").textContent = PLAN.rule;
+  $("c1").textContent = `5 個模塊＋共用基礎・時程版本 ${mdd(PLAN.updated)}`;
+  $("notes").innerHTML = `<span>${esc(PLAN.flow)}</span><span>${esc(PLAN.rule)}</span>`;
+  renderGantt(mods);
 
   $("mods").innerHTML = mods.map(x => {
-    const M = x.M, lives = [...new Set([M.track, ...(M.rows||[]).map(s => s.track)].filter(Boolean).map(n => trackInfo(TRACK(n)).live).filter(Boolean).map(l => l[0]))];
-    const rowChanged = s => x.was && (() => { const w = x.was.rows.find(y => y.item === s.item); return w && (w.lab !== s.lab || w.k !== s.k); })();
-    const I = M.track ? trackInfo(TRACK(M.track)) : null;
-    /* 主管要看：現在進行中階段 → 現象 → ETA（預計完成）→ 下一階段 */
-    let srow = "";
-    if (I && I.cur.length) {
-      const c = I.cur[I.cur.length-1];
-      const phen = x.lines[0] ? x.lines[0].text : "";
-      srow = `<div class="row"><span class="k">目前階段</span><b>${esc(c.n)}</b>${phen ? `<span class="dim">— ${esc(phen)}</span>` : ""}</div>` +
-             `<div class="row"><span class="k">預計完成</span><b class="mono">${mdd(c.e)}</b>${I.nx ? `<span class="k">下一階段</span><span>${esc(I.nx.n)}${I.nx.s ? `（<span class="mono">${mdd(I.nx.s)}</span> 開始）` : "（TBD）"}</span>` : ""}</div>`;
-    } else if (I && I.allPast) {
-      srow = `<div class="row"><span class="k">狀態</span><b>依計畫已結束</b></div>`;
-    } else if (I && I.nxt) {
-      srow = `<div class="row"><span class="k">尚未開始</span><b>${esc(I.nxt.n)}</b><span class="k">預計</span><b class="mono">${I.nxt.s ? mdd(I.nxt.s) + " 開始" : "TBD"}</b></div>`;
-    }
-    const sched = srow ? `<div class="ssum"><span class="lbl">時程</span>${srow}</div>` : "";
-    return `<article class="card" data-s="${x.status}" data-w="${M.w||6}" role="button" tabindex="0" aria-expanded="true">
-      <div class="hd"><h3>${esc(M.name)}</h3>
+    const M = x.M;
+    const lives = [...new Set(x.lines.filter(l => l.track).map(l => trackInfo(TRACK(l.track)).live).filter(Boolean).map(l => l[0]))];
+    const changedIn = (list, s) => x.was && (() => { const w = x.was[list].find(y => (y.label || y.item) === (s.label || s.item)); return w && (w.lab !== s.lab || w.k !== s.k); })();
+    const rows = [];
+    rows.push(["時程", x.lines.map(l => `<div class="line"><div class="nm"><b>${esc(l.label || l.item)}${changedIn("lines", l) ? `<i class="upd">更新</i>` : ""}</b><small>${esc(who(l.owner))}</small><span class="st ${l.k}">${esc(l.lab)}</span></div>${l.track ? stepsHTML(TRACK(l.track)) : ""}</div>`).join("")]);
+    const texts = x.src.filter(l => l.text);
+    rows.push(["最新進展", texts.length ? textBlock(texts) : `<div class="prog single dim"><div>${notStarted(TRACK(x.lines[0].track))}</div></div>`]);
+    const nexts = x.src.filter(l => l.next).map(l => ({label:l.label, text:l.next}));
+    if (nexts.length) rows.push(["下一步", textBlock(nexts)]);
+    if (x.issues.length) rows.push(["風險與對策", `<div class="issues">${x.issues.map(issueHTML).join("")}</div>`]);
+    if (x.items.length) rows.push(["相關項目", `<div class="items">${x.items.map(s => `<div class="it"><span><b>${esc(s.label || s.item)}${changedIn("items", s) ? `<i class="upd">更新</i>` : ""}</b><small>${esc(who(s.owner))}</small></span><span class="st ${s.k}">${esc(s.lab)}</span></div>`).join("")}</div>${M.note ? `<p class="inote">${esc(M.note)}</p>` : ""}`]);
+    return `<article class="card${M.base ? " base" : ""}" id="m-${M.no || "base"}" data-s="${x.status}">
+      <div class="hd">${M.no ? `<span class="no">${M.no}</span>` : ""}<h3>${esc(M.name)}${M.sub ? `<small>${esc(M.sub)}</small>` : ""}</h3>
         ${lives.length ? `<span class="livepill">◆ 上線 ${lives.map(mdd).join("、")}</span>` : ""}
         ${x.changed ? `<span class="badge new">今日更新</span>` : `<span class="badge same">今日無變動</span>`}
         <span class="pill">${LABEL[x.status]}</span></div>
-      <div class="sum">
-        ${sched}
-        ${!I && x.lines.length ? `<div class="prog">${x.lines.filter(l => l.text).map(l => `<div>${x.lines.length > 1 ? `<b>${esc(l.label)}</b>` : ""}${esc(l.text)}</div>`).join("")}</div>` : ""}
-        ${x.issues.map(issueHTML).join("")}
-      </div>
-      <span class="chev" aria-hidden="true">›</span>
-      <div class="cbody">${(b => b.trim() ? `<div class="blk">${b}</div>` : "")(`
-      ${M.track ? vSteps(TRACK(M.track)) : ""}
-      ${I && x.lines.some(l => l.text) ? `<div class="prog">${x.lines.filter(l => l.text).map(l => `<div>${x.lines.length > 1 ? `<b>${esc(l.label)}</b>` : ""}${esc(l.text)}</div>`).join("")}</div>` : ""}
-      ${x.lines.filter(l => l.next).map(l => `<dl class="kv"><dt>下一步</dt><dd>${esc(l.next)}</dd></dl>`).join("")}
-      ${M.note ? `<div class="note">${esc(M.note)}</div>` : ""}
-      ${x.rows.length ? `<div class="mrows">${x.rows.map(s => `<div class="mrow${s.track ? "" : " two"}">
-          <span class="nm">${esc(s.label || s.item)}${rowChanged(s) ? `<i>更新</i>` : ""}<small>${esc(s.owner)}</small></span>
-          <span class="st ${s.k}">${esc(s.lab)}</span>${s.track ? rowSteps(TRACK(s.track)) : ""}</div>`).join("")}</div>` : ""}`)}
-      </div>
+      <dl class="rows">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
       <div class="meta"><span>DRI：${esc(x.owners || "—")}</span><span>最後更新：<span class="mono">${md(x.last)}</span></span></div>
     </article>`;
   }).join("");
-  /* 桌機（>900px）：點卡片展開／收合；手機：全展開，不綁事件 */
-  const desktop = matchMedia("(min-width:901px)");
-  document.querySelectorAll("#mods .card").forEach(c => {
-    const open = e => { e.preventDefault(); c.setAttribute("aria-expanded", c.getAttribute("aria-expanded") === "true" ? "false" : "true"); };
-    c.addEventListener("click", e => { if (desktop.matches) open(e); });
-    c.addEventListener("keydown", e => { if (desktop.matches && (e.key === "Enter" || e.key === " ")) open(e); });
-  });
 }
 
-/* ---- 甘特圖 ---- */
-function renderGantt(){
+/* ---- 甘特圖：左欄＝模塊（點名稱跳到下方模塊卡），中欄＝工作線，右側＝時間軸 ---- */
+function renderGantt(mods){
   const A = dn(PLAN.from), span = PLAN.weeks * 7, pct = d => ((d - A) / span * 100).toFixed(3) + "%";
   const pctEnd = d => ((d + 1 - A) / span * 100).toFixed(3) + "%";
   const pctMid = d => ((d + .5 - A) / span * 100).toFixed(3) + "%";
   const inAxis = TODAY >= A && TODAY < A + span;
-  $("c2").textContent = `時程版本 ${mdd(PLAN.updated)}`;
   const todayEl = inAxis ? `<span class="today" style="left:${pct(TODAY)}"></span>` : "";
   let ticks = "";
   for (let w = 0; w < PLAN.weeks; w++) { const x = new Date((A + w*7) * 864e5); ticks += `<span class="wk" style="left:${pct(A+w*7)}">${x.getUTCMonth()+1}/${x.getUTCDate()}</span>`; }
@@ -871,18 +648,23 @@ function renderGantt(){
   };
   const mark = ([d, txt, k, more]) => !d ? "" : `<span class="mk ${k}" style="left:${pctMid(dn(d))}" title="${mdd(d)}　${esc(txt)}${more?"："+esc(more):""}"></span>` +
     (k === "live" ? `<span class="msl" style="left:${pctMid(dn(d))}">上線 ${mdd(d)}</span>` : "");
-  const row = (label, sub, steps, ms) => `<div class="grow"><div class="lb">${esc(label)}${sub?`<small>${esc(sub)}</small>`:""}</div>
+  const row = (label, sub, steps, ms, tip) => `<div class="grow"><div class="lb"${tip ? ` title="${esc(tip)}"` : ""}>${esc(label)}${sub?`<small>${esc(sub)}</small>`:""}</div>
     <div class="trk" style="--wks:${PLAN.weeks}">${(steps.some(x => x.s) ? steps.filter(x => x.s) : steps).map(bar).join("")}${(ms||[]).map(mark).join("")}${todayEl}</div></div>`;
   $("gantt").innerHTML = `<div class="gax"><span></span><div class="ticks">${ticks}</div></div>` +
-    PLAN.groups.map((g, gi) => `<div class="ghd"><span>${esc(g.name)}</span><span class="gn">${esc(g.note||"")}</span></div>` +
+    PLAN.groups.map((g, gi) => { const x = mods.find(y => y.M.name === g.name);
+      return `<div class="gmod${g.base ? " base" : ""}"><div class="gm"><a href="#m-${g.no || "base"}" data-jump>${g.no ? `<span class="no">${g.no}</span>` : ""}${esc(g.name)}</a>${x ? `<span class="pill" data-s="${x.status}">${LABEL[x.status]}</span>` : ""}</div><div>` +
       PLAN.tracks.filter(tr => tr.group === gi).map(tr => tr.row === "each"
-        ? tr.steps.map(x => row(x.n, x.sub, [x], x.ms)).join("")
-        : row(tr.label || tr.name, tr.sub, tr.steps, tr.ms)).join("")).join("");
+        ? tr.steps.map(s => row(s.n, "", [s], s.ms, s.sub)).join("")
+        : row(tr.label || tr.name, tr.sub, tr.steps, tr.ms)).join("") + `</div></div>`; }).join("");
 }
 
-/* 甘特圖展開狀態只記在本機瀏覽器 */
-try { if (localStorage.getItem("ganttOpen") === "1") $("gbox").open = true; } catch(e) {}
-$("gbox").addEventListener("toggle", () => { try { localStorage.setItem("ganttOpen", $("gbox").open ? "1" : "0"); } catch(e) {} });
+/* 甘特圖的模塊名稱：捲到對應模塊卡（不改網址，避免切換所選日期） */
+$("gantt").addEventListener("click", e => {
+  const a = e.target.closest("a[data-jump]"); if (!a) return;
+  e.preventDefault();
+  const el = document.querySelector(a.getAttribute("href"));
+  if (el) el.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"});
+});
 addEventListener("hashchange", render);
 $("date").addEventListener("change", e => { location.hash = e.target.value; });
 render();
