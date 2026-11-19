@@ -32,6 +32,9 @@ body{background:var(--page-bg);font-family:"Microsoft YaHei","微软雅黑","Pin
 .tabs a[aria-current="page"]{border-bottom-color:var(--brand)}
 .tabs a:focus-visible{outline-color:var(--brand)}
 h1{font-family:inherit;font-weight:900;letter-spacing:.04em;padding-left:14px;border-left:5px solid var(--brand);line-height:1.15}
+/* 返回總覽：和分頁區隔開，不是分頁 */
+.tabs a.back{border-bottom-color:transparent;margin-right:10px;padding-left:0;padding-right:14px;position:relative;font-weight:500}
+.tabs a.back::after{content:"";position:absolute;right:0;top:25%;bottom:25%;border-right:1px solid var(--line)}
 """
 
 html = f"""<!doctype html>
@@ -49,7 +52,7 @@ html = f"""<!doctype html>
 <body>
 <div class="wrap">
 <header>
-  <nav class="tabs" aria-label="頁面"><a href="./">總覽</a><a href="daily.html">每日進度</a><a href="arch.html" aria-current="page">架構全貌</a></nav>
+  <nav class="tabs" aria-label="頁面"><a class="back" href="./">← 總覽</a><a href="daily.html">每日進度</a><a href="arch.html" aria-current="page">架構全貌</a></nav>
   <div class="eyebrow">LAB COLLAB MATE ・ USB-AGENT 技術架構</div>
   <h1>技術架構全貌</h1>
   <p class="lede">第一階段依程式碼現況整理；第二階段方案 A／B 尚待和 LabMind 團隊確認。實線是已經有的，虛線是要補齊或待確認的。圖太寬時可左右滑動。</p>

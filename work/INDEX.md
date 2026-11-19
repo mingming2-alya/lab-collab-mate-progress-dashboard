@@ -2,6 +2,7 @@
 
 | 任務 | 狀態 | 最後更新 | 主要交付 |
 |---|---|---|---|
+| [首頁導覽：點 Lab Collab Mate 進每日日報](2026-11-19_homepage-navigation/STATUS.md) | 已完成，待確認後上線（工作分支） | 2026-11-19 | `public/index.html`、`public/daily.html`、`public/arch.html` |
 | [手機版可讀性調整（首頁、日報頁）](2026-11-19_mobile-readability/STATUS.md) | **已上線**；桌機版確認未變動 | 2026-11-19 | `public/index.html`、`public/daily.html` 的手機版樣式；截圖 `outputs/screenshots/` |
 | [總覽頁前端重構：讓副總一眼看到本週推進](2026-11-17_overview-redesign/STATUS.md) | **已上線**：總覽頁新版、日報頁 11/18 與統一風格、架構頁外框；下週起依訊息回覆更新 | 2026-11-18 | `public/index.html`、`public/daily.html`、`public/arch.html`；訊息範本 `outputs/data-template.md` |
 | [SW AI 案例總覽主頁 與 日報頁桌機版密度改善](2026-11-17_sw-ai-overview-and-daily-density/STATUS.md) | 已上線（main `27f140d`）；8 案的 DRI／里程碑待補 | 2026-11-17 | `public/index.html`（總覽）、`public/daily.html`（原日報頁） |
