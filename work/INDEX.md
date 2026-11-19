@@ -1,5 +1,7 @@
 # 任務總覽
 
+> 新對話請先讀 [HANDOFF.md](HANDOFF.md)（最新交接，2026-11-19）。
+
 | 任務 | 狀態 | 最後更新 | 主要交付 |
 |---|---|---|---|
 | [首頁導覽：點 Lab Collab Mate 進每日日報](2026-11-19_homepage-navigation/STATUS.md) | **已上線** | 2026-11-19 | `public/index.html`、`public/daily.html`、`public/arch.html` |
