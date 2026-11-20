@@ -1,10 +1,10 @@
 # 任務總覽
 
-> 新對話請先讀 [HANDOFF.md](HANDOFF.md)（最新交接，2026-11-19）。
+> 新對話請先讀 [HANDOFF.md](HANDOFF.md)（最新交接，2026-11-20）。
 
 | 任務 | 狀態 | 最後更新 | 主要交付 |
 |---|---|---|---|
-| [依老闆回饋調整首頁與日報頁版面](2026-11-19_boss-layout-feedback/STATUS.md) | **待確認**：工作分支已推；待選重點色、確認共用基礎放法後上線 | 2026-11-19 | `public/index.html`、`public/daily.html`；截圖 `outputs/screenshots/` |
+| [依老闆回饋調整首頁與日報頁版面](2026-11-19_boss-layout-feedback/STATUS.md) | **待確認上線**：v2 改版（首頁方案 3A＋日報方案 A＋架構頁清理）已推分支 `redesign/overview-and-daily-v2` | 2026-11-20 | `public/index.html`、`public/daily.html`、`public/arch.html`；截圖 `outputs/screenshots/v2-*.png` |
 | [首頁導覽：點 Lab Collab Mate 進每日日報](2026-11-19_homepage-navigation/STATUS.md) | **已上線** | 2026-11-19 | `public/index.html`、`public/daily.html`、`public/arch.html` |
 | [手機版可讀性調整（首頁、日報頁）](2026-11-19_mobile-readability/STATUS.md) | **已上線**；桌機版確認未變動 | 2026-11-19 | `public/index.html`、`public/daily.html` 的手機版樣式；截圖 `outputs/screenshots/` |
 | [總覽頁前端重構：讓副總一眼看到本週推進](2026-11-17_overview-redesign/STATUS.md) | **已上線**：總覽頁新版、日報頁 11/18 與統一風格、架構頁外框；下週起依訊息回覆更新 | 2026-11-18 | `public/index.html`、`public/daily.html`、`public/arch.html`；訊息範本 `outputs/data-template.md` |

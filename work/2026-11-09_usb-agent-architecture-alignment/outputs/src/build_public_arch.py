@@ -24,10 +24,10 @@ TABS_CSS = """
 .tabs a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--user)}
 .tabs a:focus-visible{outline:2px solid var(--user);outline-offset:2px;border-radius:4px}
 .note-src{font-size:12px;color:var(--muted)}
-/* 統一風格（11-18，與總覽、每日進度頁一致）：深青綠主色、微軟雅黑、標題左側直條；架構圖本身的配色不動 */
-:root{--brand:#2E6B62;--page-bg:#F3F6F5}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--brand:#5FBFAE;--page-bg:#0F1614}}
-:root[data-theme="dark"]{--brand:#5FBFAE;--page-bg:#0F1614}
+/* 統一風格（與總覽、每日進度頁一致）：礦物暖紙底、深松青主色、微軟雅黑；架構圖本身的配色不動 */
+:root{--brand:#154A41;--page-bg:#F4F4F0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--brand:#59C2AE;--page-bg:#0E1412}}
+:root[data-theme="dark"]{--brand:#59C2AE;--page-bg:#0E1412}
 body{background:var(--page-bg);font-family:"Microsoft YaHei","微软雅黑","PingFang TC","PingFang SC","Noto Sans TC",system-ui,sans-serif}
 .tabs a[aria-current="page"]{border-bottom-color:var(--brand)}
 .tabs a:focus-visible{outline-color:var(--brand)}
@@ -35,6 +35,18 @@ h1{font-family:inherit;font-weight:900;letter-spacing:.04em;padding-left:14px;bo
 /* 返回總覽：和分頁區隔開，不是分頁 */
 .tabs a.back{border-bottom-color:transparent;margin-right:10px;padding-left:0;padding-right:14px;position:relative;font-weight:500}
 .tabs a.back::after{content:"";position:absolute;right:0;top:25%;bottom:25%;border-right:1px solid var(--line)}
+/* 橫向捲動容器邊緣漸層陰影，以視覺取代「可左右滑動」文字說明 */
+.scroll{
+  background:
+    linear-gradient(to right, var(--surface) 20%, transparent),
+    linear-gradient(to left, var(--surface) 20%, transparent),
+    radial-gradient(farthest-side at 0 50%, rgba(20,30,27,.14), transparent),
+    radial-gradient(farthest-side at 100% 50%, rgba(20,30,27,.14), transparent);
+  background-position: 0 0, 100% 0, 0 0, 100% 0;
+  background-repeat: no-repeat;
+  background-size: 36px 100%, 36px 100%, 14px 100%, 14px 100%;
+  background-attachment: local, local, scroll, scroll;
+}
 """
 
 html = f"""<!doctype html>
@@ -55,13 +67,11 @@ html = f"""<!doctype html>
   <nav class="tabs" aria-label="頁面"><a class="back" href="./">← 總覽</a><a href="daily.html">每日進度</a><a href="arch.html" aria-current="page">架構全貌</a></nav>
   <div class="eyebrow">LAB COLLAB MATE ・ USB-AGENT 技術架構</div>
   <h1>技術架構全貌</h1>
-  <p class="lede">第一階段依程式碼現況整理；第二階段方案 A／B 尚待和 LabMind 團隊確認。實線是已經有的，虛線是要補齊或待確認的。圖太寬時可左右滑動。</p>
+  <p class="lede">第一階段依程式碼現況整理；第二階段方案 A／B 尚待和 LabMind 團隊確認。</p>
   {legend}
 </header>
 
 {body.strip()}
-
-<footer>本頁由架構全貌頁自動抽出三張全貌圖產生，原始檔在 repo 的 work/2026-11-09_usb-agent-architecture-alignment/outputs/。</footer>
 </div>
 </body>
 </html>

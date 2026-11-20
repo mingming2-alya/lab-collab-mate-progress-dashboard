@@ -9,210 +9,454 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
 <style>
-/* 版面（依使用者 11-18 提供的參考圖）：
-   第一行＝標題＋週次＋四個數字（細直線分隔，不加框）；
-   第二行＝「本週成果」斜角標籤＋三則「主題｜成果」；第三行＝「請副總協助」淡色帶（有事項才出現）；
-   下方三欄模塊卡（01 課題研究｜02 案例開發｜03 導入試用＋04 推廣複用），同一色系的深青綠標題列；
-   模塊內依項目分小標題，需求以圓圈編號、細線分隔，每行「本週：」「下週：」「成果：」，沒內容的行省略。 */
+/* 版面（2026-11-19 改版・方案 3A 由大到小展開）：
+   第一層＝深松青全局數字頂冠（14 總需求＋四階段成熟度比例條｜11 需求本週更新｜0 待協調）；
+   第二層＝本週亮點（2×2，四枚克制礦物色圓章 1–4，依重要性排序）；
+   第三層＝四大模塊細節（01 課題研究｜02 案例開發｜03 導入試用｜04 推廣複用，四欄底部切齊，
+   入選亮點列帶同色同號圓章與微底色，免懸停即可靜態配對；支援雙向懸停聚焦；點 Lab Collab Mate 進每日日報）。 */
 :root{
-  --bg:#F3F6F5; --surface:#FFFFFF; --fg:#1B2724; --muted:#5E6B68; --line:#DCE4E1;
-  --brand:#2E6B62; --brand-ink:#245850; --brand-soft:#E3F0EC; --on-brand:#FFFFFF;
-  --idle:#5F6B68; --idle-soft:#ECF0EE; --badge:#E7ECEA; --warn:#A86200;
-  --f-body:"Microsoft YaHei","微软雅黑","PingFang TC","PingFang SC","Noto Sans TC",system-ui,sans-serif;  /* 使用者指定微軟雅黑；Mac 用蘋方、其他系統用 Noto Sans TC */
+  --ground:#F4F4F0; --paper:#FFFFFF; --paper-dim:#FAF9F6;
+  --ink:#141E1B; --ink-2:#36433F; --muted:#63706C; --faint:#94A09C;
+  --rule:#E3E3DC; --rule-soft:#EFEFE9; --band:#F3F4F0;
+  --pine-deep:#0D312B; --pine:#154A41; --pine-mid:#1D5E53; --pine-soft:#E5F1EE;
+  --jade:#7BE6CD; --mint-text:#C2E0D9;
+  --ok:#157347; --ok-soft:#E3F5EB;
+  --warn:#A85000; --warn-soft:#FDF3DF; --warn-ink:#7C3D08;
+  --bad:#B91C1C; --bad-soft:#FDEAEA; --bad-bd:#F5BCBC; --bad-ink:#7F1D1D;
+  --idle-ink:#7D8985; --idle-soft:#EFEFE9; --rno-bg:#EBEEEC;
+  /* 四枚克制礦物識別色（亮點 1–4 上下靜態秒配對） */
+  --c1:#145349; --c1-bg:#EBF5F2; --c1-bd:#9FC9BE;
+  --c2:#244F7A; --c2-bg:#EDF3F9; --c2-bd:#A5C2DF;
+  --c3:#7A4B22; --c3-bg:#F9F2EA; --c3-bd:#DFC0A1;
+  --c4:#4A642E; --c4-bg:#F1F6EB; --c4-bd:#BBD0A2;
+  --f-body:"Microsoft YaHei","微软雅黑","PingFang TC","PingFang SC","Noto Sans TC",system-ui,sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0F1614; --surface:#17211E; --fg:#E4ECE9; --muted:#9AA9A5; --line:#2A3834;
-  --brand:#5FBFAE; --brand-ink:#7FD2C2; --brand-soft:#183531; --on-brand:#0F1614;
-  --idle:#A7B4B0; --idle-soft:#222D2A; --badge:#25312D; --warn:#F0B055;
+  --ground:#0E1412; --paper:#161E1C; --paper-dim:#1A2421;
+  --ink:#E7EFEA; --ink-2:#BCCAC5; --muted:#8E9E99; --faint:#65746F;
+  --rule:#283531; --rule-soft:#202B28; --band:#1D2724;
+  --pine-deep:#0A2420; --pine:#59C2AE; --pine-mid:#4AB39F; --pine-soft:#16332E;
+  --jade:#7BE6CD; --mint-text:#BBD8D1;
+  --ok:#63CF95; --ok-soft:#143324;
+  --warn:#F2AE52; --warn-soft:#342611; --warn-ink:#F6CA86;
+  --bad:#F88379; --bad-soft:#3A1919; --bad-bd:#6E2C2C; --bad-ink:#FBC5C0;
+  --idle-ink:#8A9793; --idle-soft:#222D2A; --rno-bg:#24312D;
+  --c1:#48B3A0; --c1-bg:#142B27; --c1-bd:#2B5B53;
+  --c2:#6BA3DC; --c2-bg:#162433; --c2-bd:#2E4F70;
+  --c3:#DF9B62; --c3-bg:#2D2116; --c3-bd:#65462B;
+  --c4:#95BE6A; --c4-bg:#1F2B17; --c4-bd:#445D30;
   color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0F1614; --surface:#17211E; --fg:#E4ECE9; --muted:#9AA9A5; --line:#2A3834;
-  --brand:#5FBFAE; --brand-ink:#7FD2C2; --brand-soft:#183531; --on-brand:#0F1614;
-  --idle:#A7B4B0; --idle-soft:#222D2A; --badge:#25312D; --warn:#F0B055;
+  --ground:#0E1412; --paper:#161E1C; --paper-dim:#1A2421;
+  --ink:#E7EFEA; --ink-2:#BCCAC5; --muted:#8E9E99; --faint:#65746F;
+  --rule:#283531; --rule-soft:#202B28; --band:#1D2724;
+  --pine-deep:#0A2420; --pine:#59C2AE; --pine-mid:#4AB39F; --pine-soft:#16332E;
+  --jade:#7BE6CD; --mint-text:#BBD8D1;
+  --ok:#63CF95; --ok-soft:#143324;
+  --warn:#F2AE52; --warn-soft:#342611; --warn-ink:#F6CA86;
+  --bad:#F88379; --bad-soft:#3A1919; --bad-bd:#6E2C2C; --bad-ink:#FBC5C0;
+  --idle-ink:#8A9793; --idle-soft:#222D2A; --rno-bg:#24312D;
+  --c1:#48B3A0; --c1-bg:#142B27; --c1-bd:#2B5B53;
+  --c2:#6BA3DC; --c2-bg:#162433; --c2-bd:#2E4F70;
+  --c3:#DF9B62; --c3-bg:#2D2116; --c3-bd:#65462B;
+  --c4:#95BE6A; --c4-bg:#1F2B17; --c4-bd:#445D30;
   color-scheme:dark}
+
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5}
-.page{max-width:1600px;margin:0 auto;padding-block:12px 16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--f-body);font-size:13.5px;line-height:1.48;-webkit-font-smoothing:antialiased}
 h1,h2,h3,h4{margin:0;text-wrap:balance}
 .num{font-variant-numeric:tabular-nums}
 
+.page{
+  max-width:1600px;margin:0 auto;
+  padding-block:12px 14px;
+  padding-left:max(18px,env(safe-area-inset-left,0px));
+  padding-right:max(18px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:12px;
+}
 
-/* 第一行：標題＋週次＋四個數字 */
-.head{display:flex;align-items:center;flex-wrap:wrap;gap:6px 0}
-.head h1{font-size:34px;font-weight:900;line-height:1.15;letter-spacing:.04em;padding-left:14px;border-left:5px solid var(--brand)}
-.head .wk{font-size:20px;color:var(--muted);font-weight:500}
-.head > .seg{display:flex;align-items:baseline;gap:8px;padding:0 22px;border-left:1px solid var(--line)}
-.head > .seg:first-of-type{margin-left:18px}
-.head .seg b{font-size:38px;font-weight:900;line-height:1;color:var(--brand)}
-.head .seg span{font-size:16px;font-weight:700}
+/* ===== 第一層：深松青全局數字頂冠 ===== */
+.crown{
+  background:
+    radial-gradient(ellipse 60% 130% at 8% 0%, rgba(123,230,205,.16) 0%, transparent 60%),
+    linear-gradient(125deg, #164C43 0%, #0D312B 100%);
+  border-radius:12px;
+  padding:14px 24px;
+  color:#FFFFFF;
+  display:grid;
+  grid-template-columns:210px minmax(320px,1.8fr) minmax(155px,.85fr) minmax(105px,.55fr);
+  gap:20px;
+  align-items:center;
+  box-shadow:0 8px 22px rgba(13,49,43,.14);
+}
+.crown-title{display:flex;flex-direction:column;gap:3px;padding-right:18px;border-right:1px solid rgba(157,240,223,.2)}
+.crown-title h1{font-size:26px;font-weight:900;letter-spacing:.06em;line-height:1.12;color:#FFFFFF}
+.crown-title .wk{font-size:13.5px;font-weight:700;color:var(--jade)}
+.crown-title .asof{font-size:11.5px;color:rgba(194,224,217,.75);margin-top:1px}
 
-/* 第二行：本週成果 */
-.wins{display:grid;grid-template-columns:auto minmax(0,1fr);background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;min-height:58px}
-.wins .lab{background:var(--brand);color:var(--on-brand);font-size:18px;font-weight:900;letter-spacing:.06em;display:flex;align-items:center;padding:0 30px 0 18px;clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%)}
-.wins ul{list-style:none;margin:0;padding:10px 8px;display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));align-items:center}
-.wins li{display:flex;align-items:baseline;gap:12px;padding:3px 20px;min-width:0;font-size:16px}
-.wins li + li{border-left:1px solid var(--line)}
-/* 4 則時排成兩欄兩列 */
-.wcols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;padding:6px 0}
-.wcols ul{display:flex;flex-direction:column;align-items:stretch;padding:0 8px}
-.wcols ul + ul{border-left:1px solid var(--line)}
-.wcols li{border-left:0!important;padding-block:4px}
-.wcols li + li{border-top:1px solid var(--line)}
-.wins li b{color:var(--brand);font-size:17.5px;font-weight:900;white-space:nowrap;padding-right:10px;border-right:1px solid var(--line)}
-.wins li span{min-width:0}
-.wins .empty{padding:0 18px;color:var(--muted);align-self:center}
+.crown-dist{padding-right:20px;border-right:1px solid rgba(157,240,223,.18);display:flex;flex-direction:column;gap:6px}
+.crown-dist-top{display:flex;align-items:baseline;gap:8px}
+.crown-big{font-size:44px;font-weight:900;line-height:.86;color:#FFFFFF;letter-spacing:-.04em}
+.crown-big-lbl{font-size:14px;font-weight:800;color:var(--jade)}
+.mat-bar{display:flex;gap:3px;height:9px;width:100%}
+.mat-bar i{display:block;height:100%;border-radius:2px}
+.mat-s1{background:rgba(123,230,205,.30)}
+.mat-s2{background:rgba(123,230,205,.56)}
+.mat-s3{background:rgba(123,230,205,.82)}
+.mat-s4{background:#7BE6CD}
+.mat-leg{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--mint-text);font-weight:600}
+.mat-leg span{white-space:nowrap}
+.mat-leg em{font-style:normal;color:#FFFFFF;font-weight:800;margin-left:2px}
 
-/* 第三行：請副總協助 */
-.ask{display:flex;align-items:baseline;gap:14px;background:var(--brand-soft);border-radius:10px;padding:13px 22px;font-size:16px}
-.ask b{color:var(--brand-ink);font-size:18px;font-weight:900;letter-spacing:.04em;white-space:nowrap;padding-right:14px;border-right:1px solid var(--line)}
+.kcell{display:flex;flex-direction:column;gap:3px;padding-left:4px}
+.kcell .v{font-size:38px;font-weight:900;line-height:.9;color:#FFFFFF;letter-spacing:-.03em}
+.kcell .k{font-size:12.5px;font-weight:700;color:var(--mint-text)}
+.kcell.accent .v{color:var(--jade)}
+.kcell.zero .v,.kcell.zero .k{color:rgba(194,224,217,.42)}
+.kcell.alert{background:rgba(185,28,28,.9);border:1px solid rgba(254,202,202,.5);border-radius:8px;padding:7px 12px}
+.kcell.alert .v{color:#FFFFFF}
+.kcell.alert .k{color:#FECACA}
+
+/* 請副總協助（有事項才出現） */
+.ask{
+  display:flex;align-items:baseline;gap:14px;
+  background:var(--bad-soft);border:1px solid var(--bad-bd);border-radius:9px;
+  padding:9px 16px;font-size:13px;color:var(--bad-ink);
+}
+.ask b{color:var(--bad);font-size:13.5px;font-weight:900;white-space:nowrap;padding-right:12px;border-right:1px solid var(--bad-bd)}
 .ask div + div{margin-top:2px}
 
-/* 模塊卡：三欄，第三欄上下疊放 03、04 */
-.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:stretch}
-.col{display:flex;flex-direction:column;gap:12px;min-width:0}
-.mod{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;flex:1 1 auto}
-/* 三欄底部切齊：較矮的欄把多出的高度平均分給各需求，需求內容在自己的格內垂直置中 */
-.mbody{flex:1 1 auto;display:flex;flex-direction:column}
-.mbody > .proj{flex:none}
-/* 可點進詳細頁的項目組（Lab Collab Mate → 每日日報） */
-.pgroup{display:flex;flex-direction:column;flex:1 1 auto;color:inherit;text-decoration:none;border-radius:8px;margin:0 -8px;padding:0 8px;transition:background .15s}
-.pgroup > .req{flex:1 1 auto;align-content:center}
-.pgroup:hover,.pgroup:focus-visible{background:var(--brand-soft)}
-.pgroup:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
-.pgroup .proj{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.proj .go{font-size:13px;font-weight:700;color:var(--brand);white-space:nowrap}
-.pgroup:hover .go{text-decoration:underline}
-@media (prefers-reduced-motion:reduce){.pgroup{transition:none}}
-.mbody > .req{flex:1 1 auto;align-content:center}
-.mod > header{display:flex;align-items:baseline;gap:12px;background:var(--brand);color:var(--on-brand);padding:7px 16px}
-.mod h3{font-size:19px;font-weight:900;letter-spacing:.06em}
-.mod h3 .no{margin-right:10px}
-.mod > header span{margin-left:auto;font-size:14px;font-weight:700}
-.mbody{padding:2px 16px 6px}
-.proj{font-size:15px;font-weight:900;color:var(--brand-ink);padding:6px 0 4px;border-bottom:1px solid var(--line)}
-.req{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:0 10px;padding:7px 0 8px;border-bottom:1px solid var(--line)}
-.req:last-child{border-bottom:0}
-.req .i{grid-row:1 / span 4;width:24px;height:24px;border-radius:50%;background:var(--badge);color:var(--fg);font-size:13px;font-weight:700;display:grid;place-items:center;margin-top:2px}
-.req h4{font-size:16px;font-weight:900;line-height:1.4}
-.pill{font-size:12.5px;font-weight:700;padding:1px 10px;border-radius:6px;white-space:nowrap;color:var(--brand-ink);background:var(--brand-soft);align-self:start;margin-top:2px}
-.pill.idle{color:var(--idle);background:var(--idle-soft)}
-.ln{grid-column:2 / -1;font-size:13.5px;line-height:1.5}
-.ln b{font-weight:700}
+/* ===== 第二層：本週亮點（2×2，四色礦物圓章 1–4 靜態秒配對） ===== */
+.hl-panel{
+  background:var(--paper);border:1px solid var(--rule);border-radius:10px;
+  padding:9px 14px 11px;box-shadow:0 2px 10px rgba(20,30,27,.035);
+}
+.hl-hd{padding-bottom:6px;margin-bottom:8px;border-bottom:1px solid var(--rule-soft);font-size:13.5px;font-weight:900;color:var(--ink);letter-spacing:.06em}
+.hl-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 10px}
+.hl-grid.n1{grid-template-columns:1fr}
+.hl-grid.n3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.hl-card{
+  padding:8px 11px;border-radius:8px;border:1.5px solid transparent;
+  display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:2px 9px;align-items:start;
+  cursor:default;transition:box-shadow .16s ease,transform .16s ease;
+}
+.hl-card.c1{background:var(--c1-bg);border-color:var(--c1-bd)}
+.hl-card.c2{background:var(--c2-bg);border-color:var(--c2-bd)}
+.hl-card.c3{background:var(--c3-bg);border-color:var(--c3-bd)}
+.hl-card.c4{background:var(--c4-bg);border-color:var(--c4-bd)}
+.hl-card:hover,.hl-card.is-hot{box-shadow:0 4px 14px rgba(20,30,27,.12);transform:translateY(-1px)}
+.hl-card .c-pin{grid-row:1 / span 2;margin-top:1px}
+.hl-card .c-head{display:flex;align-items:baseline;gap:7px;min-width:0;flex-wrap:wrap}
+.hl-card .c-name{font-size:14px;font-weight:900;color:var(--ink)}
+.hl-card .c-mod{font-size:11.5px;font-weight:700;color:var(--muted)}
+.hl-card .c-body{grid-column:2 / -1;font-size:12.6px;color:var(--ink-2);line-height:1.45}
+.hl-card .c-body strong{color:var(--ink);font-weight:800}
+.hl-empty{padding:4px 0;color:var(--muted);font-size:13px}
+
+/* 四色礦物大圓章（絕不與外層 class 同名） */
+.pin{
+  width:23px;height:23px;border-radius:50%;
+  display:inline-grid;place-items:center;
+  font-size:12.5px;font-weight:900;color:#FFFFFF;line-height:1;flex:none;
+  box-shadow:0 1px 4px rgba(0,0,0,.15);
+}
+.pin.sm{width:20px;height:20px;font-size:11px}
+.pin.pin-1{background:var(--c1)}
+.pin.pin-2{background:var(--c2)}
+.pin.pin-3{background:var(--c3)}
+.pin.pin-4{background:var(--c4)}
+
+/* ===== 第三層：四大模塊細節（四欄底部切齊） ===== */
+.board{
+  display:grid;
+  grid-template-columns:1.22fr 1.14fr 1.06fr 0.86fr;
+  gap:10px;
+  align-items:stretch;
+}
+.col{display:flex;flex-direction:column;min-width:0}
+.mod{
+  background:var(--paper);border:1px solid var(--rule);border-radius:10px;overflow:hidden;
+  display:flex;flex-direction:column;flex:1 1 auto;
+  box-shadow:0 1px 4px rgba(20,30,27,.025);
+}
+.col:nth-child(1) .mod{border-top:3px solid #A8C7C0}
+.col:nth-child(2) .mod{border-top:3px solid #60A194}
+.col:nth-child(3) .mod{border-top:3px solid #2A786B}
+.col:nth-child(4) .mod{border-top:3px solid #154A41}
+
+.mod > header{
+  padding:8px 13px 7px;border-bottom:1px solid var(--rule);background:var(--paper-dim);
+  display:flex;align-items:baseline;justify-content:space-between;gap:6px;
+}
+.mod h3{font-size:14.5px;font-weight:900;color:var(--ink);display:inline-flex;align-items:baseline;gap:6px;letter-spacing:.03em}
+.mod h3 .no{font-size:12px;font-weight:900;color:var(--pine-mid)}
+.mod > header .cnt{font-size:11.5px;font-weight:700;color:var(--muted);white-space:nowrap}
+.mod > header .cnt b{color:var(--pine);font-weight:900}
+
+.mbody{padding:4px 13px 8px;display:flex;flex-direction:column;flex:1 1 auto}
+.proj-block{margin-top:7px;display:flex;flex-direction:column}
+.proj-block:first-child{margin-top:2px}
+.proj-block.grow{flex:1 1 auto}
+
+.proj-band{
+  display:flex;align-items:center;justify-content:space-between;gap:6px;
+  padding:4px 8px;margin:0 -4px 3px;border-radius:5px;
+  background:var(--band);font-size:12px;font-weight:900;color:var(--pine);letter-spacing:.02em;
+}
+.proj-band .pcnt{
+  font-size:10.5px;font-weight:800;color:var(--muted);
+  background:var(--paper);border:1px solid var(--rule);padding:0 6px;border-radius:999px;
+}
+
+/* 可點進日報的整組互動區 */
+.pgroup{
+  display:flex;flex-direction:column;flex:1 1 auto;color:inherit;text-decoration:none;
+  border-radius:7px;margin:0 -5px;padding:0 5px;transition:background .16s ease;
+}
+.pgroup:hover,.pgroup:focus-visible{background:var(--pine-soft)}
+.pgroup:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+.drill-pill{
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:11px;font-weight:800;color:var(--pine);background:var(--pine-soft);
+  padding:2px 8px;border-radius:999px;white-space:nowrap;transition:all .16s ease;
+}
+.pgroup:hover .drill-pill{background:var(--pine);color:#FFFFFF}
+.drill-pill svg{transition:transform .16s ease}
+.pgroup:hover .drill-pill svg{transform:translate(1.5px,-1.5px)}
+
+/* 需求列 */
+.req{
+  display:grid;grid-template-columns:23px minmax(0,1fr) auto;gap:2px 7px;
+  padding:5.5px 6px;margin:1.5px -6px;border-radius:7px;
+  border:1px solid transparent;border-bottom-color:var(--rule-soft);
+  font-size:12px;line-height:1.45;
+  transition:background .16s ease,box-shadow .16s ease,opacity .16s ease,border-color .16s ease;
+}
+.req:last-child{border-bottom-color:transparent}
+.req .i{
+  grid-row:1 / span 5;width:19px;height:19px;border-radius:50%;
+  background:var(--rno-bg);color:var(--ink-2);font-size:10.5px;font-weight:800;
+  display:grid;place-items:center;margin-top:1.5px;justify-self:center;
+}
+.req.is-idle .i{background:var(--idle-soft);color:var(--faint);font-weight:600}
+.req.has-warn:not(.hl-row) .i{background:var(--warn-soft);color:var(--warn)}
+.req .pin-slot{grid-row:1 / span 5;display:flex;justify-content:center;padding-top:1px}
+
+/* 亮點靜態配對列（免懸停一眼配對 1–4） */
+.req.hl-row{margin-block:3.5px;padding:6px 6px}
+.req.hl-c1{background:var(--c1-bg);border-color:var(--c1-bd)}
+.req.hl-c2{background:var(--c2-bg);border-color:var(--c2-bd)}
+.req.hl-c3{background:var(--c3-bg);border-color:var(--c3-bd)}
+.req.hl-c4{background:var(--c4-bg);border-color:var(--c4-bd)}
+
+.req h4{font-size:13px;font-weight:800;color:var(--ink);line-height:1.36}
+.req.hl-row h4{font-weight:900}
+.req.is-idle{padding:4px 6px}
+.req.is-idle h4{color:var(--idle-ink);font-weight:600;font-size:12.4px}
+
+.pill{
+  font-size:11px;font-weight:700;padding:1.5px 7px;border-radius:4px;white-space:nowrap;
+  color:var(--pine);background:var(--pine-soft);align-self:start;margin-top:1px;
+}
+.pill.done{color:var(--ok);background:var(--ok-soft)}
+.pill.idle{color:var(--idle-ink);background:var(--idle-soft);font-weight:500}
+
+.ln{grid-column:2 / -1;color:var(--ink-2)}
+.ln b{font-weight:700;color:var(--ink)}
 .ln.last{color:var(--muted)}
-.ln.issue b{color:var(--warn)}
-.ln.next{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-footer{font-size:11.5px;color:var(--muted)}
-footer a{color:var(--brand-ink)}
+/* 問題塊（純淨暖琥珀柔底，狀態標籤維持原階段） */
+.prob{
+  grid-column:2 / -1;margin-top:2px;padding:3px 8px;border-radius:5px;
+  background:var(--warn-soft);color:var(--warn-ink);
+  font-size:11.5px;line-height:1.44;display:flex;gap:6px;align-items:baseline;
+}
+.prob b{font-weight:800;color:var(--warn);white-space:nowrap;flex:none}
 
-/* 矮螢幕（如筆電 1440×900）再壓縮，維持單屏 */
-/* 一頁不滾動的自動調整（由下方程式依實際高度決定）：
-   預設＝寬鬆；超出一屏時 fit1＝模塊區緊湊、上方仍寬鬆；仍超出時 fit2＝全部緊湊 */
-html.fit1 .page{gap:12px}
-html.fit1 .board,html.fit1 .col{gap:10px}
-html.fit1 .mod > header{padding:5px 14px}
-html.fit1 .mod h3{font-size:17px}
-html.fit1 .mbody{padding:0 14px 4px}
-html.fit1 .proj{font-size:14px;padding:4px 0 3px}
-html.fit1 .req{padding:4px 0 5px}
-html.fit1 .req h4{font-size:15px}
-html.fit1 .ln{font-size:13px;line-height:1.42}
-html.fit2 .board,html.fit2 .col{gap:10px}
-html.fit2 .mod > header{padding:5px 14px}
-html.fit2 .mod h3{font-size:17px}
-html.fit2 .mbody{padding:0 14px 4px}
-html.fit2 .proj{font-size:14px;padding:4px 0 3px}
-html.fit2 .req{padding:4px 0 5px}
-html.fit2 .req h4{font-size:15px}
-html.fit2 .ln{font-size:13px;line-height:1.42}
-html.fit2 .wins ul{padding:4px 8px}
-html.fit2 .wins li{font-size:13px;line-height:1.35;padding-top:1px;padding-bottom:1px}
-html.fit2 .wins li b{font-size:14px}
-html.fit2 .wcols{padding:3px 0}
-html.fit2 .wcols li{padding-block:1px}
-html.fit2 .wcols{padding:2px 0}
-html.fit2 .page{gap:9px;padding-block:6px 8px}
-html.fit2 .head h1{font-size:27px}
-html.fit2 .head .seg b{font-size:28px}
-html.fit2 .head .wk{font-size:17px}
-html.fit2 .wins{min-height:38px}
-html.fit2 .wins .lab{font-size:15.5px}
-html.fit2 .wins li{font-size:14px}
-html.fit2 .wins li b{font-size:15px}
-html.fit2 .ask{padding:6px 18px;font-size:14.5px}
-html.fit2 .ask b{font-size:15.5px}
+/* 推廣型 3 格迷你漏斗條（不壓縮標題） */
+.funnel-mini{
+  grid-column:2 / -1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:3px 0 4px;
+}
+.fm-cell{
+  background:var(--paper);border:1px solid var(--rule);border-radius:5px;
+  padding:3px 6px;display:flex;align-items:baseline;justify-content:space-between;
+  font-size:11px;color:var(--muted);font-weight:600;
+}
+.fm-cell b{font-size:14px;font-weight:900;color:var(--ink);line-height:1}
+.fm-cell.has{border-color:var(--c2-bd);color:var(--c2)}
+.fm-cell.has b{color:var(--c2)}
+.fm-cell.zero b{color:var(--faint);font-weight:700}
 
-/* 平板：兩欄；手機：一欄 */
-@media (max-width:1100px){
+/* 雙向懸停連動聚焦 */
+.board.linking .req{opacity:.35}
+.board.linking .req.hl-linked{opacity:1!important;box-shadow:0 4px 14px rgba(20,30,27,.14)}
+
+@media (prefers-reduced-motion:reduce){.pgroup,.drill-pill,.drill-pill svg,.hl-card,.req{transition:none}}
+
+/* ===== 桌機單屏自適應收緊（fit1 → fit2 → fit3 → fit4，確保 1440×900 與壓力測試 0px 溢出） ===== */
+html.fit1 .page{gap:9px;padding-block:9px 10px}
+html.fit1 .crown{padding:11px 20px;gap:16px}
+html.fit1 .crown-big{font-size:38px}
+html.fit1 .kcell .v{font-size:32px}
+html.fit1 .hl-panel{padding:7px 13px 9px}
+html.fit1 .hl-hd{padding-bottom:4px;margin-bottom:6px}
+html.fit1 .hl-card{padding:6px 10px}
+html.fit1 .hl-card .c-body{font-size:12px;line-height:1.38}
+html.fit1 .mod > header{padding:6px 12px 5px}
+html.fit1 .mbody{padding:2px 12px 6px}
+html.fit1 .proj-block{margin-top:5px}
+html.fit1 .req{padding:4px 5px;font-size:11.6px;line-height:1.38}
+html.fit1 .req.hl-row{padding:4.5px 5px;margin-block:2.5px}
+html.fit1 .req h4{font-size:12.5px}
+
+html.fit2 .page{gap:7px;padding-block:6px 8px}
+html.fit2 .crown{padding:9px 18px;gap:14px}
+html.fit2 .crown-title h1{font-size:22px}
+html.fit2 .crown-big{font-size:34px}
+html.fit2 .kcell .v{font-size:28px}
+html.fit2 .hl-panel{padding:6px 12px 7px}
+html.fit2 .hl-hd{font-size:12.5px;padding-bottom:3px;margin-bottom:5px}
+html.fit2 .hl-grid{gap:6px 8px}
+html.fit2 .hl-card{padding:5px 9px;gap:1px 7px}
+html.fit2 .hl-card .c-name{font-size:13px}
+html.fit2 .hl-card .c-body{font-size:11.5px;line-height:1.32}
+html.fit2 .mod > header{padding:5px 11px 4px}
+html.fit2 .mod h3{font-size:13.5px}
+html.fit2 .mbody{padding:2px 11px 5px}
+html.fit2 .proj-block{margin-top:4px}
+html.fit2 .proj-band{padding:2.5px 7px;font-size:11.5px}
+html.fit2 .req{padding:3px 5px;font-size:11.2px;line-height:1.32;gap:1px 6px}
+html.fit2 .req.hl-row{padding:3.5px 5px;margin-block:2px}
+html.fit2 .req h4{font-size:12px}
+html.fit2 .prob{padding:2px 6px;font-size:11px;line-height:1.32}
+
+html.fit3 .page{gap:5px;padding-block:5px 6px}
+html.fit3 .crown{padding:7px 16px;gap:12px}
+html.fit3 .crown-title h1{font-size:20px}
+html.fit3 .crown-title .wk,html.fit3 .crown-title .asof{font-size:11px}
+html.fit3 .crown-big{font-size:28px}
+html.fit3 .kcell .v{font-size:24px}
+html.fit3 .kcell .k,html.fit3 .mat-leg{font-size:10.5px}
+html.fit3 .hl-panel{padding:5px 10px 6px}
+html.fit3 .hl-hd{display:none}
+html.fit3 .hl-grid{gap:5px 7px}
+html.fit3 .hl-card{padding:4px 8px}
+html.fit3 .hl-card .c-name{font-size:12px}
+html.fit3 .hl-card .c-body{font-size:11px;line-height:1.26}
+html.fit3 .mod > header{padding:4px 10px}
+html.fit3 .mod h3{font-size:12.5px}
+html.fit3 .mbody{padding:1px 10px 4px}
+html.fit3 .proj-block{margin-top:3px}
+html.fit3 .proj-band{padding:2px 6px;font-size:11px;margin-bottom:2px}
+html.fit3 .req{padding:2.5px 4px;font-size:10.6px;line-height:1.25;gap:1px 5px;margin-block:1px}
+html.fit3 .req.hl-row{padding:3px 4px;margin-block:1.5px}
+html.fit3 .req h4{font-size:11.5px}
+html.fit3 .pill{font-size:10px;padding:1px 5px}
+html.fit3 .prob{padding:1.5px 5px;font-size:10.4px;line-height:1.24}
+html.fit3 .ln.next{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+html.fit4 .page{gap:4px;padding-block:4px 4px}
+html.fit4 .crown{padding:5px 14px;gap:10px}
+html.fit4 .crown-title h1{font-size:18px}
+html.fit4 .crown-title .asof{display:none}
+html.fit4 .crown-big{font-size:24px}
+html.fit4 .kcell .v{font-size:21px}
+html.fit4 .hl-panel{padding:4px 8px}
+html.fit4 .hl-hd{display:none}
+html.fit4 .hl-card{padding:3px 7px}
+html.fit4 .hl-card .c-name{font-size:11.5px}
+html.fit4 .hl-card .c-body{font-size:10.5px;line-height:1.22}
+html.fit4 .mod > header{padding:3px 9px}
+html.fit4 .mbody{padding:1px 9px 3px}
+html.fit4 .proj-block{margin-top:2px}
+html.fit4 .proj-band{padding:1.5px 6px;font-size:10.5px;margin-bottom:1px}
+html.fit4 .req{padding:2px 4px;font-size:10px;line-height:1.2;gap:0 4px;margin-block:0}
+html.fit4 .req.hl-row{padding:2px 4px;margin-block:1px}
+html.fit4 .req h4{font-size:11px}
+html.fit4 .ln{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* 平板兩欄 */
+@media (max-width:1120px){
+  .crown{grid-template-columns:1fr 1fr;gap:12px 18px}
+  .crown-title,.crown-dist{grid-column:1 / -1;border-right:0;padding-right:0;border-bottom:1px solid rgba(157,240,223,.18);padding-bottom:10px}
   .board{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .wins{grid-template-columns:1fr}
-  .wins .lab{clip-path:none;padding:6px 18px}
-  .wins ul{grid-template-columns:1fr}
-  .wins li + li{border-left:0;border-top:1px solid var(--line)}
-}
-@media (max-width:700px){
-  .board{grid-template-columns:1fr}
-  .head > .seg{padding:0 14px}
-  .head > .seg:first-of-type{margin-left:0;border-left:0;padding-left:0}
-  .head .wk{flex-basis:100%;padding-left:19px}
-  .ask{flex-direction:column;gap:4px}
-  .ask b{border-right:0;padding-right:0}
 }
 
-/* ===== 手機版（11-19）：只在 760px 以下生效，桌機版不受影響 ===== */
+/* ===== 手機版（只在 760px 以下生效，桌機版不受影響） ===== */
 @media (max-width:760px){
-  /* 標題列：標題與週次一行，四個數字排成 2×2 方格 */
-  .head{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-  .head h1{grid-column:1;font-size:28px;white-space:nowrap}
-  .head .wk{grid-column:2;align-self:center;padding-left:0;font-size:16px;white-space:nowrap}  /* 週次與標題同一行 */
-  .head > .seg,.head > .seg:first-of-type{margin:0;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
-  .head .seg b{font-size:28px}
-  /* 本週成果：一則一段，主題在上、內容在下 */
-  .wins ul,.wcols{grid-template-columns:1fr;padding:0}
-  .wcols ul{padding:0}
-  .wcols ul + ul{border-left:0;border-top:1px solid var(--line)}
-  .wins li,.wcols li{flex-direction:column;align-items:flex-start;gap:2px;padding:10px 16px!important;border-left:0!important;font-size:15px}
-  .wins li + li{border-top:1px solid var(--line)}
-  .wins li b{border-right:0;padding-right:0;white-space:normal;font-size:16px}
-  /* 需求卡：下週完整顯示，不截斷 */
+  .page{padding:10px 12px 18px;gap:12px}
+  .crown{padding:14px 16px;grid-template-columns:1fr 1fr;gap:12px}
+  .crown-title h1{font-size:24px}
+  .crown-title .wk{font-size:14px}
+  .crown-title .asof{font-size:12px}
+  .crown-big{font-size:38px}
+  .crown-big-lbl{font-size:14px}
+  .mat-leg{font-size:12px;flex-wrap:wrap;gap:4px 10px}
+  .kcell .v{font-size:32px}
+  .kcell .k{font-size:13px}
+  .hl-panel{padding:12px}
+  .hl-hd{font-size:14px}
+  .hl-grid,.hl-grid.n3{grid-template-columns:1fr;gap:8px}
+  .hl-card{padding:10px 12px;gap:3px 10px}
+  .hl-card .c-name{font-size:15px}
+  .hl-card .c-mod{font-size:12.5px}
+  .hl-card .c-body{font-size:13.5px;line-height:1.5}
+  .board{grid-template-columns:1fr;gap:12px}
+  .mod > header{padding:10px 14px}
+  .mod h3{font-size:16px}
+  .mod > header .cnt{font-size:12.5px}
+  .mbody{padding:6px 14px 10px}
+  .proj-band{padding:6px 10px;font-size:13px;margin:0 -4px 4px}
+  .proj-band .pcnt{font-size:12px}
+  .drill-pill{font-size:12.5px;padding:5px 10px;min-height:32px}
+  .pgroup{padding:4px 5px}
+  .req{padding:8px 6px;font-size:13.5px;line-height:1.52;gap:3px 8px}
+  .req .i{font-size:12px;width:22px;height:22px}
+  .pin.sm{width:22px;height:22px;font-size:12px}
+  .req h4,.req.is-idle h4{font-size:15px}
+  .pill{font-size:12px;padding:2px 8px}
   .ln.next{white-space:normal;overflow:visible}
-  footer{font-size:12.5px;line-height:1.6}
+  .prob{font-size:12.5px;padding:6px 10px}
+  .fm-cell{font-size:12px;padding:5px 8px}
+  .fm-cell b{font-size:15px}
+  .ask{flex-direction:column;gap:4px;font-size:13.5px}
+  .ask b{border-right:0;padding-right:0}
 }
 </style>
 </head>
 <body>
 <div class="page">
-  <header class="head" id="head"></header>
-  <section class="wins" aria-label="本週成果"><div class="lab">本週成果</div><div id="wins"></div></section>
+  <header class="crown" id="crown"></header>
   <section class="ask" id="ask" aria-label="請副總協助" hidden></section>
+  <section class="hl-panel" id="hlPanel" aria-label="本週亮點"></section>
   <main class="board" id="board" aria-label="四大模塊"></main>
-  <footer id="foot"></footer>
 </div>
 <script>
 /* ===== 資料（每週由 PM 依負責人訊息回覆更新） =====
    WEEK：本週週次；ASOF：資料截至（手動設定，頁面所有時間計算以它為準，不隨瀏覽當天變動）。
-   MODULES：四大模塊，依成熟度路線排列；col＝第幾欄（0–2）。需求依 proj（項目）分小組。
+   MODULES：四大模塊，依成熟度路線排列（01 課題研究 → 02 案例開發 → 03 導入試用 → 04 推廣複用）。
    需求欄位：
-     type   deliver＝交付型（照步驟做出東西）／research＝研究型（回答問題）／promo＝推廣型（讓更多人用）
-     steps  交付型的時程步驟（短名稱）；null＝步驟待定
+     type   deliver＝交付型／research＝研究型／promo＝推廣型
+     steps  交付型的時程步驟；null＝步驟待定
      start  尚未開始時的預計開始日
-     sub    某個步驟底下的子階段 {at:步驟索引, items:[...]}（例：Skill 的「建置」含技能本身的各階段）
+     sub    某個步驟底下的子階段 {at, items}
      ms     PM 規劃的里程碑 [日期, 名稱]
      rel    與其他需求的關聯
-     nums   推廣型要問的數字名稱
-     rep    本週回報：{now:步驟索引或索引陣列（-1＝尚未開始）, subDone:子階段完成數, subs:[[子項,步驟索引]],
-                       pill:"狀態標籤文字（選填，覆寫自動判斷）", hideDone:true＝卡片不顯示本週（內容已在成果，只用於本週成果與統計）, issue:"遇到的問題（不需副總幫忙；不算本週進度）", done:[...], next:[...], hl:[放進「本週成果」的完成事項：索引，或 {i:索引, s:主題, t:短句, o:顯示順序}], help:"", conclusion:"", nums:{...}}；null＝待回報
-     last   最近一次的已知狀態（本週尚未回報時顯示）：{date, now, subs, text} */
-const WEEK = {from:"2026-11-13", to:"2026-11-19"};  /* 週次：週五到隔週四 */
+     nums   推廣型漏斗指標名稱
+     rep    本週回報：{now, subDone, subs, pill, hideDone, issue, done, next,
+                       hl:[{i:完成索引, s:主題, t:短句, b:亮點粗體前句(選填), badge:狀態標籤(選填), o:順序, also:[同亮點其他需求名]}],
+                       help, conclusion, nums}；null＝尚未回報／未啟動
+     last   最近一次已知狀態：{date, now, subs, text} */
+const WEEK = {from:"2026-11-13", to:"2026-11-19"};
 const ASOF = "2026-11-18";
 
 const WF = ["設計規劃","節點開發","首次跑通","五次跑通","用戶驗收","上線"];
 const SKILL = ["市場調研","技能設計","建置","實測驗證","推廣接入"];
 
 const MODULES = [
-  {no:"①", name:"課題研究", col:0, reqs:[
+  {no:"①", name:"課題研究", short:"研究", col:0, reqs:[
     {proj:"Mac Mini 部署試驗", name:"驗證兩台", type:"research", dri:"萬鋒", q:"可穩定運行的模型上限", rel:"跑 Lab Collab Mate 工作流",
      desc:"硬體：Mac mini 24G × 2，雷靂 5 全互聯。已部署 Qwen3.6 35B A3B（4-bit），進入部署後運維：有 bug 且影響運行中的項目才 debug。",
      rep:{pill:"運維中", conclusion:"可部署 Qwen3.6 35B 並正常對話；只能跑自定義輕量 Agent，接 3 個工具執行 Lab Collab Mate 工作流"}},
@@ -226,7 +470,7 @@ const MODULES = [
           done:["完成 IDE 插件與原生 TUI 體驗比較，產出插件安裝 SOP，11/16 結案"], hideDone:true}},
     {proj:"新 Skill 研究與建置", name:"Presentation Skill", type:"deliver", dri:"Alyanna", steps:SKILL, rel:"之後接上 Nomi",
      sub:{at:2, items:["目標／對象／架構／內容梳理","風格與排版","品管與檢查驗證"]},
-     desc:"技能名 deck-architect（從頭到尾支援簡報全流程的 Skill）。進度來源：claude-base-skills repo 的 presentation-skill-generation 分支。目前在技能設計：方法論已用 4 份真實簡報驗證，正在做設計美感的風格定調；尚未用真實簡報從頭做到成品。",
+     desc:"技能名 deck-architect（從頭到尾支援簡報全流程的 Skill）。目前在技能設計：方法論已用 4 份真實簡報驗證，正在做設計美感的風格定調。",
      rep:{now:1,
           done:["完成 12 款風格意象圖（插畫、積木、水彩可切換畫風）", "依審閱回饋重做顧問報告、週報、攝影雜誌三款"],
           next:["討論 12 款並選出首批 3 款，進入逐風格設計排法"]}},
@@ -237,12 +481,12 @@ const MODULES = [
           done:["以 InvestGo 實測：依 SRS 自動生成開發設計文檔", "以 PCC 實測：依需求自動生成看板 UI 設計"],
           next:["InvestGo 測程式碼生成；PCC 依定稿 UI 生成 SRS"]}}
   ]},
-  {no:"②", name:"案例開發", col:1, reqs:[
+  {no:"②", name:"案例開發", short:"開發", col:1, reqs:[
     {proj:"Lab Collab Mate", name:"客戶軟體驗證", type:"deliver", dri:"Simon、Gary、景棠、熙宁", steps:WF,
      ms:[["2026-11-24","Bundle 首次跑通"],["2026-11-25","proxima 自動化節點開發完成"],["2026-12-01","Bundle 五次跑通"],["2026-12-11","正式上線（proxima、EFI 首次跑通 TBD）"]],
      rep:{now:1, subs:[["Bundle",1],["proxima",1],["EFI",1]],
           done:["Bundle 串聯 4 個節點，可跑通查看、下載新 bundle 與刷機", "Bundle 累計 9 個、proxima 6 個、EFI 1 個自動化節點"],
-          hl:[{i:0, s:"Lab Collab Mate", t:"客戶軟體驗證的前 3 步（查詢、下載、刷機）已由 AI 自動執行並投入實際業務，預計 11/24 跑通全流程", o:1}],
+          hl:[{i:0, s:"Lab Collab Mate", b:"前 3 步（查詢、下載、刷機）已由 AI 自動執行並投入業務", t:"，預計 11/24 跑通全流程", o:1}],
           issue:"proxima、EFI 首次跑通時間 TBD（EFI 因支援客戶 STFL 轉 burn-in 延緩）",
           next:["Bundle 本週串接完成，下週二（11/24）首次跑通全流程"]}},
     {proj:"Lab Collab Mate", name:"產品 Panic 處理", type:"deliver", dri:"Simon、Gary、熙宁", steps:WF, start:"2026-12-01",
@@ -258,30 +502,30 @@ const MODULES = [
           done:["取得 LabMind 技術架構文件與相關程式碼"],
           next:["研讀 LabMind 架構與程式碼，評估 Lab Collab Mate 的接入方式"]}}
   ]},
-  {no:"③", name:"導入試用", col:2, reqs:[
+  {no:"③", name:"導入試用", short:"試用", col:2, reqs:[
     {proj:"Codio 使用與活化", name:"InvestGo IDL 資訊更新看板", type:"promo", dri:"Lucas", rel:"與 Development Skill 共用 InvestGo 驗證",
      desc:"大型系統類開發：以 InvestGo 部門 IDL 資訊更新看板需求為試點，用 Codio 搭配開發 Skill 走開發流程。",
      rep:{done:["用 Codio 搭配開發設計文檔生成 Skill，依 SRS 自動生成開發設計文檔（技能實測驗證中）"],
           next:["結合 Vibe Coding Skill，開展程式碼生成測試"],
-          hl:[{i:0, o:4, s:"InvestGo、PCC", t:"使用 IT 平台 Codio，依需求自動產出開發設計文件與畫面設計，已在 2 個實際需求上試行"}]}},
+          hl:[{i:0, o:4, s:"InvestGo、PCC", badge:"2 案試行中", b:"使用 Codio 依需求自動產出開發設計文件與畫面設計", t:"，已在 2 個實際需求上試行", also:["PCC 人力活化系統"]}]}},
     {proj:"Codio 使用與活化", name:"PCC 人力活化系統", type:"promo", dri:"Lucas", rel:"與 Development Skill 共用驗證",
      desc:"大型系統類開發：以 PCC 人力活化系統需求為試點，用 Codio 搭配開發 Skill 走開發流程。",
      rep:{done:["用 Codio 搭配原型生成 Skill，依需求自動生成看板 UI 設計（技能實測驗證中）"],
           next:["依定稿的 UI 設計生成對應的 SRS"]}},
     {proj:"Nomi 使用與活化", name:"AAS 系統重構", type:"deliver", dri:"Tylee",
      steps:["系統分析","需求梳理","原型確認","技術規劃","AI 開發測試","內部試用驗收","用戶單位確認","Xylon 架構重構"],
-     desc:"架構演進：原本建在 xTrack 系統管理架構 → Nomi 重構後為純 JSP（無系統管理架構）→ 下一階段改為 Xylon 系統管理架構。重構範圍止於驗收，不含正式部署與切換。用 Nomi 經 6 輪迭代（10/21–11/13），驗收 4 次退回後通過。",
+     desc:"用 Nomi 經 6 輪迭代（10/21–11/13），驗收 4 次退回後通過；下一階段改為 Xylon 系統管理架構。",
      rep:{now:5, pill:"內部驗收完成",
           done:["用 Nomi 走完系統重構全流程，內部測試驗收完成"],
           next:["跟用戶單位確認功能是否符合業務需求（TBD）"],
-          hl:[{i:0, o:3, s:"AAS 系統重構", t:"從分析舊程式到開發測試，全程只靠 Nomi 完成系統重構，已通過內部驗收"}]}}
+          hl:[{i:0, o:3, s:"AAS 系統重構", b:"從分析舊程式到開發測試，全程只靠 Nomi 完成重構", t:"，已通過內部驗收"}]}}
   ]},
-  {no:"④", name:"推廣複用", col:2, reqs:[
+  {no:"④", name:"推廣複用", short:"推廣", col:3, reqs:[
     {proj:"AI Hiring Agent", name:"開放複用", type:"promo", dri:"Alyanna", nums:["尋求","申請","已上線"], numUnit:"單位",
      rep:{nums:{"尋求":2, "申請":0, "已上線":0},
           done:["PCC、Non Phone OPM 派人了解，已提供操作影片與部署準備簡報"],
           next:["待需求單位確認導入需求，並準備部署的硬體與模型"],
-          hl:[{i:0, o:2, s:"AI Hiring Agent", t:"2 個單位（PCC、Non Phone OPM）前來了解導入，已提供操作影片與部署說明"}]}}
+          hl:[{i:0, o:2, s:"AI Hiring Agent", badge:"尋求 2 單位", b:"2 個單位（PCC、Non Phone OPM）前來了解導入", t:"，已提供操作影片與部署說明"}]}}
   ]}
 ];
 
@@ -291,53 +535,110 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;
 const dn = s => Date.UTC(+s.slice(0,4), +s.slice(5,7)-1, +s.slice(8,10)) / 864e5;
 const md = s => `${+s.slice(5,7)}/${+s.slice(8,10)}`;
 const BASE = dn(ASOF);
-const REQS = MODULES.flatMap(m => m.reqs);
+const ARROW_OUT = `<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5L8.5 3.5M4.5 3.5h4v4"/></svg>`;
+
+const REQS = MODULES.flatMap((m, mi) => m.reqs.map(r => ({...r, _modNo: String(mi + 1).padStart(2, "0"), _modName: m.name})));
 const reported = REQS.filter(r => r.rep);
 const helps = reported.filter(r => r.rep.help);
 const hasDone = r => r.rep && (r.rep.done || []).length > 0;
-const progressed = REQS.filter(hasDone).length;
-const projCount = new Set(REQS.map(r => r.proj)).size;
-
-/* 第一行：標題＋週次＋四個數字 */
-const seg = (n, t) => `<div class="seg"><b class="num">${n}</b><span>${t}</span></div>`;
-$("head").innerHTML = `<h1>本週進度</h1><span class="wk num">｜ ${md(WEEK.from)}–${md(WEEK.to)}</span>` +
-  seg(projCount, "項目") + seg(REQS.length, "需求") + seg(progressed, "本週有進度") + seg(helps.length, "待協調");
-
-/* 第二行：本週成果「主題｜成果」。回報的 hl 可寫 {i:完成事項索引, s:主題, t:短句}；只寫索引時，主題用需求名、內容用完成事項原文。最多 6 則 */
-let wins = reported.flatMap(r => (r.rep.hl || []).map(h => typeof h === "number"
-  ? {s:r.name, t:r.rep.done[h]} : {s:h.s || r.name, t:h.t || r.rep.done[h.i], o:h.o ?? 99}));
-wins.sort((a, b) => (a.o ?? 99) - (b.o ?? 99));  /* hl 的 o＝顯示順序（依重要性，PM 決定） */
-if (!wins.length) wins = reported.filter(hasDone).map(r => ({s:r.name, t:r.rep.done[0]}));
-wins = wins.slice(0, 6);
-$("wins").innerHTML = wins.length
-  ? (() => { const n = wins.length, c = n <= 3 ? n : 2;  /* 1–3 則一排；4 則以上兩欄 */
-      const li = w => `<li><b>${esc(w.s)}</b><span>${esc(w.t)}</span></li>`;
-      if (n <= 3) return `<ul style="--n:${c}">${wins.map(li).join("")}</ul>`;
-      const h = Math.ceil(n / 2);  /* 4 則以上：左右兩欄各自由上往下排 */
-      return `<div class="wcols"><ul>${wins.slice(0, h).map(li).join("")}</ul><ul>${wins.slice(h).map(li).join("")}</ul></div>`; })()
-  : `<div class="empty">本週回報彙整中；負責人回覆後，這裡會列出本週最重要的成果。</div>`;
-
-/* 第三行：請副總協助（有事項才出現） */
-if (helps.length) { $("ask").hidden = false; $("ask").innerHTML = `<b>請副總協助</b><div>${helps.map(r => `<div>${esc(r.rep.help)}<span class="num" style="color:var(--muted)">（${esc(r.name)}）</span></div>`).join("")}</div>`; }
 
 /* 狀態標籤 */
 const nowSet = v => new Set([].concat(v ?? []));
 function pill(r){
   const src = r.rep || r.last;
-  if (r.rep && r.rep.pill) return ["", r.rep.pill];
+  if (r.rep && r.rep.pill) {
+    const p = r.rep.pill;
+    const isDone = /結案|驗收完成|已上線/.test(p);
+    return [isDone ? "done" : "", p];
+  }
   if (r.type === "deliver") {
     if (!r.steps) return ["idle", r.rep ? "步驟待定" : "待回報"];
     const now = src ? src.now : null;
     if (now == null) return ["idle", "待回報"];
     const set = nowSet(now), max = Math.max(...set);
-    if (max < 0) return ["idle", r.start ? `預計 ${md(r.start)} 開始` : "尚未開始"];
+    if (max < 0) return ["idle", r.start ? `預計 ${md(r.start)}` : "尚未開始"];
     if (r.sub && max === r.sub.at) return ["", `完成 ${src.subDone || 0}/${r.sub.items.length} 子階段`];
     return ["", r.steps[max]];
   }
   if (r.type === "research") return r.rep ? ["", r.rep.conclusion ? "已有結論" : "測試中"] : ["idle", "待回報"];
-  if (r.nums) return r.rep && r.rep.nums ? ["", r.nums.map(n => `${n} ${r.rep.nums[n] ?? "–"}`).join("・")] : ["idle", "待回報"];
   return r.rep ? ["", "推廣中"] : ["idle", "待回報"];
 }
+
+/* 第一層：深松青全局數字頂冠（統一使用「需求」口徑） */
+const matBars = MODULES.map((m, i) => `<i class="mat-s${i+1}" style="flex:${m.reqs.length}"></i>`).join("");
+const matLegs = MODULES.map((m, i) => `<span>${String(i+1).padStart(2,"0")} ${esc(m.short || m.name.slice(0,2))} <em>${m.reqs.length}</em></span>`).join("");
+const waitCls = helps.length ? "alert" : "zero";
+$("crown").innerHTML = `
+  <div class="crown-title">
+    <h1>本週進度</h1>
+    <span class="wk num">${md(WEEK.from)}–${md(WEEK.to)}</span>
+    <span class="asof num">資料截至 ${md(ASOF)}</span>
+  </div>
+  <div class="crown-dist">
+    <div class="crown-dist-top">
+      <span class="crown-big num">${REQS.length}</span>
+      <span class="crown-big-lbl">總需求</span>
+    </div>
+    <div class="mat-bar" aria-label="四階段需求分佈">${matBars}</div>
+    <div class="mat-leg num">${matLegs}</div>
+  </div>
+  <div class="kcell accent">
+    <span class="v num">${reported.length}</span>
+    <span class="k">需求本週更新</span>
+  </div>
+  <div class="kcell ${waitCls}">
+    <span class="v num">${helps.length}</span>
+    <span class="k">待協調${helps.length ? " ⚠" : ""}</span>
+  </div>`;
+
+/* 請副總協助（有事項才顯示） */
+if (helps.length) {
+  $("ask").hidden = false;
+  $("ask").innerHTML = `<b>請副總協助</b><div>${helps.map(r => `<div>${esc(r.rep.help)}<span class="num" style="opacity:.75">（${esc(r.name)}）</span></div>`).join("")}</div>`;
+}
+
+/* 第二層：本週亮點（最多 4 則，自動配發四色礦物編號 1–4 並反查下方對應需求列） */
+let wins = reported.flatMap(r => (r.rep.hl || []).map(h => {
+  const obj = typeof h === "number" ? {i:h} : h;
+  const [pCls, pWord] = pill(r);
+  return {
+    s: obj.s || r.name,
+    b: obj.b || "",
+    t: obj.t || (r.rep.done && r.rep.done[obj.i]) || "",
+    o: obj.o ?? 99,
+    mod: `${r._modNo} ${r._modName}`,
+    badge: obj.badge || pWord,
+    badgeCls: obj.badge ? "" : pCls,
+    targets: [r.name, ...(obj.also || [])]
+  };
+}));
+wins.sort((a, b) => a.o - b.o);
+if (!wins.length) {
+  wins = reported.filter(hasDone).slice(0, 4).map((r, idx) => {
+    const [pCls, pWord] = pill(r);
+    return {s:r.name, b:"", t:r.rep.done[0], o:idx+1, mod:`${r._modNo} ${r._modName}`, badge:pWord, badgeCls:pCls, targets:[r.name]};
+  });
+}
+wins = wins.slice(0, 4);
+
+/* 建立 需求名稱 → 亮點編號 (1..4) 的對照表 */
+const reqToPin = new Map();
+wins.forEach((w, idx) => {
+  const pin = idx + 1;
+  w.pin = pin;
+  w.targets.forEach(name => reqToPin.set(name, pin));
+});
+
+$("hlPanel").innerHTML = wins.length
+  ? `<div class="hl-hd">本週亮點</div><div class="hl-grid n${wins.length}">${wins.map(w => `
+      <div class="hl-card c${w.pin}" data-hl="p${w.pin}">
+        <span class="pin pin-${w.pin} c-pin num">${w.pin}</span>
+        <div class="c-head"><span class="c-name">${esc(w.s)}</span><span class="c-mod num">${esc(w.mod)}</span></div>
+        <span class="pill ${w.badgeCls} num">${esc(w.badge)}</span>
+        <div class="c-body">${w.b ? `<strong>${esc(w.b)}</strong>${esc(w.t)}` : esc(w.t)}</div>
+      </div>`).join("")}</div>`
+  : `<div class="hl-hd">本週亮點</div><div class="hl-empty">本週回報彙整中</div>`;
+
 /* 滑鼠提示：DRI、關聯、步驟、子項狀態、下一里程碑 */
 function tip(r){
   const src = r.rep || r.last, t = [`DRI：${r.dri || "待補"}`];
@@ -351,40 +652,95 @@ function tip(r){
   return t.join("\n");
 }
 const more = arr => arr.length > 1 ? `等 ${arr.length} 件` : "";
+
 function reqHTML(r, i){
   const [cls, word] = pill(r);
+  const isIdle = cls === "idle";
+  const pin = reqToPin.get(r.name);
   let rows = "";
+
+  /* 推廣型多指標（如 尋求 2 / 申請 0 / 已上線 0）：排在標題下方 3 格漏斗，絕不壓縮標題 */
+  if (r.nums && r.rep && r.rep.nums) {
+    rows += `<div class="funnel-mini">${r.nums.map(k => {
+      const v = r.rep.nums[k] ?? 0;
+      return `<div class="fm-cell ${v > 0 ? "has" : "zero"}"><span>${esc(k)}</span><b class="num">${v}</b></div>`;
+    }).join("")}</div>`;
+  }
   if (r.rep) {
     if (r.rep.conclusion) rows += `<div class="ln"><b>成果：</b>${esc(r.rep.conclusion)}</div>`;
     const d = r.rep.done || [], n = r.rep.next || [];
     if (d.length && !r.rep.hideDone) rows += `<div class="ln"><b>本週：</b>${esc(d[0])}${more(d)}</div>`;
-    if (r.rep.issue) rows += `<div class="ln issue"><b>問題：</b>${esc(r.rep.issue)}</div>`;
     if (n.length) rows += `<div class="ln next" title="下週：${esc(n.join("；"))}"><b>下週：</b>${esc(n[0])}${more(n)}</div>`;
+    if (r.rep.issue) rows += `<div class="prob"><b>問題</b><span>${esc(r.rep.issue)}</span></div>`;
   } else if (r.last && r.last.text) {
     rows += `<div class="ln last"><b>上次（${md(r.last.date)}）：</b>${esc(r.last.text)}</div>`;
   }
-  return `<div class="req" title="${esc(tip(r))}"><span class="i num">${i}</span><h4>${esc(r.name)}</h4><span class="pill ${cls}">${esc(word)}</span>${rows}</div>`;
-}
-const LINKS = {"Lab Collab Mate":"daily.html"};  /* 有詳細頁的項目 */
-function modHTML(m, k){
-  let html = "", proj = null;
-  /* 依項目分組；有詳細頁的項目（Lab Collab Mate → 每日日報）整組變成連結 */
-  const groups = [];
-  m.reqs.forEach((r, i) => { if (r.proj !== proj) { proj = r.proj; groups.push({proj, items:[]}); } groups[groups.length - 1].items.push(reqHTML(r, i + 1)); });
-  html = groups.map(g => LINKS[g.proj]
-    ? `<a class="pgroup" href="${LINKS[g.proj]}" style="flex-grow:${g.items.length}" aria-label="${esc(g.proj)}：查看每日日報"><h4 class="proj">${esc(g.proj)}<span class="go">查看每日日報 ›</span></h4>${g.items.join("")}</a>`
-    : `<h4 class="proj">${esc(g.proj)}</h4>${g.items.join("")}`).join("");
-  return `<section class="mod"><header><h3><span class="no num">${String(k + 1).padStart(2, "0")}</span>${esc(m.name)}</h3><span>${m.reqs.length} 個需求</span></header><div class="mbody">${html}</div></section>`;
-}
-$("board").innerHTML = [0, 1, 2].map(c => `<div class="col">${MODULES.map((m, k) => m.col === c ? modHTML(m, k) : "").join("")}</div>`).join("");
-$("foot").innerHTML = `資料截至 ${md(ASOF)}・已回報 ${reported.length}／${REQS.length}。進度以負責人最近一次回報為準；日期為 PM 規劃的時程。滑鼠移到需求上可看 DRI、步驟、下一里程碑等細節；點「Lab Collab Mate」區塊可看詳細的每日日報。`;
 
-/* 一頁不滾動：桌機依實際高度逐級收緊（寬鬆 → fit1 → fit2）；字型載入完成與視窗大小改變時重算 */
+  const leftMark = pin
+    ? `<div class="pin-slot"><span class="pin sm pin-${pin} num">${pin}</span></div>`
+    : `<span class="i num">${i}</span>`;
+  const rowCls = [
+    "req",
+    isIdle ? "is-idle" : "",
+    r.rep && r.rep.issue ? "has-warn" : "",
+    pin ? `hl-row hl-c${pin}` : ""
+  ].filter(Boolean).join(" ");
+
+  return `<div class="${rowCls}" ${pin ? `data-hl="p${pin}"` : ""} title="${esc(tip(r))}">${leftMark}<h4>${esc(r.name)}</h4><span class="pill ${cls} num">${esc(word)}</span>${rows}</div>`;
+}
+
+const LINKS = {"Lab Collab Mate":"daily.html"};
+function modHTML(m, k){
+  const groups = [];
+  let proj = null;
+  m.reqs.forEach((r, i) => {
+    if (r.proj !== proj) { proj = r.proj; groups.push({proj, items:[]}); }
+    groups[groups.length - 1].items.push(reqHTML(r, i + 1));
+  });
+  const body = groups.map(g => {
+    const band = `<div class="proj-band"><span>${esc(g.proj)}</span>${LINKS[g.proj]
+      ? `<span class="drill-pill">每日日報 ${ARROW_OUT}</span>`
+      : `<span class="pcnt num">${g.items.length}</span>`}</div>`;
+    return LINKS[g.proj]
+      ? `<div class="proj-block grow"><a class="pgroup" href="${LINKS[g.proj]}" aria-label="${esc(g.proj)} 每日日報">${band}${g.items.join("")}</a></div>`
+      : `<div class="proj-block">${band}${g.items.join("")}</div>`;
+  }).join("");
+  return `<div class="col"><section class="mod"><header><h3><span class="no num">${String(k + 1).padStart(2, "0")}</span>${esc(m.name)}</h3><span class="cnt num"><b>${m.reqs.length}</b> 需求</span></header><div class="mbody">${body}</div></section></div>`;
+}
+
+$("board").innerHTML = MODULES.map((m, k) => modHTML(m, k)).join("");
+
+/* 雙向懸停連動：移到亮點卡或對應列時聚焦高亮 */
+(() => {
+  const board = $("board");
+  const cards = document.querySelectorAll(".hl-card[data-hl]");
+  const rows = board.querySelectorAll(".req[data-hl]");
+  const setHot = key => {
+    board.classList.toggle("linking", !!key);
+    cards.forEach(c => c.classList.toggle("is-hot", c.dataset.hl === key));
+    rows.forEach(r => r.classList.toggle("hl-linked", r.dataset.hl === key));
+  };
+  cards.forEach(c => {
+    c.addEventListener("mouseenter", () => setHot(c.dataset.hl));
+    c.addEventListener("mouseleave", () => setHot(null));
+  });
+  rows.forEach(r => {
+    r.addEventListener("mouseenter", () => setHot(r.dataset.hl));
+    r.addEventListener("mouseleave", () => setHot(null));
+  });
+})();
+
+/* 一頁不滾動：桌機依實際高度逐級收緊（寬鬆 → fit1 → fit2 → fit3 → fit4） */
 function fit(){
   const el = document.documentElement;
-  el.classList.remove("fit1", "fit2");
-  if (innerWidth <= 900) return;
-  for (const c of ["fit1", "fit2"]) { if (el.scrollHeight <= innerHeight) break; el.classList.remove("fit1", "fit2"); el.classList.add(c); }
+  const levels = ["fit1", "fit2", "fit3", "fit4"];
+  el.classList.remove(...levels);
+  if (innerWidth <= 1120) return;
+  for (const c of levels) {
+    if (el.scrollHeight <= innerHeight) break;
+    el.classList.remove(...levels);
+    el.classList.add(c);
+  }
 }
 fit();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
